@@ -5,17 +5,17 @@
 import asyncio
 import os
 import re
-from aiohttp.web_urldispatcher import PATH_SEP
 import aiohttp_jinja2
 import jinja2
 import aiohttp
 from aiohttp import web
+from dpys import utils
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
-os.chdir("/var/www/html")
+# os.chdir("/var/www/html")
 routes = web.RouteTableDef()
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # --MAIN WEBSITE CODE--
 
@@ -94,14 +94,14 @@ class Test:
         #     return web.Response(text=f"<script>alert('Something went wrong. Error code: {e}. Report the error in our discord server http://jgltechnologies.com/discord'); document.location = '/';</script>", content_type="text/html", status=500)
         if request.query.get('weight') is None or request.query.get('heightin') is None or request.query.get('heightft') is None:
             return web.Response(status=400, text="Invalid params")
-        try:
+        if await utils.var_can_be_type(request.query.get('weight'), float) and await utils.var_can_be_type(request.query.get('heightft'), float):
             if request.query['heightin'] == "":
                 heightin = 0
             else:
-                heightin = float(request.query['heightin'])
-        except:
-            return aiohttp_jinja2.render_template("test/bmi/invalid.html", request, context={}, status=400)
-        try:
+                if await utils.var_can_be_type(request.query.get('heightin'), float):
+                    heightin = float(request.query['heightin'])
+                else:
+                    return aiohttp_jinja2.render_template("test/bmi/invalid.html", request, context={}, status=400)
             # bmi = 703*(weight(lbs)/height(in)**2)
             bmi = float(request.query['weight'])/(((float(request.query['heightft'])*12) + heightin)**2)*703
             if bmi > 24.9:
@@ -121,7 +121,7 @@ class Test:
             else:
                 context = {"bmi":round(bmi, 2), "weight":""}
 
-        except:
+        else:
             return aiohttp_jinja2.render_template("test/bmi/invalid.html", request, context={}, status=400)
         return context
 
