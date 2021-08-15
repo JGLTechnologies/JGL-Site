@@ -89,7 +89,7 @@ class Test:
                 async with session.get(f"https://www.google.com/recaptcha/api/siteverify?secret={SECRET_KEY}&remoteip={request.remote}&response={token}") as response:
                     data = await response.json()
                     if data['score'] <= 0.6:
-                        # This is only for testing. I'm not gonna do anything because it is a bmi calculator and I don't care a a bot submits the form.
+                        # This was for testing. I do not use it for the bmi calculator anymore.
                         pass
         except:
             pass
