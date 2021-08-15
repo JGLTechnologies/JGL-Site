@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src="https://www.google.com/recaptcha/api.js?render=6LecNN0bAAAAAJ_jSdE2k6-7ydrxKbSMNMwNjAul"></script>
+    <title>BMI Calculator</title>
+    {% block css %}{% endblock %}
+</head>
+<body>
+    <h1 id="header">BMI Calculator</h1>
+    <center>
+    <form id="form" method="GET" action="/test/bmi/calc">
+        <input name="weight" id="weight" placeholder="weight" required/>
+        <br>
+        <br>
+        <input name="heightft" id="heightft" placeholder="height feet" required/>
+        <br>
+        <br>
+        <input name="heightin" id="heightin" placeholder="height inches"/>
+        <br>
+        <br>
+        <input type='hidden' name='token' id='token'>
+        <button type="submit" id="button">Calculate</button>
+        </form>
+    </center>
+    <script>
+      //   const form = document.getElementById("form");
+      //   form.addEventListener('submit', function(e){
+      //       e.preventDefault();
+      //   });
+      //   function onClick() {
+      //       var weight = document.getElementById("weight");
+      //       weight.value = weight.value.trim();
+      //       var heightft = document.getElementById("heightft");
+      //       heightft.value = heightft.value.trim();
+      //       var heightin = document.getElementById("heightin");
+      //       heightin.value = heightin.value.trim();
+      //       console.log(weight.value);
+      //   if (weight.value == null || heightft.value == null || weight.value == "" || heightft.value == ""){
+      //       return;
+      //   }
+      //  else{
+      //   document.getElementById("button").style.display = "none";
+      //   grecaptcha.ready(function() {
+      //     grecaptcha.execute('6LecNN0bAAAAAJ_jSdE2k6-7ydrxKbSMNMwNjAul', {action: 'submit'}).then(function(token) {
+      //       const form = document.getElementById("form");
+      //       document.getElementById("token").value = token;
+      //       form.action = "/test/bmi/calc";
+      //       form.submit();
+      //     });
+      //   });
+      // }
+      //   }
+        </script>
+    
+</body>
+</html>

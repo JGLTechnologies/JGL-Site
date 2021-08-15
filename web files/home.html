@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% block nonscript %}{% endblock %}
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>JGL Technologies</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/Nebulizer1213/4535435456543/main/favicon.ico" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- styles -->
+        {% block css %}{% endblock %}
+    </head>
+    <body class="d-flex flex-column">
+        <main class="flex-shrink-0">
+            <!-- Navigation-->
+            {% block navbar %}{% endblock %}
+            <!-- Header-->
+            <header class="py-5">
+                <div class="container px-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8 col-xxl-6">
+                            <div class="text-center my-5">
+                                <h1 class="fw-bolder mb-3">About Us</h1>
+                                <p class="lead fw-normal text-muted mb-4">We are a computer technology company that develops open source, closed source, and premium software. We also develop devices for everyday use, such as mobile devices, audio devices, and computer hardware components.</p>
+                                <a class="btn btn-primary btn-lg" href="https://discord.gg/TUUbzTa3B7">Join our discord server</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- About section one-->
+            <section class="py-5 bg-light" id="scroll-target">
+                <div class="container px-5 my-5">
+                    <div class="row gx-5 align-items-center">
+                        <div class="col-lg-6"><img class="img-fluid rounded mb-5 mb-lg-0" src="https://raw.githubusercontent.com/joebonjovi/jgltechlogo/main/logo.png" alt="..." /></div>
+                        <div class="col-lg-6">
+                            <h2 class="fw-bolder">Our Employees</h2>
+                            <p class="lead fw-normal text-muted mb-0"><span style="color: var(--bs-dark);">George Luca:</span><br>Skills: Python, SQL, and discord.py<br>Email: fixingg@gmail.com<br><br><span style="color: var(--bs-dark);">Joseph Luca:</span><br>Skills: Electronics/Circuit Design, C#, JavaScript, Python, SQL, and Networking<br>Email: fixingj@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- About section two-->
+            <section class="py-5">
+                <div class="container px-5 my-5">
+                    <div class="row gx-5 align-items-center">
+                        <div class="col-lg-6">
+                            <h2 class="fw-bolder">Current Projects</h2>
+                            <p class="lead fw-normal text-muted mb-0"><span style="color: var(--bs-dark);">JGL Watch:</span><br>An open source smart watch thinner than the apple watch.<br><span style="color: var(--bs-dark);">JGL Forum:</span><br>A forum to discuss JGL products and give feedback.<br><span style="color: var(--bs-dark);">JGL API:</span><br>An api made with the aiohttp.web framework to handle form applications and the entire backend of the JGL Forum.<br><a href="/bot" style="color: var(--bs-dark); text-decoration: none;">JGL Bot:</a><br>A discord bot full of features such as reaction role, moderation, giveaways, custom commands, reminders, and much more.<br><a href="https://sites.google.com/view/dpys" style="color: var(--bs-dark); text-decoration: none;">DPYS:</a><br>A Python library to make basic functionalities that every good bot needs easy to implement for beginners.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <!-- Footer-->
+        {% block footer %}{% endblock %}
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+
+</html>
