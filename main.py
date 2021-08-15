@@ -83,16 +83,17 @@ class Test:
     @routes.get("/test/bmi/calc/")
     @aiohttp_jinja2.template("test/bmi/bmi.html", status=200)
     async def bmi_calc(request):
-        try:
-            token = request.query["token"]
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"https://www.google.com/recaptcha/api/siteverify?secret={SECRET_KEY}&remoteip={request.remote}&response={token}") as response:
-                    data = await response.json()
-                    if data['score'] <= 0.6:
-                        # This was for testing. I do not use it for the bmi calculator anymore.
-                        pass
-        except:
-            pass
+        # try:
+        #     token = request.query["token"]
+        #     async with aiohttp.ClientSession() as session:
+        #         async with session.get(f"https://www.google.com/recaptcha/api/siteverify?secret={SECRET_KEY}&remoteip={request.remote}&response={token}") as response:
+        #             data = await response.json()
+        #             if data['score'] <= 0.6:
+        #                 return web.Response(text="<script>alert('Your reCPATCHA token has been scored below 0.7 which means you are probably a bot. If you are not, report the issue to us in our discord server. http://jgltechnologies.com/discord'); document.location = '/';</script>", content_type="text/html", status=403)
+        # except Exception as e:
+        #     return web.Response(text=f"<script>alert('Something went wrong. Error code: {e}. Report the error in our discord server http://jgltechnologies.com/discord'); document.location = '/';</script>", content_type="text/html", status=500)
+        if request.query.get('weight') is None or request.query.get('heightin') is None or request.query.get('heightft') is None:
+            return web.Response(status=400, text="Invalid params")
         try:
             if request.query['heightin'] == "":
                 heightin = 0
