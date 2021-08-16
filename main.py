@@ -258,6 +258,6 @@ def startup():
     asyncio.set_event_loop(loop)
     app.mount("/api", api)
     app.mount("/static", StaticFiles(directory="static"), name="static")
-    uvicorn.run(app, port=80)
+    uvicorn.run(app, port=80, host="0.0.0.0")
 
 startup()
