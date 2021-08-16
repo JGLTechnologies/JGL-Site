@@ -1,3 +1,5 @@
+# This is the old JGL Website that uses aiohttp instead of FastAPI
+
 # Copyright (c) JGL WEBSITE 2021, JGL Technolgies
 
 # --IMPORTS--
