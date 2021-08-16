@@ -157,7 +157,7 @@ class api_class:
         async def bot_is_online(request : Request):
                 try:
                     async with aiohttp.ClientSession() as session:
-                        async with session.get("http://jgltechnologies.com:83/bot_is_online", timeout=.1) as bot_response:
+                        async with session.get("http://jglbotapi.us/bot_is_online", timeout=.1) as bot_response:
                             data = await bot_response.json()
                             if data["online"]:
                                 response = {"online":True}
@@ -170,7 +170,7 @@ class api_class:
         async def info(request : Request):
             async with aiohttp.ClientSession() as session:
                 try:
-                    async with session.get("http://jgltechnologies.com:83/info", timeout=.1) as response:
+                    async with session.get("http://jglbotapi.us/info", timeout=.1) as response:
                         data = await response.json()
                         guilds = data["guilds"]
                         cogs = data["cogs"]
@@ -277,12 +277,15 @@ class api_class:
 async def invalid_path(request, exc):
     return RedirectResponse("/")
 
+@app.on_event("startup")
+async def startup():
+    await api_class.setup()
+
 def startup():
     loop = asyncio.new_event_loop()
-    loop.run_until_complete(api_class.setup())
     asyncio.set_event_loop(loop)
     app.mount("/api", api)
     app.mount("/static", StaticFiles(directory="static"), name="static")
-    uvicorn.run(app, port=80, host="0.0.0.0")
+    uvicorn.run(app, port=81, host="0.0.0.0")
 
 startup()
