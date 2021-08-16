@@ -25,7 +25,6 @@ os.chdir("/var/www/html")
 app = FastAPI(docs_url=None)
 api = FastAPI()
 templates = Jinja2Templates(directory="web files")
-SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # --MAIN WEBSITE CODE--
 
@@ -76,6 +75,16 @@ async def bot(request : Request):
 @app.get("/dpys/")
 async def dpys(request : Request):
     return RedirectResponse("https://sites.google.com/view/dpys")
+
+@app.get("/dpys/src")
+@app.get("/dpys/src/")
+async def dpys_src(request : Request):
+    return RedirectResponse("https://github.com/Nebulizer1213/dpys")
+
+@app.get("/src")
+@app.get("/src/")
+async def src(request : Request):
+    return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
 
 class Test:
 
