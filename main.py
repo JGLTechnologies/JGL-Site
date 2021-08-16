@@ -21,11 +21,11 @@ import uvicorn
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
-# os.chdir("/var/www/html")
+os.chdir("/var/www/html")
 app = FastAPI(docs_url=None)
 api = FastAPI()
 templates = Jinja2Templates(directory="web files")
-# SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # --MAIN WEBSITE CODE--
 

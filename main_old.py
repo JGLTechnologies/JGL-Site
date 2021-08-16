@@ -13,9 +13,9 @@ from dpys import utils
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
-# os.chdir("/var/www/html")
+os.chdir("/var/www/html")
 routes = web.RouteTableDef()
-# SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # --MAIN WEBSITE CODE--
 
