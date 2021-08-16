@@ -18,12 +18,18 @@ from dpys import utils
 import json
 import aiosqlite
 import uvicorn
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
+limiter = Limiter(key_func=get_remote_address)
 os.chdir("/var/www/html")
 app = FastAPI(docs_url=None)
 api = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 templates = Jinja2Templates(directory="web files")
 
 # --MAIN WEBSITE CODE--
@@ -31,58 +37,69 @@ templates = Jinja2Templates(directory="web files")
 @app.get("/")
 @app.get("/home")
 @app.get("/home/")
+@limiter.limit("1/second")
 async def home(request : Request):
     context = {"request":request, "file":"home.html"}
     return templates.TemplateResponse("base.html", context)
 
 @app.get("/contact")
 @app.get("/contact/")
+@limiter.limit("1/second")
 async def contact(request : Request):
     context = {"request":request, "file":"contact.html"}
     return templates.TemplateResponse("base.html", context)
 
 @app.get("/freelance")
 @app.get("/freelance/")
+@limiter.limit("1/second")
 async def freelance(request : Request):
     context = {"request":request, "file":"freelance.html"}
     return templates.TemplateResponse("base.html", context)
 
 @app.get("/discord")
 @app.get("/discord/")
+@limiter.limit("1/second")
 async def discord(request : Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
 
 @app.get("/favicon.ico")
+@limiter.limit("1/second")
 async def ico(request : Request):
     return RedirectResponse("/static/favicon.ico")
 
 @app.get("/dpys/donate")
 @app.get("/dpys/donate/")
+@limiter.limit("1/second")
 async def dpys_donate(request : Request):
     return RedirectResponse("https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
 
 @app.get("/bot/donate")
 @app.get("/bot/donate/")
+@limiter.limit("1/second")
 async def bot_donate(request : Request):
     return RedirectResponse("https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
 
 @app.get("/bot")
 @app.get("/bot/")
+@limiter.limit("1/second")
 async def bot(request : Request):
     return HTMLResponse("JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
 
 @app.get("/dpys")
 @app.get("/dpys/")
+@limiter.limit("1/second")
 async def dpys(request : Request):
     return RedirectResponse("https://sites.google.com/view/dpys")
 
 @app.get("/dpys/src")
 @app.get("/dpys/src/")
+@limiter.limit("1/second")
 async def dpys_src(request : Request):
     return RedirectResponse("https://github.com/Nebulizer1213/dpys")
 
 @app.get("/src")
 @app.get("/src/")
+@limiter.limit("1/second")
 async def src(request : Request):
     return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
 
@@ -90,12 +107,14 @@ class Test:
 
     @app.get("/test/bmi")
     @app.get("/test/bmi/")
+    @limiter.limit("1/second")
     async def bmi_main(request : Request):
         context = {"request":request, "file":"test/bmi/index.html"}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
     @app.get("/test/bmi/calc")
     @app.get("/test/bmi/calc/")
+    @limiter.limit("1/second")
     async def bmi_calc(weight, heightft, heightin, request : Request, response : Response):
         if await utils.var_can_be_type(weight, float) and await utils.var_can_be_type(heightft, float):
             if heightin == "":
@@ -134,6 +153,7 @@ class api_class:
     class Bot:
 
         @api.get("/bot/is_online")
+        @limiter.limit("1/second")
         async def bot_is_online(request : Request):
                 try:
                     async with aiohttp.ClientSession() as session:
@@ -146,6 +166,7 @@ class api_class:
                 return response
                   
         @api.get("/bot/info")
+        @limiter.limit("1/second")
         async def info(request : Request):
             async with aiohttp.ClientSession() as session:
                 try:
@@ -170,6 +191,7 @@ class api_class:
                 return dict
 
         @api.get("/dpys")
+        @limiter.limit("1/second")
         async def dpys(request : Request):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://pypi.org/pypi/dpys/json") as response:
@@ -183,6 +205,7 @@ class api_class:
     # The forum api is not finished.
     class Forum:
         @api.get("/forum/login")
+        @limiter.limit("1/second")
         async def login(request : Request):
             try:
                 username = request.headers["username"]
@@ -202,6 +225,7 @@ class api_class:
                     return {"success":False}
         
         @api.post("/forum/createacc")
+        @limiter.limit("1/second")
         async def createacc(request : Request):
             async with aiosqlite.connect("users.db") as db:
                 try:
@@ -211,7 +235,8 @@ class api_class:
                 except:
                     return "account already exists"
 
-        @api.post("/forum/sendmsg")       
+        @api.post("/forum/sendmsg")
+        @limiter.limit("1/second")
         async def sendmsg(request : Request):
             try:
                 body=request.headers["body"]
@@ -261,4 +286,3 @@ def startup():
     uvicorn.run(app, port=80, host="0.0.0.0")
 
 startup()
-
