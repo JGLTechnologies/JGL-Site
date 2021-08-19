@@ -10,7 +10,7 @@ from fastapi import responses
 import jinja2
 import aiohttp
 from fastapi.staticfiles import StaticFiles
-from fastapi import FastAPI, Request, Response, status, Header
+from fastapi import FastAPI, Request, Response, status, Header, Form, Depends
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.templating import Jinja2Templates
@@ -21,6 +21,7 @@ import uvicorn
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from pydantic import BaseModel, BaseSettings
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
@@ -34,72 +35,79 @@ templates = Jinja2Templates(directory="web files")
 
 # --MAIN WEBSITE CODE--
 
+# class FormData(BaseModel):
+#     name: str
+#     email: str
+#     token: str
+#     message: str
+
 @app.get("/")
 @app.get("/home")
 @app.get("/home/")
-@limiter.limit("1/second")
+@limiter.limit("5/second")
 async def home(request : Request):
     context = {"request":request, "file":"home.html"}
     return templates.TemplateResponse("base.html", context)
 
 @app.get("/contact")
 @app.get("/contact/")
-@limiter.limit("1/second")
-async def contact(request : Request):
+@limiter.limit("5/second")
+async def contact(request : Request, response: Response):
     context = {"request":request, "file":"contact.html"}
-    return templates.TemplateResponse("base.html", context)
+    response = templates.TemplateResponse("base.html", context)
+    return response
 
 @app.get("/freelance")
 @app.get("/freelance/")
-@limiter.limit("1/second")
-async def freelance(request : Request):
+@limiter.limit("5/second")
+async def freelance(request : Request, response: Response):
     context = {"request":request, "file":"freelance.html"}
     return templates.TemplateResponse("base.html", context)
 
 @app.get("/discord")
 @app.get("/discord/")
-@limiter.limit("1/second")
+@limiter.limit("5/second")
 async def discord(request : Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
 
 @app.get("/favicon.ico")
-@limiter.limit("1/second")
+@limiter.limit("5/second")
 async def ico(request : Request):
     return RedirectResponse("/static/favicon.ico")
 
 @app.get("/dpys/donate")
 @app.get("/dpys/donate/")
-@limiter.limit("1/second")
+@limiter.limit("5/second")
 async def dpys_donate(request : Request):
     return RedirectResponse("https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
 
 @app.get("/bot/donate")
 @app.get("/bot/donate/")
-@limiter.limit("1/second")
+@limiter.limit("5/second")
 async def bot_donate(request : Request):
     return RedirectResponse("https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
 
 @app.get("/bot")
 @app.get("/bot/")
-@limiter.limit("1/second")
+@limiter.limit("5/second")
 async def bot(request : Request):
     return HTMLResponse("JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
 
 @app.get("/dpys")
 @app.get("/dpys/")
-@limiter.limit("1/second")
+@limiter.limit("5/second")
 async def dpys(request : Request):
     return RedirectResponse("https://sites.google.com/view/dpys")
 
 @app.get("/dpys/src")
 @app.get("/dpys/src/")
-@limiter.limit("1/second")
+@limiter.limit("5/second")
 async def dpys_src(request : Request):
     return RedirectResponse("https://github.com/Nebulizer1213/dpys")
 
 @app.get("/src")
 @app.get("/src/")
-@limiter.limit("1/second")
+@limiter.limit("5/second")
 async def src(request : Request):
     return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
 
@@ -107,14 +115,14 @@ class Test:
 
     @app.get("/test/bmi")
     @app.get("/test/bmi/")
-    @limiter.limit("1/second")
+    @limiter.limit("5/second")
     async def bmi_main(request : Request):
         context = {"request":request, "file":"test/bmi/index.html"}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
     @app.get("/test/bmi/calc")
     @app.get("/test/bmi/calc/")
-    @limiter.limit("1/second")
+    @limiter.limit("5/second")
     async def bmi_calc(weight, heightft, heightin, request : Request, response : Response):
         if await utils.var_can_be_type(weight, float) and await utils.var_can_be_type(heightft, float):
             if heightin == "":
@@ -150,10 +158,26 @@ class Test:
 
 class api_class:
 
+    class Main:
+       
+        @limiter.limit("5/second")
+        @api.post("/contact")
+        async def contact_api(response: Response, request : Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
+            async with aiohttp.ClientSession() as session:
+                async with session.post("http://jglbotapi.us:83/contact", json={"ip":request.client.host, "name":name, "email":email, "message":message, "token":token}) as response:
+                    return HTMLResponse(await response.read(), status_code=response.status)
+
+        @limiter.limit("5/second")
+        @api.post("/freelance")
+        async def freelance_api(response: Response, request : Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
+            async with aiohttp.ClientSession() as session:
+                async with session.post("http://jglbotapi.us:83/freelance", json={"ip":request.client.host, "name":name, "email":email, "message":message, "token":token}) as response:
+                    return HTMLResponse(await response.read(), status_code=response.status)
+
     class Bot:
 
         @api.get("/bot/is_online")
-        @limiter.limit("1/second")
+        @limiter.limit("5/second")
         async def bot_is_online(request : Request):
                 try:
                     async with aiohttp.ClientSession() as session:
@@ -166,7 +190,7 @@ class api_class:
                 return response
                   
         @api.get("/bot/info")
-        @limiter.limit("1/second")
+        @limiter.limit("5/second")
         async def info(request : Request):
             async with aiohttp.ClientSession() as session:
                 try:
@@ -191,7 +215,7 @@ class api_class:
                 return dict
 
         @api.get("/dpys")
-        @limiter.limit("1/second")
+        @limiter.limit("5/second")
         async def dpys(request : Request):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://pypi.org/pypi/dpys/json") as response:
@@ -205,7 +229,7 @@ class api_class:
     # The forum api is not finished.
     class Forum:
         @api.get("/forum/login")
-        @limiter.limit("1/second")
+        @limiter.limit("5/second")
         async def login(request : Request):
             try:
                 username = request.headers["username"]
@@ -225,7 +249,7 @@ class api_class:
                     return {"success":False}
         
         @api.post("/forum/createacc")
-        @limiter.limit("1/second")
+        @limiter.limit("5/second")
         async def createacc(request : Request):
             async with aiosqlite.connect("users.db") as db:
                 try:
@@ -236,7 +260,7 @@ class api_class:
                     return "account already exists"
 
         @api.post("/forum/sendmsg")
-        @limiter.limit("1/second")
+        @limiter.limit("5/second")
         async def sendmsg(request : Request):
             try:
                 body=request.headers["body"]
@@ -277,12 +301,9 @@ class api_class:
 async def invalid_path(request, exc):
     return RedirectResponse("/")
 
-@app.on_event("startup")
-async def startup():
-    await api_class.setup()
-
 def startup():
     loop = asyncio.new_event_loop()
+    loop.run_until_complete(api_class.setup())
     asyncio.set_event_loop(loop)
     app.mount("/api", api)
     app.mount("/static", StaticFiles(directory="static"), name="static")
