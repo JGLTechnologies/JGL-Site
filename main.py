@@ -1,4 +1,3 @@
-# Test
 # Copyright (c) JGL WEBSITE 2021, JGL Technolgies
 
 # --IMPORTS--
