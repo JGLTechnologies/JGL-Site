@@ -20,13 +20,13 @@ import aiosqlite
 from starlette.responses import PlainTextResponse
 import uvicorn
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
+from slowapi.util import get_remote_address, get_ipaddr
 from slowapi.errors import RateLimitExceeded
 from pydantic import BaseModel, BaseSettings
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
-limiter = Limiter(key_func=get_remote_address)
+limiter = Limiter(key_func=get_ipaddr)
 os.chdir("/var/www/html")
 app = FastAPI(docs_url=None)
 api = FastAPI()
