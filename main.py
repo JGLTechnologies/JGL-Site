@@ -17,6 +17,7 @@ from fastapi.templating import Jinja2Templates
 from dpys import utils
 import json
 import aiosqlite
+from starlette.responses import PlainTextResponse
 import uvicorn
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -34,12 +35,6 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 templates = Jinja2Templates(directory="web files")
 
 # --MAIN WEBSITE CODE--
-
-# class FormData(BaseModel):
-#     name: str
-#     email: str
-#     token: str
-#     message: str
 
 @app.get("/")
 @app.get("/home")
@@ -74,6 +69,11 @@ async def discord(request : Request):
 @limiter.limit("5/second")
 async def ico(request : Request):
     return RedirectResponse("/static/favicon.ico")
+
+@app.get("/styles.css")
+@limiter.limit("5/second")
+async def ico(request : Request):
+    return RedirectResponse("/static/styles.css")
 
 @app.get("/dpys/donate")
 @app.get("/dpys/donate/")
