@@ -182,7 +182,7 @@ class api_class:
                     async with session.get(f"https://tools.keycdn.com/geo.json?host={ip}", headers={f"User-Agent": "keycdn-tools:http://{ip}"}) as res:
                         data = await res.json()
                         for x in data.get("data").get("geo"):
-                            if data.get("data").get("geo").get(x) is None:
+                            if data.get("data").get("geo").get(x) is None or data.get("data").get("geo").get(x) == "":
                                 data["data"]["geo"][x] = "Not Found"
                         if res.status == 429:
                             return JSONResponse(data, status_code=429)
