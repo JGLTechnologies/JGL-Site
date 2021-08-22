@@ -174,7 +174,7 @@ class api_class:
                 async with session.post("http://jglbotapi.us:83/freelance", json={"ip":request.client.host, "name":name, "email":email, "message":message, "token":token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
         
-        @api.get("/ip/{ip}")
+        @api.get("/ip/{ip}", description="Gets info about an ip address")
         @limiter.limit("5/second")
         async def ip_info(request : Request, ip: str):
             async with aiohttp.ClientSession() as session:
@@ -192,8 +192,9 @@ class api_class:
 
     class Bot:
 
+        @api.get("/bot/status", description="Checks if the JGL Bot is online or offline")
         @limiter.limit("5/second")
-        async def check_if_jgl_bot_is_online(request : Request):
+        async def jgl_bot_status(request : Request):
                 try:
                     async with aiohttp.ClientSession() as session:
                         async with session.get("http://jglbotapi.us/bot_is_online", timeout=.1) as bot_response:
@@ -204,7 +205,7 @@ class api_class:
                     response = {"online":False}
                 return response
                   
-        @api.get("/bot/info")
+        @api.get("/bot/info", description="Gets info for the JGL Bot")
         @limiter.limit("5/second")
         async def get_info_for_jgl_bot(request : Request):
             async with aiohttp.ClientSession() as session:
@@ -229,9 +230,9 @@ class api_class:
                 dict = {"guilds":guilds, "shards":shards, "cogs":cogs, "ping":ping, "size":{"gb":size_gb, "mb":size_mb, "kb":size_kb}}
                 return dict
 
-        @api.get("/dpys")
+        @api.get("/dpys", description="Gets info for DPYS")
         @limiter.limit("5/second")
-        async def dpys(request : Request):
+        async def dpys_info(request : Request):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://pypi.org/pypi/dpys/json") as response:
                     data = await response.json()
