@@ -20,7 +20,7 @@ from slowapi.errors import RateLimitExceeded
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-os.chdir("/var/www/html")
+# os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None)
 app.state.limiter = limiter
@@ -178,7 +178,7 @@ class api_class:
         async def jgl_bot_status(request : Request):
                 try:
                     async with aiohttp.ClientSession() as session:
-                        async with session.get("http://jglbotapi.us/bot_is_online", timeout=.1) as bot_response:
+                        async with session.get("http://jglbotapi.us:83/bot_is_online", timeout=.1) as bot_response:
                             data = await bot_response.json()
                             if data["online"]:
                                 response = {"online":True}
@@ -191,7 +191,7 @@ class api_class:
         async def get_info_for_jgl_bot(request : Request):
             async with aiohttp.ClientSession() as session:
                 try:
-                    async with session.get("http://jglbotapi.us/info", timeout=.1) as response:
+                    async with session.get("http://jglbotapi.us:83/info", timeout=.1) as response:
                         data = await response.json()
                         guilds = data["guilds"]
                         cogs = data["cogs"]
