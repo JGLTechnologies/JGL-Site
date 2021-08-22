@@ -38,14 +38,12 @@ templates = Jinja2Templates(directory="web files")
 
 @app.get("/")
 @app.get("/home")
-@app.get("/home/")
 @limiter.limit("5/second")
 async def home(request : Request):
     context = {"request":request, "file":"home.html"}
     return templates.TemplateResponse("base.html", context)
 
 @app.get("/contact")
-@app.get("/contact/")
 @limiter.limit("5/second")
 async def contact(request : Request, response: Response):
     context = {"request":request, "file":"contact.html"}
@@ -53,14 +51,12 @@ async def contact(request : Request, response: Response):
     return response
 
 @app.get("/freelance")
-@app.get("/freelance/")
 @limiter.limit("5/second")
 async def freelance(request : Request, response: Response):
     context = {"request":request, "file":"freelance.html"}
     return templates.TemplateResponse("base.html", context)
 
 @app.get("/discord")
-@app.get("/discord/")
 @limiter.limit("5/second")
 async def discord(request : Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
@@ -76,37 +72,31 @@ async def ico(request : Request):
     return RedirectResponse("/static/styles.css")
 
 @app.get("/dpys/donate")
-@app.get("/dpys/donate/")
 @limiter.limit("5/second")
 async def dpys_donate(request : Request):
     return RedirectResponse("https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
 
 @app.get("/bot/donate")
-@app.get("/bot/donate/")
 @limiter.limit("5/second")
 async def bot_donate(request : Request):
     return RedirectResponse("https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
 
 @app.get("/bot")
-@app.get("/bot/")
 @limiter.limit("5/second")
 async def bot(request : Request):
     return HTMLResponse("JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
 
 @app.get("/dpys")
-@app.get("/dpys/")
 @limiter.limit("5/second")
 async def dpys(request : Request):
     return RedirectResponse("https://sites.google.com/view/dpys")
 
 @app.get("/dpys/src")
-@app.get("/dpys/src/")
 @limiter.limit("5/second")
 async def dpys_src(request : Request):
     return RedirectResponse("https://github.com/Nebulizer1213/dpys")
 
 @app.get("/src")
-@app.get("/src/")
 @limiter.limit("5/second")
 async def src(request : Request):
     return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
@@ -114,14 +104,12 @@ async def src(request : Request):
 class Test:
 
     @app.get("/test/bmi")
-    @app.get("/test/bmi/")
     @limiter.limit("5/second")
     async def bmi_main(request : Request):
         context = {"request":request, "file":"test/bmi/index.html"}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
     @app.get("/test/bmi/calc")
-    @app.get("/test/bmi/calc/")
     @limiter.limit("5/second")
     async def bmi_calc(weight, heightft, heightin, request : Request, response : Response):
         if await utils.var_can_be_type(weight, float) and await utils.var_can_be_type(heightft, float):
