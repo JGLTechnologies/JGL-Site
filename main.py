@@ -7,7 +7,6 @@ import os
 import aiohttp
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Request, Response, Form
-from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.templating import Jinja2Templates
 from dpys import utils
@@ -16,11 +15,17 @@ import uvicorn
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
+from fastapi.responses import (
+    RedirectResponse,
+    HTMLResponse,
+    JSONResponse,
+    PlainTextResponse,
+)
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-# os.chdir("/var/www/html")
+os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None)
 app.state.limiter = limiter
