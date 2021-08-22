@@ -167,7 +167,7 @@ class api_class:
                                 data["data"]["geo"][x] = "Not Found"
                         if res.status == 429:
                             return JSONResponse(data, status_code=429)
-                        return data.get("data").get("geo")
+                        return JSONResponse(data.get("data").get("geo"), indent=4)
                 except:
                     return PlainTextResponse("Domain/IP not found!", status_code=404)
 
@@ -209,7 +209,7 @@ class api_class:
                     size_kb = "Not Found"
                     ping = "Not Found"
                 dict = {"guilds":guilds, "shards":shards, "cogs":cogs, "ping":ping, "size":{"gb":size_gb, "mb":size_mb, "kb":size_kb}}
-                return dict
+                return JSONResponse(dict, indent=4)
 
         @api.get("/dpys", description="Gets info for DPYS")
         @limiter.limit("5/second")
@@ -221,7 +221,7 @@ class api_class:
                 async with session.get(f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz") as response:
                     file_bytes = str(await response.read())
             response_data = {"version":version,"file_bytes":file_bytes}
-            return response_data
+            return JSONResponse(response_data, indent=4)
     
     # The forum api is not finished.
     class Forum:
