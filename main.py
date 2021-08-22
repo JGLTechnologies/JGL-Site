@@ -160,14 +160,14 @@ class api_class:
 
     class Main:
        
-        @api.post("/contact")
+        @api.post("/contact", include_in_schema=False)
         @limiter.limit("5/second")
         async def contact_api(response: Response, request : Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
                 async with session.post("http://jglbotapi.us:83/contact", json={"ip":request.client.host, "name":name, "email":email, "message":message, "token":token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
-        @api.post("/freelance")
+        @api.post("/freelance", include_in_schema=False)
         @limiter.limit("5/second")
         async def freelance_api(response: Response, request : Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
@@ -176,7 +176,7 @@ class api_class:
         
         @api.get("/ip/{ip}")
         @limiter.limit("5/second")
-        async def ip_info_api(request : Request, ip: str):
+        async def ip_info(request : Request, ip: str):
             async with aiohttp.ClientSession() as session:
                 try:
                     async with session.get(f"https://tools.keycdn.com/geo.json?host={ip}", headers={f"User-Agent": "keycdn-tools:http://{ip}"}) as res:
@@ -192,9 +192,8 @@ class api_class:
 
     class Bot:
 
-        @api.get("/bot/is_online")
         @limiter.limit("5/second")
-        async def bot_is_online(request : Request):
+        async def check_if_jgl_bot_is_online(request : Request):
                 try:
                     async with aiohttp.ClientSession() as session:
                         async with session.get("http://jglbotapi.us/bot_is_online", timeout=.1) as bot_response:
@@ -207,7 +206,7 @@ class api_class:
                   
         @api.get("/bot/info")
         @limiter.limit("5/second")
-        async def info(request : Request):
+        async def get_info_for_jgl_bot(request : Request):
             async with aiohttp.ClientSession() as session:
                 try:
                     async with session.get("http://jglbotapi.us/info", timeout=.1) as response:
@@ -244,7 +243,7 @@ class api_class:
     
     # The forum api is not finished.
     class Forum:
-        @api.get("/forum/login")
+        @api.get("/forum/login", include_in_schema=False)
         @limiter.limit("5/second")
         async def login(request : Request):
             try:
@@ -264,7 +263,7 @@ class api_class:
                             return {"success":True}
                     return {"success":False}
         
-        @api.post("/forum/createacc")
+        @api.post("/forum/createacc", include_in_schema=False)
         @limiter.limit("5/second")
         async def createacc(request : Request):
             async with aiosqlite.connect("users.db") as db:
@@ -275,7 +274,7 @@ class api_class:
                 except:
                     return "account already exists"
 
-        @api.post("/forum/sendmsg")
+        @api.post("/forum/sendmsg", include_in_schema=False)
         @limiter.limit("5/second")
         async def sendmsg(request : Request):
             try:
