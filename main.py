@@ -11,13 +11,12 @@ import jinja2
 import aiohttp
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Request, Response, status, Header, Form, Depends
-from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.templating import Jinja2Templates
 from dpys import utils
 import json
 import aiosqlite
-from starlette.responses import PlainTextResponse
 import uvicorn
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address, get_ipaddr
