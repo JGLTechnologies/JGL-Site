@@ -288,26 +288,33 @@ class api_class:
                     return "username does not exist"   
 
     async def setup():
-            async with aiosqlite.connect("users.db") as db:
-                await db.execute("""CREATE TABLE IF NOT EXISTS messages(
+        async with aiosqlite.connect("users.db") as db:
+            await db.execute("""CREATE TABLE IF NOT EXISTS messages(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 body TEXT,
                 user TEXT
                 )""")
                 
-                await db.execute("""CREATE TABLE IF NOT EXISTS accounts(
+            await db.execute("""CREATE TABLE IF NOT EXISTS accounts(
                 username TEXT PRIMARY KEY,
                 password TEXT
                 )""")
-                await db.commit()
+            await db.commit()
 
 @app.exception_handler(StarletteHTTPException)
 async def invalid_path(request, exc):
     return RedirectResponse("/")
 
+@api.exception_handler(StarletteHTTPException)
+async def invalid_path(request, exc):
+    return RedirectResponse("/api/docs")
+
+@app.on_event("startup")
+async def startup():
+    await api_class.setup()
+
 def startup():
     loop = asyncio.new_event_loop()
-    loop.run_until_complete(api_class.setup())
     asyncio.set_event_loop(loop)
     app.mount("/api", api)
     app.mount("/static", StaticFiles(directory="static"), name="static")
