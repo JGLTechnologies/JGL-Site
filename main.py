@@ -28,8 +28,8 @@ from pydantic import BaseModel, BaseSettings
 
 limiter = Limiter(key_func=get_ipaddr)
 os.chdir("/var/www/html")
-app = FastAPI(docs_url=None)
-api = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None)
+api = FastAPI(redoc_url=None)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 templates = Jinja2Templates(directory="web files")
