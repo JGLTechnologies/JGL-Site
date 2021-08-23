@@ -89,6 +89,11 @@ async def dpys(request : Request):
 async def dpys_src(request : Request):
     return RedirectResponse("https://github.com/Nebulizer1213/dpys")
 
+@app.get("/dpys/pypi")
+@limiter.limit("5/second")
+async def dpys_src(request : Request):
+    return RedirectResponse("https://pypi.org/project/dpys")
+
 @app.get("/src")
 @limiter.limit("5/second")
 async def src(request : Request):
