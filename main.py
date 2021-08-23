@@ -1,5 +1,3 @@
-# Copyright (c) JGL WEBSITE 2021, JGL Technolgies
-
 # --IMPORTS--
 
 import asyncio
@@ -29,87 +27,104 @@ templates = Jinja2Templates(directory="web files")
 
 # --MAIN WEBSITE CODE--
 
+
 @app.get("/")
 @app.get("/home")
 @limiter.limit("5/second")
-async def home(request : Request):
-    context = {"request":request, "file":"home.html"}
+async def home(request: Request):
+    context = {"request": request, "file": "home.html"}
     return templates.TemplateResponse("base.html", context)
+
 
 @app.get("/contact")
 @limiter.limit("5/second")
-async def contact(request : Request, response: Response):
-    context = {"request":request, "file":"contact.html"}
+async def contact(request: Request, response: Response):
+    context = {"request": request, "file": "contact.html"}
     response = templates.TemplateResponse("base.html", context)
     return response
 
+
 @app.get("/freelance")
 @limiter.limit("5/second")
-async def freelance(request : Request, response: Response):
-    context = {"request":request, "file":"freelance.html"}
+async def freelance(request: Request, response: Response):
+    context = {"request": request, "file": "freelance.html"}
     return templates.TemplateResponse("base.html", context)
+
 
 @app.get("/discord")
 @limiter.limit("5/second")
-async def discord(request : Request):
+async def discord(request: Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
+
 
 @app.get("/favicon.ico")
 @limiter.limit("5/second")
-async def ico(request : Request):
+async def ico(request: Request):
     return RedirectResponse("/static/favicon.ico")
+
 
 @app.get("/styles.css")
 @limiter.limit("5/second")
-async def ico(request : Request):
+async def ico(request: Request):
     return RedirectResponse("/static/styles.css")
+
 
 @app.get("/dpys/donate")
 @limiter.limit("5/second")
-async def dpys_donate(request : Request):
-    return RedirectResponse("https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
+async def dpys_donate(request: Request):
+    return RedirectResponse(
+        "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
+
 
 @app.get("/bot/donate")
 @limiter.limit("5/second")
-async def bot_donate(request : Request):
-    return RedirectResponse("https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
+async def bot_donate(request: Request):
+    return RedirectResponse(
+        "https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
+
 
 @app.get("/bot")
 @limiter.limit("5/second")
-async def bot(request : Request):
-    return HTMLResponse("JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
+async def bot(request: Request):
+    return HTMLResponse(
+        "JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
+
 
 @app.get("/dpys")
 @limiter.limit("5/second")
-async def dpys(request : Request):
+async def dpys(request: Request):
     return RedirectResponse("https://sites.google.com/view/dpys")
+
 
 @app.get("/dpys/src")
 @limiter.limit("5/second")
-async def dpys_src(request : Request):
+async def dpys_src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/dpys")
+
 
 @app.get("/dpys/pypi")
 @limiter.limit("5/second")
-async def dpys_src(request : Request):
+async def dpys_src(request: Request):
     return RedirectResponse("https://pypi.org/project/dpys")
+
 
 @app.get("/src")
 @limiter.limit("5/second")
-async def src(request : Request):
+async def src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
+
 
 class Test:
 
     @app.get("/test/bmi")
     @limiter.limit("5/second")
-    async def bmi_main(request : Request):
-        context = {"request":request, "file":"test/bmi/index.html"}
+    async def bmi_main(request: Request):
+        context = {"request": request, "file": "test/bmi/index.html"}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
     @app.get("/test/bmi/calc")
     @limiter.limit("5/second")
-    async def bmi_calc(weight, heightft, heightin, request : Request, response : Response):
+    async def bmi_calc(weight, heightft, heightin, request: Request, response: Response):
         if await utils.var_can_be_type(weight, float) and await utils.var_can_be_type(heightft, float):
             if heightin == "":
                 heightin = 0
@@ -117,83 +132,109 @@ class Test:
                 if await utils.var_can_be_type(heightin, float):
                     heightin = float(heightin)
                 else:
-                    return templates.TemplateResponse("test/bmi/invalid.html", {"request":request}, status_code=400)
+                    return templates.TemplateResponse(
+                        "test/bmi/invalid.html", {"request": request}, status_code=400)
             # bmi = 703*(weight(lbs)/height(in)**2)
-            bmi = float(weight)/(((float(heightft)*12) + heightin)**2)*703
+            bmi = float(weight) / \
+                (((float(heightft) * 12) + heightin)**2) * 703
             if bmi > 24.9:
-                new_weight = (24.9/703*((float(heightft)*12) + heightin)**2)
+                new_weight = (
+                    24.9 / 703 * ((float(heightft) * 12) + heightin)**2)
                 weight = float(weight) - new_weight
                 if weight >= 1:
-                    context = {"request":request, "bmi":round(bmi, 2), "weight":f"You need to loose {round(weight, 2)} pounds to be healthy."}
+                    context = {
+                        "request": request,
+                        "bmi": round(
+                            bmi,
+                            2),
+                        "weight": f"You need to loose {round(weight, 2)} pounds to be healthy."}
                 else:
-                    context = {"request":request, "bmi":round(bmi, 2), "weight":""}
+                    context = {
+                        "request": request, "bmi": round(
+                            bmi, 2), "weight": ""}
             elif bmi < 18.5:
                 print("test")
-                new_weight = (18.5/703*((float(heightft)*12) + heightin)**2)
+                new_weight = (
+                    18.5 / 703 * ((float(heightft) * 12) + heightin)**2)
                 weight = new_weight - float(weight)
                 if weight >= 1:
-                    context = {"request":request, "bmi":round(bmi, 2), "weight":f"You need to gain {round(weight, 2)} pounds to be healthy."}
+                    context = {
+                        "request": request,
+                        "bmi": round(
+                            bmi,
+                            2),
+                        "weight": f"You need to gain {round(weight, 2)} pounds to be healthy."}
                 else:
-                    context = {"request":request, "bmi":round(bmi, 2), "weight":""}
+                    context = {
+                        "request": request, "bmi": round(
+                            bmi, 2), "weight": ""}
             else:
-                context = {"request":request, "bmi":round(bmi, 2), "weight":""}
+                context = {
+                    "request": request, "bmi": round(
+                        bmi, 2), "weight": ""}
 
         else:
-            return templates.TemplateResponse("test/bmi/invalid.html", {"request":request}, status_code=400)
+            return templates.TemplateResponse(
+                "test/bmi/invalid.html", {"request": request}, status_code=400)
         return templates.TemplateResponse("test/bmi/bmi.html", context)
+
 
 class api_class:
 
     class Main:
-       
+
         @api.post("/contact", include_in_schema=False)
         @limiter.limit("5/second")
-        async def contact_api(response: Response, request : Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
+        async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us:83/contact", json={"ip":request.client.host, "name":name, "email":email, "message":message, "token":token}) as response:
+                async with session.post("http://jglbotapi.us:83/contact", json={"ip": request.client.host, "name": name, "email": email, "message": message, "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.post("/freelance", include_in_schema=False)
         @limiter.limit("5/second")
-        async def freelance_api(response: Response, request : Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
+        async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us:83/freelance", json={"ip":request.client.host, "name":name, "email":email, "message":message, "token":token}) as response:
+                async with session.post("http://jglbotapi.us:83/freelance", json={"ip": request.client.host, "name": name, "email": email, "message": message, "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
-        
+
         @api.get("/ip/{ip}", description="Gets info about an ip address")
         @limiter.limit("5/second")
-        async def ip_info(request : Request, ip: str):
+        async def ip_info(request: Request, ip: str):
             async with aiohttp.ClientSession() as session:
                 try:
                     async with session.get(f"https://tools.keycdn.com/geo.json?host={ip}", headers={f"User-Agent": "keycdn-tools:http://{ip}"}) as res:
                         data = await res.json()
                         for x in data.get("data").get("geo"):
-                            if data.get("data").get("geo").get(x) is None or data.get("data").get("geo").get(x) == "":
+                            if data.get("data").get("geo").get(x) is None or data.get(
+                                    "data").get("geo").get(x) == "":
                                 data["data"]["geo"][x] = "Not Found"
                         if res.status == 429:
                             return JSONResponse(data, status_code=429)
-                        return JSONResponse(data.get("data").get("geo"), indent=4)
-                except:
-                    return PlainTextResponse("Domain/IP not found!", status_code=404)
+                        return JSONResponse(
+                            data.get("data").get("geo"), indent=4)
+                except BaseException:
+                    return PlainTextResponse(
+                        "Domain/IP not found!", status_code=404)
 
     class Bot:
 
-        @api.get("/bot/status", description="Checks if the JGL Bot is online or offline")
+        @api.get("/bot/status",
+                 description="Checks if the JGL Bot is online or offline")
         @limiter.limit("5/second")
-        async def jgl_bot_status(request : Request):
-                try:
-                    async with aiohttp.ClientSession() as session:
-                        async with session.get("http://jglbotapi.us:83/bot_is_online", timeout=.1) as bot_response:
-                            data = await bot_response.json()
-                            if data["online"]:
-                                response = {"online":True}
-                except:
-                    response = {"online":False}
-                return response
-                  
+        async def jgl_bot_status(request: Request):
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get("http://jglbotapi.us:83/bot_is_online", timeout=.1) as bot_response:
+                        data = await bot_response.json()
+                        if data["online"]:
+                            response = {"online": True}
+            except BaseException:
+                response = {"online": False}
+            return response
+
         @api.get("/bot/info", description="Gets info for the JGL Bot")
         @limiter.limit("5/second")
-        async def get_info_for_jgl_bot(request : Request):
+        async def get_info_for_jgl_bot(request: Request):
             async with aiohttp.ClientSession() as session:
                 try:
                     async with session.get("http://jglbotapi.us:83/info", timeout=.1) as response:
@@ -205,7 +246,7 @@ class api_class:
                         size_mb = data["size"]["mb"]
                         size_kb = data["size"]["kb"]
                         ping = data["ping"]
-                except:
+                except BaseException:
                     guilds = "Not Found"
                     cogs = "Not Found"
                     shards = "Not Found"
@@ -213,30 +254,38 @@ class api_class:
                     size_mb = "Not Found"
                     size_kb = "Not Found"
                     ping = "Not Found"
-                dict = {"guilds":guilds, "shards":shards, "cogs":cogs, "ping":ping, "size":{"gb":size_gb, "mb":size_mb, "kb":size_kb}}
+                dict = {
+                    "guilds": guilds,
+                    "shards": shards,
+                    "cogs": cogs,
+                    "ping": ping,
+                    "size": {
+                        "gb": size_gb,
+                        "mb": size_mb,
+                        "kb": size_kb}}
                 return JSONResponse(dict, indent=4)
 
         @api.get("/dpys", description="Gets info for DPYS")
         @limiter.limit("5/second")
-        async def dpys_info(request : Request):
+        async def dpys_info(request: Request):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://pypi.org/pypi/dpys/json") as response:
                     data = await response.json()
                     version = data["info"]["version"]
                 async with session.get(f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz") as response:
                     file_bytes = str(await response.read())
-            response_data = {"version":version,"file_bytes":file_bytes}
+            response_data = {"version": version, "file_bytes": file_bytes}
             return JSONResponse(response_data, indent=4)
-    
+
     # The forum api is not finished.
     class Forum:
         @api.get("/forum/login", include_in_schema=False)
         @limiter.limit("5/second")
-        async def login(request : Request):
+        async def login(request: Request):
             try:
                 username = request.headers["username"]
                 passw = request.headers["password"]
-            except:
+            except BaseException:
                 return "login configured wrong"
             async with aiosqlite.connect("users.db") as db:
                 async with db.execute("""
@@ -245,36 +294,36 @@ class api_class:
                 """) as cur:
                     async for entry in cur:
                         print(entry)
-                        user,password = entry
+                        user, password = entry
                         if username == user and passw == password:
-                            return {"success":True}
-                    return {"success":False}
-        
+                            return {"success": True}
+                    return {"success": False}
+
         @api.post("/forum/createacc", include_in_schema=False)
         @limiter.limit("5/second")
-        async def createacc(request : Request):
+        async def createacc(request: Request):
             async with aiosqlite.connect("users.db") as db:
                 try:
                     await db.execute("INSERT INTO accounts (username,password) VALUES (?,?)", (request.headers["username"], request.headers["password"]))
                     await db.commit()
                     return "account created"
-                except:
+                except BaseException:
                     return "account already exists"
 
         @api.post("/forum/sendmsg", include_in_schema=False)
         @limiter.limit("5/second")
-        async def sendmsg(request : Request):
+        async def sendmsg(request: Request):
             try:
-                body=request.headers["body"]
-                user=request.headers["username"]
-                password=request.headers["password"]
-            except:
+                body = request.headers["body"]
+                user = request.headers["username"]
+                password = request.headers["password"]
+            except BaseException:
                 return "login configured wrong"
             async with aiosqlite.connect("users.db") as db:
                 try:
                     async with db.execute(f"""
-                    SELECT password 
-                    FROM accounts 
+                    SELECT password
+                    FROM accounts
                     WHERE username='{user}';
                     """) as cur:
                         async for x in cur:
@@ -282,8 +331,8 @@ class api_class:
                                 return f"Message Sent with: {body}"
                             else:
                                 return "password is incorrect"
-                except:
-                    return "username does not exist"   
+                except BaseException:
+                    return "username does not exist"
 
     async def setup():
         async with aiosqlite.connect("users.db") as db:
@@ -292,24 +341,28 @@ class api_class:
                 body TEXT,
                 user TEXT
                 )""")
-                
+
             await db.execute("""CREATE TABLE IF NOT EXISTS accounts(
                 username TEXT PRIMARY KEY,
                 password TEXT
                 )""")
             await db.commit()
 
+
 @app.exception_handler(StarletteHTTPException)
 async def invalid_path(request, exc):
     return RedirectResponse("/")
+
 
 @api.exception_handler(StarletteHTTPException)
 async def invalid_path(request, exc):
     return RedirectResponse("/api/docs")
 
+
 @app.on_event("startup")
 async def startup():
     await api_class.setup()
+
 
 def startup():
     loop = asyncio.new_event_loop()
@@ -317,5 +370,6 @@ def startup():
     app.mount("/api", api)
     app.mount("/static", StaticFiles(directory="static"), name="static")
     uvicorn.run(app, port=81, host="0.0.0.0")
+
 
 startup()
