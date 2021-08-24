@@ -7,3 +7,5 @@ uvicorn
 jinja2
 aiohttp
 aiosqlite
+
+# Use this version of starlette https://github.com/Nebulizer1213/starlette
