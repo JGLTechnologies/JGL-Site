@@ -73,7 +73,7 @@ async def ico(request: Request):
 @limiter.limit("5/second")
 async def dpys_donate(request: Request):
     return RedirectResponse(
-        "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
+        "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")        
 
 
 @app.get("/bot/donate")
