@@ -369,7 +369,10 @@ def startup():
     asyncio.set_event_loop(loop)
     app.mount("/api", api)
     app.mount("/static", StaticFiles(directory="static"), name="static")
-    uvicorn.run(app, port=81, host="0.0.0.0")
-
+    # Linux
+    res = os.system("python -m gunicorn main:app -k uvicorn.workers.UvicornWorker -b 0.0.0.0:81")
+    if res == 1:
+        # Windows
+        uvicorn.run(app, port=81, host="0.0.0.0")
 
 startup()
