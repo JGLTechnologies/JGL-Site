@@ -212,7 +212,7 @@ class api_class:
                             return JSONResponse(data, status_code=429)
                         return JSONResponse(
                             data.get("data").get("geo"), indent=4)
-                except BaseException:
+                except:
                     return PlainTextResponse(
                         "Domain/IP not found!", status_code=404)
 
@@ -228,7 +228,7 @@ class api_class:
                         data = await bot_response.json()
                         if data["online"]:
                             response = {"online": True}
-            except BaseException:
+            except:
                 response = {"online": False}
             return response
 
@@ -246,7 +246,7 @@ class api_class:
                         size_mb = data["size"]["mb"]
                         size_kb = data["size"]["kb"]
                         ping = data["ping"]
-                except BaseException:
+                except:
                     guilds = "Not Found"
                     cogs = "Not Found"
                     shards = "Not Found"
@@ -285,7 +285,7 @@ class api_class:
             try:
                 username = request.headers["username"]
                 passw = request.headers["password"]
-            except BaseException:
+            except:
                 return "login configured wrong"
             async with aiosqlite.connect("users.db") as db:
                 async with db.execute("""
@@ -307,7 +307,7 @@ class api_class:
                     await db.execute("INSERT INTO accounts (username,password) VALUES (?,?)", (request.headers["username"], request.headers["password"]))
                     await db.commit()
                     return "account created"
-                except BaseException:
+                except:
                     return "account already exists"
 
         @api.post("/forum/sendmsg", include_in_schema=False)
@@ -317,7 +317,7 @@ class api_class:
                 body = request.headers["body"]
                 user = request.headers["username"]
                 password = request.headers["password"]
-            except BaseException:
+            except:
                 return "login configured wrong"
             async with aiosqlite.connect("users.db") as db:
                 try:
@@ -331,7 +331,7 @@ class api_class:
                                 return f"Message Sent with: {body}"
                             else:
                                 return "password is incorrect"
-                except BaseException:
+                except:
                     return "username does not exist"
 
     async def setup():
