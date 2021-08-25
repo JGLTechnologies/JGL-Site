@@ -187,14 +187,14 @@ class api_class:
         @limiter.limit("5/second")
         async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us:83/contact", json={"ip": request.client.host, "name": name, "email": email, "message": message, "token": token}) as response:
+                async with session.post("http://jglbotapi.us:83/contact", json={"ip": request.headers.get("X-Forwarded-For"), "name": name, "email": email, "message": message, "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.post("/freelance", include_in_schema=False)
         @limiter.limit("5/second")
         async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us:83/freelance", json={"ip": request.client.host, "name": name, "email": email, "message": message, "token": token}) as response:
+                async with session.post("http://jglbotapi.us:83/freelance", json={"ip": request.headers.get("X-Forwarded-For"), "name": name, "email": email, "message": message, "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.get("/ip/{ip}", description="Gets info about an ip address")
