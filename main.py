@@ -18,7 +18,7 @@ from fastapi.responses import *
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-os.chdir("/var/www/html")
+# os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None)
 app.state.limiter = limiter
@@ -365,14 +365,9 @@ async def startup():
 
 
 def startup():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
     app.mount("/api", api)
     app.mount("/static", StaticFiles(directory="static"), name="static")
-    # Linux
-    res = os.system("python -m gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:81")
-    if res == 1:
-        # Windows
-        uvicorn.run(app, port=81, host="0.0.0.0")
+    if __name__ == "__main__":
+        uvicorn.run("main:app", port=81, host="0.0.0.0", reload=True, workers=4)
 
 startup()
