@@ -18,7 +18,7 @@ from fastapi.responses import *
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-# os.chdir("/var/www/html")
+os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None)
 api.state.limiter = limiter
@@ -62,13 +62,8 @@ async def discord(request: Request):
 @app.get("/favicon.ico")
 @limiter.limit("5/second")
 async def ico(request: Request):
-    return RedirectResponse("/static/favicon.ico")
-
-
-@app.get("/styles.css")
-@limiter.limit("5/second")
-async def ico(request: Request):
-    return RedirectResponse("/static/styles.css")
+    return RedirectResponse(
+        "https://raw.githubusercontent.com/Nebulizer1213/JGL-Plugins/main/favicon.ico")
 
 
 @app.get("/dpys/donate")
