@@ -5,6 +5,7 @@
 # --IMPORTS--
 
 import asyncio
+from concurrent.futures.thread import ThreadPoolExecutor
 import os
 import re
 import aiohttp_jinja2
@@ -15,7 +16,7 @@ from dpys import utils
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
-os.chdir("/var/www/html")
+# os.chdir("/var/www/html")
 routes = web.RouteTableDef()
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
