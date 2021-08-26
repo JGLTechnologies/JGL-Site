@@ -21,6 +21,8 @@ limiter = Limiter(key_func=get_ipaddr)
 # os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None)
+api.state.limiter = limiter
+api.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 templates = Jinja2Templates(directory="web files")
@@ -73,7 +75,7 @@ async def ico(request: Request):
 @limiter.limit("5/second")
 async def dpys_donate(request: Request):
     return RedirectResponse(
-        "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")        
+        "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
 
 
 @app.get("/bot/donate")
@@ -212,7 +214,7 @@ class api_class:
                             return JSONResponse(data, status_code=429)
                         return JSONResponse(
                             data.get("data").get("geo"), indent=4)
-                except:
+                except BaseException:
                     return PlainTextResponse(
                         "Domain/IP not found!", status_code=404)
 
@@ -228,7 +230,7 @@ class api_class:
                         data = await bot_response.json()
                         if data["online"]:
                             response = {"online": True}
-            except:
+            except BaseException:
                 response = {"online": False}
             return response
 
@@ -246,7 +248,7 @@ class api_class:
                         size_mb = data["size"]["mb"]
                         size_kb = data["size"]["kb"]
                         ping = data["ping"]
-                except:
+                except BaseException:
                     guilds = "Not Found"
                     cogs = "Not Found"
                     shards = "Not Found"
@@ -285,7 +287,7 @@ class api_class:
             try:
                 username = request.headers["username"]
                 passw = request.headers["password"]
-            except:
+            except BaseException:
                 return "login configured wrong"
             async with aiosqlite.connect("users.db") as db:
                 async with db.execute("""
@@ -307,7 +309,7 @@ class api_class:
                     await db.execute("INSERT INTO accounts (username,password) VALUES (?,?)", (request.headers["username"], request.headers["password"]))
                     await db.commit()
                     return "account created"
-                except:
+                except BaseException:
                     return "account already exists"
 
         @api.post("/forum/sendmsg", include_in_schema=False)
@@ -317,7 +319,7 @@ class api_class:
                 body = request.headers["body"]
                 user = request.headers["username"]
                 password = request.headers["password"]
-            except:
+            except BaseException:
                 return "login configured wrong"
             async with aiosqlite.connect("users.db") as db:
                 try:
@@ -331,7 +333,7 @@ class api_class:
                                 return f"Message Sent with: {body}"
                             else:
                                 return "password is incorrect"
-                except:
+                except BaseException:
                     return "username does not exist"
 
     async def setup():
@@ -351,12 +353,14 @@ class api_class:
 
 @app.exception_handler(StarletteHTTPException)
 async def invalid_path(request, exc):
-    return RedirectResponse("/")
+    if exc.status_code == 404:
+        return RedirectResponse("/")
 
 
 @api.exception_handler(StarletteHTTPException)
 async def invalid_path(request, exc):
-    return RedirectResponse("/api/docs")
+    if exc.status_code == 404:
+        return RedirectResponse("/api/docs")
 
 
 @app.on_event("startup")
@@ -368,6 +372,12 @@ def startup():
     app.mount("/api", api)
     app.mount("/static", StaticFiles(directory="static"), name="static")
     if __name__ == "__main__":
-        uvicorn.run("main:app", port=81, host="0.0.0.0", reload=True, workers=4)
+        uvicorn.run(
+            "main:app",
+            port=81,
+            host="0.0.0.0",
+            reload=True,
+            workers=4)
+
 
 startup()
