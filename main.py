@@ -18,7 +18,7 @@ from fastapi.responses import *
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-os.chdir("/var/www/html")
+# os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None)
 api.state.limiter = limiter
@@ -35,22 +35,21 @@ templates = Jinja2Templates(directory="web files")
 @limiter.limit("5/second")
 async def home(request: Request):
     context = {"request": request, "file": "home.html"}
-    return templates.TemplateResponse("base.html", context)
+    return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "base.html", context)
 
 
 @app.get("/contact")
 @limiter.limit("5/second")
-async def contact(request: Request, response: Response):
+async def contact(request: Request):
     context = {"request": request, "file": "contact.html"}
-    response = templates.TemplateResponse("base.html", context)
-    return response
+    return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "base.html", context)
 
 
 @app.get("/freelance")
 @limiter.limit("5/second")
 async def freelance(request: Request, response: Response):
     context = {"request": request, "file": "freelance.html"}
-    return templates.TemplateResponse("base.html", context)
+    return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "base.html", context)
 
 
 @app.get("/discord")
@@ -117,7 +116,7 @@ class Test:
     @limiter.limit("5/second")
     async def bmi_main(request: Request):
         context = {"request": request, "file": "test/bmi/index.html"}
-        return templates.TemplateResponse("test/bmi/styles.html", context)
+        return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "test/bmi/styles.html", context)
 
     @app.get("/test/bmi/calc")
     @limiter.limit("5/second")
@@ -129,8 +128,7 @@ class Test:
                 if await utils.var_can_be_type(heightin, float):
                     heightin = float(heightin)
                 else:
-                    return templates.TemplateResponse(
-                        "test/bmi/invalid.html", {"request": request}, status_code=400)
+                    return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "test/bmi/invalid.html", {"request": request}, status_code=400)
             # bmi = 703*(weight(lbs)/height(in)**2)
             bmi = float(weight) / \
                 (((float(heightft) * 12) + heightin)**2) * 703
@@ -141,16 +139,14 @@ class Test:
                 if weight >= 1:
                     context = {
                         "request": request,
-                        "bmi": round(
-                            bmi,
-                            2),
+                        "bmi": await asyncio.get_event_loop().run_in_executor(None, round,
+                                                                              bmi,
+                                                                              2),
                         "weight": f"You need to loose {round(weight, 2)} pounds to be healthy."}
                 else:
                     context = {
-                        "request": request, "bmi": round(
-                            bmi, 2), "weight": ""}
+                        "request": request, "bmi": await asyncio.get_event_loop().run_in_executor(None, round, bmi, 2), "weight": ""}
             elif bmi < 18.5:
-                print("test")
                 new_weight = (
                     18.5 / 703 * ((float(heightft) * 12) + heightin)**2)
                 weight = new_weight - float(weight)
@@ -163,17 +159,19 @@ class Test:
                         "weight": f"You need to gain {round(weight, 2)} pounds to be healthy."}
                 else:
                     context = {
-                        "request": request, "bmi": round(
-                            bmi, 2), "weight": ""}
+                        "request": request, "bmi": await asyncio.get_event_loop().run_in_executor(None, round,
+                                                                                                  bmi,
+                                                                                                  2), "weight": ""}
             else:
                 context = {
-                    "request": request, "bmi": round(
-                        bmi, 2), "weight": ""}
+                    "request": request, "bmi": await asyncio.get_event_loop().run_in_executor(None, round,
+                                                                                              bmi,
+                                                                                              2), "weight": ""}
 
         else:
-            return templates.TemplateResponse(
-                "test/bmi/invalid.html", {"request": request}, status_code=400)
-        return templates.TemplateResponse("test/bmi/bmi.html", context)
+            return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse,
+                                                                  "test/bmi/invalid.html", {"request": request}, status_code=400)
+        return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "test/bmi/bmi.html", context)
 
 
 class api_class:
