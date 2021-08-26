@@ -190,7 +190,7 @@ class api_class:
         @limiter.limit("5/second")
         async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us:83/freelance", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}) as response:
+                async with session.post("http://jglbotapi.us:83/freelance", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG":request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.get("/ip/{ip}", description="Gets info about an ip address")
