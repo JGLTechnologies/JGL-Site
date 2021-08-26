@@ -19,7 +19,7 @@ from functools import partial
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-# os.chdir("/var/www/html")
+os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None)
 api.state.limiter = limiter
