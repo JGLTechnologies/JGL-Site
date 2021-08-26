@@ -182,7 +182,7 @@ class api_class:
         @limiter.limit("5/second")
         async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us:83/contact", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}) as response:
+                async with session.post("http://jglbotapi.us:83/contact", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG":request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.post("/freelance", include_in_schema=False)
