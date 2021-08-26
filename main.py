@@ -14,11 +14,12 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import *
+from functools import partial
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-os.chdir("/var/www/html")
+# os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None)
 api.state.limiter = limiter
@@ -128,7 +129,7 @@ class Test:
                 if await utils.var_can_be_type(heightin, float):
                     heightin = float(heightin)
                 else:
-                    return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "test/bmi/invalid.html", {"request": request}, status_code=400)
+                    return await asyncio.get_event_loop().run_in_executor(None, partial(templates.TemplateResponse, "test/bmi/invalid.html", {"request": request}, status_code=400))
             # bmi = 703*(weight(lbs)/height(in)**2)
             bmi = float(weight) / \
                 (((float(heightft) * 12) + heightin)**2) * 703
@@ -169,8 +170,8 @@ class Test:
                                                                                               2), "weight": ""}
 
         else:
-            return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse,
-                                                                  "test/bmi/invalid.html", {"request": request}, status_code=400)
+            return await asyncio.get_event_loop().run_in_executor(None, partial(templates.TemplateResponse,
+                                                                  "test/bmi/invalid.html", {"request": request}, status_code=400))
         return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "test/bmi/bmi.html", context)
 
 
