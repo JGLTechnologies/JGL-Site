@@ -42,9 +42,9 @@ server {
     listen 80;
     listen [::]:80;
     server_name jglbotapi.us;
+    allow 192.168.1.1;
+    deny all;
     location / {
-        allow 192.168.1.1;
-        deny all;
         proxy_pass http://192.168.1.254:83;
         proxy_set_header   Host             $host;
         proxy_set_header   X-Real-IP        $remote_addr;
