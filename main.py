@@ -21,7 +21,7 @@ from functools import partial
 limiter = Limiter(key_func=get_ipaddr)
 os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
-api = FastAPI(redoc_url=None, description="The rate limit is 5 requests per second. This is not per page. When we upgrade our server we will switch to 10 requests per second. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
+api = FastAPI(redoc_url=None, description="The rate limit is 10 requests per second. This is not per page. The per page rate limit is 5 requests per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
 api.state.limiter = limiter
 api.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.state.limiter = limiter
