@@ -175,7 +175,7 @@ class Test:
         return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "test/bmi/bmi.html", context)
 
 
-class api_class:
+class Api:
 
     class Main:
 
@@ -330,19 +330,19 @@ class api_class:
                 except BaseException:
                     return "username does not exist"
 
-    async def setup():
-        async with aiosqlite.connect("users.db") as db:
-            await db.execute("""CREATE TABLE IF NOT EXISTS messages(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                body TEXT,
-                user TEXT
-                )""")
+        async def setup():
+            async with aiosqlite.connect("users.db") as db:
+                await db.execute("""CREATE TABLE IF NOT EXISTS messages(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    body TEXT,
+                    user TEXT
+                    )""")
 
-            await db.execute("""CREATE TABLE IF NOT EXISTS accounts(
-                username TEXT PRIMARY KEY,
-                password TEXT
-                )""")
-            await db.commit()
+                await db.execute("""CREATE TABLE IF NOT EXISTS accounts(
+                    username TEXT PRIMARY KEY,
+                    password TEXT
+                    )""")
+                await db.commit()
 
 
 @app.exception_handler(StarletteHTTPException)
@@ -359,7 +359,7 @@ async def invalid_path(request, exc):
 
 @app.on_event("startup")
 async def startup():
-    await api_class.setup()
+    await Api.Forum.setup()
 
 
 def startup():

@@ -147,4 +147,17 @@ def startup():
     app.add_routes(routes)
     web.run_app(app, port=80)
 
-startup()
+# startup()
+import requests
+import threading
+import time
+import gunicorn
+
+def request(session):
+    with session.get("https://jgltechnologies.com"):
+        pass
+
+with requests.Session() as session:
+    while True:
+        t = threading.Thread(target=request, args=[session])
+        t.start()
