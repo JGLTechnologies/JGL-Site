@@ -148,14 +148,16 @@ def startup():
     web.run_app(app, port=80)
 
 # startup()
+
+# dos test
 import requests
 import threading
 import time
 import gunicorn
 
-def request(session):
-    with session.get("https://jgltechnologies.com"):
-        pass
+def request(session: requests.Session):
+    with session.get("https://jgltechnologies.com/home") as res:
+        print(res.status_code)
 
 with requests.Session() as session:
     while True:
