@@ -148,12 +148,3 @@ def startup():
     web.run_app(app, port=80)
 
 # startup()
-
-# dos test
-from aiotools.requests import get
-
-async def test():
-    r = await get(url_list=["https://jgltechnologies.com" for _ in range(1000000)], ratelimit="100/0")
-    print([x.status for x in r])
-
-asyncio.get_event_loop().run_until_complete(test())
