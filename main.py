@@ -366,12 +366,13 @@ def startup():
     app.mount("/api", api)
     # app.mount("/static", StaticFiles(directory="static"), name="static")
     if __name__ == "__main__":
-        uvicorn.run(
-            "main:app",
-            port=81,
-            host="0.0.0.0",
-            reload=True,
-            workers=4)
+        # uvicorn.run(
+        #     "main:app",
+        #     port=81,
+        #     host="0.0.0.0",
+        #     reload=True,
+        #     workers=4)
+        os.system("gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
 
 
 startup()
