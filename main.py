@@ -372,7 +372,7 @@ def startup():
         #     host="0.0.0.0",
         #     reload=True,
         #     workers=4)
-        os.system("gunicorn main:app -w 9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
+        os.system("gunicorn main:app --workers=3 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81 --threads=3")
 
 
 startup()
