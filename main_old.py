@@ -150,16 +150,10 @@ def startup():
 # startup()
 
 # dos test
-import requests
-import threading
-import time
-import gunicorn
+from aiotools.requests import get
 
-def request(session: requests.Session):
-    with session.get("https://jgltechnologies.com/home") as res:
-        print(res.status_code)
+async def test():
+    r = await get(url_list=["https://jgltechnologies.com" for _ in range(1000000)], ratelimit="100/0")
+    print([x.status for x in r])
 
-with requests.Session() as session:
-    while True:
-        t = threading.Thread(target=request, args=[session])
-        t.start()
+asyncio.get_event_loop().run_until_complete(test())
