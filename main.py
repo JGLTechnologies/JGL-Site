@@ -183,14 +183,14 @@ class Api:
         @limiter.limit("5/second")
         async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us:83/contact", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG":request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
+                async with session.post("http://jglbotapi.us/contact", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG":request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.post("/freelance", include_in_schema=False)
         @limiter.limit("5/second")
         async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us:83/freelance", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG":request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
+                async with session.post("http://jglbotapi.us/freelance", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG":request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.get("/ip/{ip}", description="Gets info about an ip address")
@@ -220,7 +220,7 @@ class Api:
         async def jgl_bot_status(request: Request):
             try:
                 async with aiohttp.ClientSession() as session:
-                    async with session.get("http://jglbotapi.us:83/bot_is_online", timeout=.1) as bot_response:
+                    async with session.get("http://jglbotapi.us/bot_is_online", timeout=.1) as bot_response:
                         data = await bot_response.json()
                         if data["online"]:
                             response = {"online": True}
@@ -233,7 +233,7 @@ class Api:
         async def get_info_for_jgl_bot(request: Request):
             async with aiohttp.ClientSession() as session:
                 try:
-                    async with session.get("http://jglbotapi.us:83/info", timeout=.1) as response:
+                    async with session.get("http://jglbotapi.us/info", timeout=.1) as response:
                         data = await response.json()
                         guilds = data["guilds"]
                         cogs = data["cogs"]
