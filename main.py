@@ -189,7 +189,7 @@ class Api:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.get("/ip/{ip}", description="Gets info about an ip address")
-        @limiter.limit("5/second")
+        @limiter.limit("1/second")
         async def ip_info(request: Request, ip: str):
             async with aiohttp.ClientSession() as session:
                 try:
@@ -357,8 +357,8 @@ async def startup():
 
 
 def startup():
-    app.mount("/api", api)
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+    # app.mount("/api", api)
+    # app.mount("/static", StaticFiles(directory="static"), name="static")
     # uvicorn.run(
     #     "main:app",
     #     port=81,
