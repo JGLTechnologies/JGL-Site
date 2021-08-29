@@ -15,7 +15,7 @@ from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import *
 from functools import partial
-from aiotools.AIObuiltins import *
+from aiotools.AIObuiltins import aio_round
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
@@ -358,7 +358,7 @@ async def startup():
 
 def startup():
     app.mount("/api", api)
-    # app.mount("/static", StaticFiles(directory="static"), name="static")
+    app.mount("/static", StaticFiles(directory="static"), name="static")
     # uvicorn.run(
     #     "main:app",
     #     port=81,
