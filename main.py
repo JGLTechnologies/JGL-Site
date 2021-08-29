@@ -140,13 +140,11 @@ class Test:
                 if weight >= 1:
                     context = {
                         "request": request,
-                        "bmi": await asyncio.get_event_loop().run_in_executor(None, round,
-                                                                              bmi,
-                                                                              2),
+                        "bmi": round(bmi,2),
                         "weight": f"You need to loose {round(weight, 2)} pounds to be healthy."}
                 else:
                     context = {
-                        "request": request, "bmi": await asyncio.get_event_loop().run_in_executor(None, round, bmi, 2), "weight": ""}
+                        "request": request, "bmi": round(bmi,2), "weight": ""}
             elif bmi < 18.5:
                 new_weight = (
                     18.5 / 703 * ((float(heightft) * 12) + heightin)**2)
@@ -160,14 +158,10 @@ class Test:
                         "weight": f"You need to gain {round(weight, 2)} pounds to be healthy."}
                 else:
                     context = {
-                        "request": request, "bmi": await asyncio.get_event_loop().run_in_executor(None, round,
-                                                                                                  bmi,
-                                                                                                  2), "weight": ""}
+                        "request": request, "bmi": round(bmi,2), "weight": ""}
             else:
                 context = {
-                    "request": request, "bmi": await asyncio.get_event_loop().run_in_executor(None, round,
-                                                                                              bmi,
-                                                                                              2), "weight": ""}
+                    "request": request, "bmi": round(bmi,2), "weight": ""}
 
         else:
             return await asyncio.get_event_loop().run_in_executor(None, partial(templates.TemplateResponse,
