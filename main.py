@@ -357,7 +357,7 @@ async def startup():
 
 
 def startup():
-    # app.mount("/api", api)
+    app.mount("/api", api)
     # app.mount("/static", StaticFiles(directory="static"), name="static")
     # uvicorn.run(
     #     "main:app",
