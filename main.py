@@ -20,7 +20,7 @@ from aiotools.AIObuiltins import aio_round
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-os.chdir("/var/www/html")
+# os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None, description="The rate limit is 5 requests per second. This is not per page. The IP info api has a rate limit of 1 request per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
 api.state.limiter = limiter
@@ -359,15 +359,15 @@ async def startup():
 def startup():
     app.mount("/api", api)
     # app.mount("/static", StaticFiles(directory="static"), name="static")
-    # uvicorn.run(
-    #     "main:app",
-    #     port=81,
-    #     host="0.0.0.0",
-    #     reload=True,
-    #     workers=4)
-    os.system(
-        "gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
+    if __name__ == "__main__":
+        # uvicorn.run(
+        #     "main:app",
+        #     port=81,
+        #     host="0.0.0.0",
+        #     reload=True,
+        #     workers=4)
+        os.system(
+            "gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
 
 
-if __name__ == "__main__":
-    startup()
+startup()
