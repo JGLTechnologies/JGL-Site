@@ -15,6 +15,7 @@ from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import *
 from functools import partial
+from aiotools.AIObuiltins import *
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
@@ -140,11 +141,11 @@ class Test:
                 if weight >= 1:
                     context = {
                         "request": request,
-                        "bmi": round(bmi,2),
-                        "weight": f"You need to loose {round(weight, 2)} pounds to be healthy."}
+                        "bmi": await aio_round(bmi, 2),
+                        "weight": f"You need to loose {await aio_round(weight, 2)} pounds to be healthy."}
                 else:
                     context = {
-                        "request": request, "bmi": round(bmi,2), "weight": ""}
+                        "request": request, "bmi": await aio_round(bmi, 2), "weight": ""}
             elif bmi < 18.5:
                 new_weight = (
                     18.5 / 703 * ((float(heightft) * 12) + heightin)**2)
@@ -152,16 +153,16 @@ class Test:
                 if weight >= 1:
                     context = {
                         "request": request,
-                        "bmi": round(
+                        "bmi": await aio_round(
                             bmi,
                             2),
-                        "weight": f"You need to gain {round(weight, 2)} pounds to be healthy."}
+                        "weight": f"You need to gain {await aio_round(weight, 2)} pounds to be healthy."}
                 else:
                     context = {
-                        "request": request, "bmi": round(bmi,2), "weight": ""}
+                        "request": request, "bmi": await aio_round(bmi, 2), "weight": ""}
             else:
                 context = {
-                    "request": request, "bmi": round(bmi,2), "weight": ""}
+                    "request": request, "bmi": await aio_round(bmi, 2), "weight": ""}
 
         else:
             return await asyncio.get_event_loop().run_in_executor(None, partial(templates.TemplateResponse,
@@ -177,14 +178,14 @@ class Api:
         @limiter.limit("5/second")
         async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us/contact", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG":request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
+                async with session.post("http://jglbotapi.us/contact", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG": request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.post("/freelance", include_in_schema=False)
         @limiter.limit("5/second")
         async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us/freelance", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG":request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
+                async with session.post("http://jglbotapi.us/freelance", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG": request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.get("/ip/{ip}", description="Gets info about an ip address")
@@ -202,7 +203,7 @@ class Api:
                             return JSONResponse(data, status_code=429)
                         return JSONResponse(
                             data.get("data").get("geo"), indent=4)
-                except BaseException:
+                except:
                     return PlainTextResponse(
                         "Domain/IP not found!", status_code=404)
 
@@ -218,7 +219,7 @@ class Api:
                         data = await bot_response.json()
                         if data["online"]:
                             response = {"online": True}
-            except BaseException:
+            except:
                 response = {"online": False}
             return response
 
@@ -236,7 +237,7 @@ class Api:
                         size_mb = data["size"]["mb"]
                         size_kb = data["size"]["kb"]
                         ping = data["ping"]
-                except BaseException:
+                except:
                     guilds = "Not Found"
                     cogs = "Not Found"
                     shards = "Not Found"
@@ -275,7 +276,7 @@ class Api:
             try:
                 username = request.headers["username"]
                 passw = request.headers["password"]
-            except BaseException:
+            except:
                 return "login configured wrong"
             async with aiosqlite.connect("users.db") as db:
                 async with db.execute("""
@@ -283,7 +284,6 @@ class Api:
                 FROM accounts;
                 """) as cur:
                     async for entry in cur:
-                        print(entry)
                         user, password = entry
                         if username == user and passw == password:
                             return {"success": True}
@@ -297,7 +297,7 @@ class Api:
                     await db.execute("INSERT INTO accounts (username,password) VALUES (?,?)", (request.headers["username"], request.headers["password"]))
                     await db.commit()
                     return "account created"
-                except BaseException:
+                except:
                     return "account already exists"
 
         @api.post("/forum/sendmsg", include_in_schema=False)
@@ -307,7 +307,7 @@ class Api:
                 body = request.headers["body"]
                 user = request.headers["username"]
                 password = request.headers["password"]
-            except BaseException:
+            except:
                 return "login configured wrong"
             async with aiosqlite.connect("users.db") as db:
                 try:
@@ -321,7 +321,7 @@ class Api:
                                 return f"Message Sent with: {body}"
                             else:
                                 return "password is incorrect"
-                except BaseException:
+                except:
                     return "username does not exist"
 
         async def setup():
@@ -359,14 +359,15 @@ async def startup():
 def startup():
     app.mount("/api", api)
     # app.mount("/static", StaticFiles(directory="static"), name="static")
-    if __name__ == "__main__":
-        # uvicorn.run(
-        #     "main:app",
-        #     port=81,
-        #     host="0.0.0.0",
-        #     reload=True,
-        #     workers=4)
-        os.system("gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
+    # uvicorn.run(
+    #     "main:app",
+    #     port=81,
+    #     host="0.0.0.0",
+    #     reload=True,
+    #     workers=4)
+    os.system(
+        "gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
 
 
-startup()
+if __name__ == "__main__":
+    startup()
