@@ -20,7 +20,7 @@ from aiotools.AIObuiltins import aio_round
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-# os.chdir("/var/www/html")
+os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None, description="The rate limit is 5 requests per second. This is not per page. The IP info api has a rate limit of 1 request per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
 api.state.limiter = limiter
