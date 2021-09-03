@@ -175,14 +175,14 @@ class Api:
     class Main:
 
         @api.post("/contact", include_in_schema=False)
-        @limiter.limit("5/second")
+        @limiter.limit("1/second")
         async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
                 async with session.post("http://jglbotapi.us/contact", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG": request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.post("/freelance", include_in_schema=False)
-        @limiter.limit("5/second")
+        @limiter.limit("1/second")
         async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
             async with aiohttp.ClientSession() as session:
                 async with session.post("http://jglbotapi.us/freelance", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG": request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
