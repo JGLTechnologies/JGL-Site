@@ -355,19 +355,13 @@ async def invalid_path(request, exc):
 async def startup():
     await Api.Forum.setup()
 
-
 def startup():
     app.mount("/api", api)
     # app.mount("/static", StaticFiles(directory="static"), name="static")
     if __name__ == "__main__":
-        # uvicorn.run(
-        #     "main:app",
-        #     port=81,
-        #     host="0.0.0.0",
-        #     reload=True,
-        #     workers=4)
+        # os.system("python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
         os.system(
-            "gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
+            "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
 
 
 startup()
