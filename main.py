@@ -9,18 +9,16 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.templating import Jinja2Templates
 from dpys import utils
 import aiosqlite
-import uvicorn
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
-from fastapi.responses import *
+from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse
 from functools import partial
 from aiotools.AIObuiltins import aio_round
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None, description="The rate limit is 5 requests per second. This is not per page. The IP info api has a rate limit of 1 request per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
 api.state.limiter = limiter
@@ -354,6 +352,7 @@ async def invalid_path(request, exc):
 @app.on_event("startup")
 async def startup():
     await Api.Forum.setup()
+
 
 def startup():
     app.mount("/api", api)
