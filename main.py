@@ -20,7 +20,6 @@ from aiotools.AIObuiltins import aio_round
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 limiter = Limiter(key_func=get_ipaddr)
-os.chdir("/var/www/html")
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None, description="The rate limit is 5 requests per second. This is not per page. The IP info api has a rate limit of 1 request per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
 api.state.limiter = limiter
@@ -177,15 +176,17 @@ class Api:
         @api.post("/contact", include_in_schema=False)
         @limiter.limit("1/second")
         async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
+            ip = request.headers.get("X-Forwarded-For") or request.client.host
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us/contact", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG": request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
+                async with session.post("http://jglbotapi.us/contact", json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message, "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.post("/freelance", include_in_schema=False)
         @limiter.limit("1/second")
         async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
+            ip = request.headers.get("X-Forwarded-For") or request.client.host
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us/freelance", json={"ip": request.headers.get("X-Forwarded-For").split(",")[0], "name": name, "email": email, "message": message, "token": token}, headers={"IP-OG": request.headers.get("X-Forwarded-For").split(",")[0]}) as response:
+                async with session.post("http://jglbotapi.us/freelance", json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message, "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @api.get("/ip/{ip}", description="Gets info about an ip address")
