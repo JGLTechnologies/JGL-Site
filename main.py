@@ -9,11 +9,10 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.templating import Jinja2Templates
 from dpys import utils
 import aiosqlite
-import uvicorn
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
-from fastapi.responses import *
+from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse
 from functools import partial
 from aiotools.AIObuiltins import aio_round
 
@@ -355,6 +354,7 @@ async def invalid_path(request, exc):
 @app.on_event("startup")
 async def startup():
     await Api.Forum.setup()
+
 
 def startup():
     app.mount("/api", api)
