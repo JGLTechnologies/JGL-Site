@@ -14,6 +14,7 @@ from slowapi.errors import RateLimitExceeded
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse
 from functools import partial
 import logging
+from asyncio import Semaphore
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
@@ -29,25 +30,24 @@ templates = Jinja2Templates(directory="web files")
 
 # --MAIN WEBSITE CODE--
 
-
 @app.get("/")
 @app.get("/home")
 @limiter.limit("5/second")
-async def home(request: Request):
+def home(request: Request):
     context = {"request": request, "file": "home.html"}
     return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/contact")
 @limiter.limit("5/second")
-async def contact(request: Request):
+def contact(request: Request):
     context = {"request": request, "file": "contact.html"}
     return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/freelance")
 @limiter.limit("5/second")
-async def freelance(request: Request, response: Response):
+def freelance(request: Request, response: Response):
     context = {"request": request, "file": "freelance.html"}
     return templates.TemplateResponse("base.html", context)
 
