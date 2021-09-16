@@ -12,9 +12,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse
-from functools import partial
 import logging
-from asyncio import Semaphore
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
