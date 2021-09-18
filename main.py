@@ -8,7 +8,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Request, Response, Form
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.templating import Jinja2Templates
-from dpys import utils
 import aiosqlite
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_ipaddr
@@ -28,6 +27,13 @@ api.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 templates = Jinja2Templates(directory="web files")
+
+def var_can_be_type(var, type) -> bool:
+    try:
+        type(var)
+    except:
+        return False
+    return True
 
 # --MAIN WEBSITE CODE--
 
@@ -115,18 +121,18 @@ class Test:
 
     @app.get("/test/bmi")
     @limiter.limit("5/second")
-    async def bmi_main(request: Request):
+    def bmi_main(request: Request):
         context = {"request": request, "file": "test/bmi/index.html"}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
     @app.get("/test/bmi/calc")
     @limiter.limit("5/second")
-    async def bmi_calc(weight, heightft, heightin, request: Request, response: Response):
-        if await utils.var_can_be_type(weight, float) and await utils.var_can_be_type(heightft, float):
+    def bmi_calc(weight, heightft, heightin, request: Request, response: Response):
+        if var_can_be_type(weight, float) and var_can_be_type(heightft, float):
             if heightin == "":
                 heightin = 0
             else:
-                if await utils.var_can_be_type(heightin, float):
+                if var_can_be_type(heightin, float):
                     heightin = float(heightin)
                 else:
                     return templates.TemplateResponse("test/bmi/invalid.html", {"request": request}, status_code=400)
@@ -340,13 +346,13 @@ class Api:
 
 
 @app.exception_handler(StarletteHTTPException)
-async def invalid_path(request, exc):
+def invalid_path(request, exc):
     if exc.status_code == 404:
         return RedirectResponse("/")
 
 
 @api.exception_handler(StarletteHTTPException)
-async def invalid_path(request, exc):
+def api_invalid_path(request, exc):
     if exc.status_code == 404:
         return RedirectResponse("/api/docs")
 
@@ -369,7 +375,5 @@ def startup():
                     "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
                 return
             os.system("python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
-        
-
 
 startup()
