@@ -2,10 +2,9 @@ fastapi
 slowapi
 aiofiles
 python-multipart
-dpys
 uvicorn
 jinja2
 aiohttp
 aiosqlite
-git+https://github.com/Nebulizer1213/aio-tools
+uvloop
 # Use this version of starlette https://github.com/Nebulizer1213/starlette
