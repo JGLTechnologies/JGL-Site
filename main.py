@@ -2,6 +2,7 @@
 
 import asyncio
 import os
+import platform
 import aiohttp
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Request, Response, Form
@@ -360,9 +361,13 @@ def startup():
     app.mount("/api", api)
     # app.mount("/static", StaticFiles(directory="static"), name="static")
     if __name__ == "__main__":
-        # os.system("python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
-        os.system(
-            "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
+        if platform.system().lower() == "linux":
+            import uvloop
+            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+            os.system(
+                "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
+            return
+        os.system("python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
 
 
 startup()
