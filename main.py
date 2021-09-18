@@ -1,7 +1,7 @@
 # --IMPORTS--
 
-import asyncio
 import os
+import asyncio
 import platform
 import aiohttp
 from fastapi.staticfiles import StaticFiles
@@ -15,10 +15,11 @@ from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse
 from functools import partial
-from aiotools.AIObuiltins import aio_round
+import logging
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
+logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR, format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
 limiter = Limiter(key_func=get_ipaddr)
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None, description="The rate limit is 5 requests per second. This is not per page. The IP info api has a rate limit of 1 request per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
@@ -30,84 +31,83 @@ templates = Jinja2Templates(directory="web files")
 
 # --MAIN WEBSITE CODE--
 
-
 @app.get("/")
 @app.get("/home")
 @limiter.limit("5/second")
-async def home(request: Request):
+def home(request: Request):
     context = {"request": request, "file": "home.html"}
-    return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "base.html", context)
+    return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/contact")
 @limiter.limit("5/second")
-async def contact(request: Request):
+def contact(request: Request):
     context = {"request": request, "file": "contact.html"}
-    return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "base.html", context)
+    return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/freelance")
 @limiter.limit("5/second")
-async def freelance(request: Request, response: Response):
+def freelance(request: Request, response: Response):
     context = {"request": request, "file": "freelance.html"}
-    return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "base.html", context)
+    return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/discord")
 @limiter.limit("5/second")
-async def discord(request: Request):
+def discord(request: Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
 
 
 @app.get("/favicon.ico")
 @limiter.limit("5/second")
-async def ico(request: Request):
+def ico(request: Request):
     return RedirectResponse(
         "https://raw.githubusercontent.com/Nebulizer1213/JGL-Plugins/main/favicon.ico")
 
 
 @app.get("/dpys/donate")
 @limiter.limit("5/second")
-async def dpys_donate(request: Request):
+def dpys_donate(request: Request):
     return RedirectResponse(
         "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
 
 
 @app.get("/bot/donate")
 @limiter.limit("5/second")
-async def bot_donate(request: Request):
+def bot_donate(request: Request):
     return RedirectResponse(
         "https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
 
 
 @app.get("/bot")
 @limiter.limit("5/second")
-async def bot(request: Request):
+def bot(request: Request):
     return HTMLResponse(
         "JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
 
 
 @app.get("/dpys")
 @limiter.limit("5/second")
-async def dpys(request: Request):
+def dpys(request: Request):
     return RedirectResponse("https://sites.google.com/view/dpys")
 
 
 @app.get("/dpys/src")
 @limiter.limit("5/second")
-async def dpys_src(request: Request):
+def dpys_src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/dpys")
 
 
 @app.get("/dpys/pypi")
 @limiter.limit("5/second")
-async def dpys_src(request: Request):
+def dpys_src(request: Request):
     return RedirectResponse("https://pypi.org/project/dpys")
 
 
 @app.get("/src")
 @limiter.limit("5/second")
-async def src(request: Request):
+def src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
 
 
@@ -117,7 +117,7 @@ class Test:
     @limiter.limit("5/second")
     async def bmi_main(request: Request):
         context = {"request": request, "file": "test/bmi/index.html"}
-        return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "test/bmi/styles.html", context)
+        return templates.TemplateResponse("test/bmi/styles.html", context)
 
     @app.get("/test/bmi/calc")
     @limiter.limit("5/second")
@@ -129,7 +129,7 @@ class Test:
                 if await utils.var_can_be_type(heightin, float):
                     heightin = float(heightin)
                 else:
-                    return await asyncio.get_event_loop().run_in_executor(None, partial(templates.TemplateResponse, "test/bmi/invalid.html", {"request": request}, status_code=400))
+                    return templates.TemplateResponse("test/bmi/invalid.html", {"request": request}, status_code=400)
             # bmi = 703*(weight(lbs)/height(in)**2)
             bmi = float(weight) / \
                 (((float(heightft) * 12) + heightin)**2) * 703
@@ -140,11 +140,11 @@ class Test:
                 if weight >= 1:
                     context = {
                         "request": request,
-                        "bmi": await aio_round(bmi, 2),
-                        "weight": f"You need to loose {await aio_round(weight, 2)} pounds to be healthy."}
+                        "bmi": round(bmi, 2),
+                        "weight": f"You need to loose {round(weight, 2)} pounds to be healthy."}
                 else:
                     context = {
-                        "request": request, "bmi": await aio_round(bmi, 2), "weight": ""}
+                        "request": request, "bmi": round(bmi, 2), "weight": ""}
             elif bmi < 18.5:
                 new_weight = (
                     18.5 / 703 * ((float(heightft) * 12) + heightin)**2)
@@ -152,21 +152,20 @@ class Test:
                 if weight >= 1:
                     context = {
                         "request": request,
-                        "bmi": await aio_round(
+                        "bmi": round(
                             bmi,
                             2),
-                        "weight": f"You need to gain {await aio_round(weight, 2)} pounds to be healthy."}
+                        "weight": f"You need to gain {round(weight, 2)} pounds to be healthy."}
                 else:
                     context = {
-                        "request": request, "bmi": await aio_round(bmi, 2), "weight": ""}
+                        "request": request, "bmi": round(bmi, 2), "weight": ""}
             else:
                 context = {
-                    "request": request, "bmi": await aio_round(bmi, 2), "weight": ""}
+                    "request": request, "bmi": round(bmi, 2), "weight": ""}
 
         else:
-            return await asyncio.get_event_loop().run_in_executor(None, partial(templates.TemplateResponse,
-                                                                  "test/bmi/invalid.html", {"request": request}, status_code=400))
-        return await asyncio.get_event_loop().run_in_executor(None, templates.TemplateResponse, "test/bmi/bmi.html", context)
+            return templates.TemplateResponse("test/bmi/invalid.html", {"request": request}, status_code=400)
+        return templates.TemplateResponse("test/bmi/bmi.html", context)
 
 
 class Api:
@@ -352,22 +351,25 @@ async def invalid_path(request, exc):
         return RedirectResponse("/api/docs")
 
 
-@app.on_event("startup")
-async def startup():
-    await Api.Forum.setup()
+# @app.on_event("startup")
+# async def startup():
+#     await Api.Forum.setup()
 
 
 def startup():
     app.mount("/api", api)
     # app.mount("/static", StaticFiles(directory="static"), name="static")
     if __name__ == "__main__":
-        if platform.system().lower() == "linux":
-            import uvloop
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-            os.system(
-                "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
-            return
-        os.system("python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
+        if __name__ == "__main__":
+            if platform.system().lower() == "linux":
+                import uvloop
+                uvloop.install()
+                asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+                os.system(
+                    "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
+                return
+            os.system("python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
+        
 
 
 startup()
