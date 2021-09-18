@@ -1,2 +1,4 @@
 users.db
 __pycache__/
+jglsite.log
+*.log
