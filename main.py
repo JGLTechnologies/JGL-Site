@@ -369,7 +369,6 @@ def startup():
         if __name__ == "__main__":
             if platform.system().lower() == "linux":
                 import uvloop
-                uvloop.install()
                 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
                 os.system(
                     "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
