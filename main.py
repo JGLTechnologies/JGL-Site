@@ -348,7 +348,7 @@ class Api:
 @app.exception_handler(StarletteHTTPException)
 def invalid_path(request, exc):
     if exc.status_code == 404:
-        return RedirectResponse("/")
+        return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
 
 
 @api.exception_handler(StarletteHTTPException)
