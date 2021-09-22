@@ -13,7 +13,6 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse
-from functools import partial
 import logging
 import pytz
 from pytz.exceptions import UnknownTimeZoneError
