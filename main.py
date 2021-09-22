@@ -307,8 +307,8 @@ class Api:
                 "microsecond": datetime_obj.strftime("%f"),
                 "time_12_hour": datetime_obj.strftime("%I:%M:%S %p"),
                 "time_24_hour": datetime_obj.strftime("%H:%M:%S"),
-                "date": datetime_obj.strftime("%Y-%B-%d"),
-                "datime_formatted": datetime_obj.strftime("%B %d %Y %I:%M:%S %p")
+                "date": datetime_obj.strftime("%Y-%m-%d"),
+                "datime_formatted": datetime_obj.strftime("%B %d, %Y %I:%M:%S %p")
             }
             return JSONResponse(date_dict, indent=4)
 
