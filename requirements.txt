@@ -7,4 +7,5 @@ jinja2
 aiohttp
 aiosqlite
 uvloop
+pytz
 # Use this version of starlette https://github.com/Nebulizer1213/starlette

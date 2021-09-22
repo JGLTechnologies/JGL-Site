@@ -21,7 +21,8 @@ import datetime
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
-logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR, format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
+logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR,
+                    format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
 limiter = Limiter(key_func=get_ipaddr)
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None, description="The rate limit is 10 requests per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
@@ -31,6 +32,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 templates = Jinja2Templates(directory="web files")
 
+
 def var_can_be_type(var, type) -> bool:
     try:
         type(var)
@@ -39,6 +41,7 @@ def var_can_be_type(var, type) -> bool:
     return True
 
 # --MAIN WEBSITE CODE--
+
 
 @app.get("/shop")
 @limiter.limit("5/second")
@@ -228,15 +231,16 @@ class Api:
         def weekday_endpoint(request: Request):
             date = request.query_params.get("date")
             if date is None or date.count("-") != 2 or "/" in date:
-                raise StarletteHTTPException(status_code=400)
+                return JSONResponse({"error": "Invalid parameters."})
             for number in date.split("-"):
                 if not var_can_be_type(number, int):
-                    raise StarletteHTTPException(status_code=400)
+                    return JSONResponse({"error": "Invalid parameters."})
             number_list = [int(string) for string in date.split("-")]
             try:
-                datetime_obj = datetime.datetime(number_list[0], number_list[1], number_list[2])
+                datetime_obj = datetime.datetime(
+                    number_list[0], number_list[1], number_list[2])
             except ValueError:
-                raise StarletteHTTPException(status_code=400)
+                return JSONResponse({"error": "Invalid parameters."})
             return PlainTextResponse(datetime_obj.strftime("%A"))
 
         @api.get("/date")
@@ -245,9 +249,11 @@ class Api:
             tz = request.query_params.get("tz")
             if tz is not None:
                 try:
-                    datetime_obj = datetime.datetime.now(tz=pytz.timezone(str(tz)))
+                    datetime_obj = datetime.datetime.now(
+                        tz=pytz.timezone(str(tz)))
                 except UnknownTimeZoneError:
-                    dict_ = {"error": "Invalid timezone", "valid_timezones": pytz.all_timezones}
+                    dict_ = {"error": "Invalid timezone",
+                             "valid_timezones": pytz.all_timezones}
                     return JSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
@@ -257,53 +263,54 @@ class Api:
         @limiter.limit("5/second")
         def time_endpoint(request: Request):
             tz = request.query_params.get("tz")
-            military = request.query_params.get("military")
-            if military is None:
-                military = 1
-            try:
-                military = int(military)
-            except ValueError:
-                raise StarletteHTTPException(status_code=400)
+            military = request.query_params.get("24_hour")
             if tz is not None:
                 try:
-                    datetime_obj = datetime.datetime.now(tz=pytz.timezone(str(tz)))
+                    datetime_obj = datetime.datetime.now(
+                        tz=pytz.timezone(str(tz)))
                 except UnknownTimeZoneError:
-                    dict_ = {"error": "Invalid timezone", "valid_timezones": pytz.all_timezones}
+                    dict_ = {"error": "Invalid timezone",
+                             "valid_timezones": pytz.all_timezones}
                     return JSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
-            if military == 1:
-                return PlainTextResponse(datetime_obj.strftime("%H:%M:%S"))
-            return PlainTextResponse(datetime_obj.strftime("%I:%M:%S %p"))
+            if str(military).lower() == "false":
+                return PlainTextResponse(datetime_obj.strftime("%I:%M:%S %p"))
+            return PlainTextResponse(datetime_obj.strftime("%H:%M:%S"))
 
         @api.get("/datetime")
         @limiter.limit("5/second")
         def datetime_endpoint(request: Request):
-            print(1)
             tz = request.query_params.get("tz")
             if tz is not None:
                 try:
-                    datetime_obj = datetime.datetime.now(tz=pytz.timezone(str(tz)))
+                    datetime_obj = datetime.datetime.now(
+                        tz=pytz.timezone(str(tz)))
                 except UnknownTimeZoneError:
-                    dict_ = {"error": "Invalid timezone", "valid_timezones": pytz.all_timezones}
+                    dict_ = {"error": "Invalid timezone",
+                             "valid_timezones": pytz.all_timezones}
                     return JSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
-            if str(request.query_params.get("json")) == "1":
+            if str(request.query_params.get("json")).lower() == "true":
                 date_dict = {
-                "year": datetime_obj.strftime("%Y"),
-                "month": datetime_obj.strftime("%B"),
-                "day": datetime_obj.strftime("%d"),
-                "weekday": datetime_obj.strftime("%A"),
-                "weekday_number": datetime_obj.isoweekday(),
-                "month_number": datetime_obj.strftime("%m"),
-                "am/pm": datetime_obj.strftime("%p"),
-                "week_number_sunday_first": datetime_obj.strftime("%U"),
-                "week_number_monday_first": datetime_obj.strftime("%W"),
-                "second": datetime_obj.strftime("%S"),
-                "minute": datetime_obj.strftime("%M"),
-                "hour": datetime_obj.strftime("%H"),
-                "microsecond": datetime_obj.strftime("%f")
+                    "year": datetime_obj.strftime("%Y"),
+                    "month": datetime_obj.strftime("%B"),
+                    "day": datetime_obj.strftime("%d"),
+                    "weekday": datetime_obj.strftime("%A"),
+                    "weekday_number": datetime_obj.isoweekday(),
+                    "month_number": datetime_obj.strftime("%m"),
+                    "am/pm": datetime_obj.strftime("%p"),
+                    "week_number_sunday_first": datetime_obj.strftime("%U"),
+                    "week_number_monday_first": datetime_obj.strftime("%W"),
+                    "second": datetime_obj.strftime("%S"),
+                    "minute": datetime_obj.strftime("%M"),
+                    "hour": datetime_obj.strftime("%H"),
+                    "microsecond": datetime_obj.strftime("%f"),
+                    "time_12_hour": datetime_obj.strftime("%I:%M:%S %p"),
+                    "time_24_hour": datetime_obj.strftime("%H:%M:%S"),
+                    "date": datetime_obj.strftime("%Y-%B-%d"),
+                    "datime_formatted": datetime_obj.strftime("%B %d %Y %I:%M:%S %p")
                 }
                 return JSONResponse(date_dict, indent=4)
             return PlainTextResponse(datetime_obj.strftime("%B %d %Y %I:%M:%S %p"))
@@ -468,6 +475,8 @@ def startup():
                 os.system(
                     "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
                 return
-            os.system("python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
+            os.system(
+                "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
+
 
 startup()
