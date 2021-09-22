@@ -15,13 +15,16 @@ from slowapi.errors import RateLimitExceeded
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse
 from functools import partial
 import logging
+import pytz
+from pytz.exceptions import UnknownTimeZoneError
+import datetime
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR, format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
 limiter = Limiter(key_func=get_ipaddr)
 app = FastAPI(docs_url=None, redoc_url=None)
-api = FastAPI(redoc_url=None, description="The rate limit is 5 requests per second. This is not per page. The IP info api has a rate limit of 1 request per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
+api = FastAPI(redoc_url=None, description="The rate limit is 10 requests per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
 api.state.limiter = limiter
 api.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.state.limiter = limiter
@@ -200,8 +203,9 @@ class Api:
                 async with session.post("http://jglbotapi.us/freelance", json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message, "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
-        @api.get("/ip/{ip}", description="Gets info about an ip address")
-        @limiter.limit("1/second")
+        # Deprecated
+        # @api.get("/ip/{ip}", description="Gets info about an ip address")
+        # @limiter.limit("1/second")
         async def ip_info(request: Request, ip: str):
             async with aiohttp.ClientSession() as session:
                 try:
@@ -218,6 +222,91 @@ class Api:
                 except:
                     return PlainTextResponse(
                         "Domain/IP not found!", status_code=404)
+
+        @api.get("/weekday")
+        @limiter.limit("5/second")
+        def weekday_endpoint(request: Request):
+            date = request.query_params.get("date")
+            if date is None or date.count("-") != 2 or "/" in date:
+                raise StarletteHTTPException(status_code=400)
+            for number in date.split("-"):
+                if not var_can_be_type(number, int):
+                    raise StarletteHTTPException(status_code=400)
+            number_list = [int(string) for string in date.split("-")]
+            try:
+                datetime_obj = datetime.datetime(number_list[0], number_list[1], number_list[2])
+            except ValueError:
+                raise StarletteHTTPException(status_code=400)
+            return PlainTextResponse(datetime_obj.strftime("%A"))
+
+        @api.get("/date")
+        @limiter.limit("5/second")
+        def date_endpoint(request: Request):
+            tz = request.query_params.get("tz")
+            if tz is not None:
+                try:
+                    datetime_obj = datetime.datetime.now(tz=pytz.timezone(str(tz)))
+                except UnknownTimeZoneError:
+                    dict_ = {"error": "Invalid timezone", "valid_timezones": pytz.all_timezones}
+                    return JSONResponse(dict_, status_code=400)
+            else:
+                datetime_obj = datetime.datetime.now(tz=None)
+            return PlainTextResponse(datetime_obj.strftime("%Y-%m-%d"))
+
+        @api.get("/time")
+        @limiter.limit("5/second")
+        def time_endpoint(request: Request):
+            tz = request.query_params.get("tz")
+            military = request.query_params.get("military")
+            if military is None:
+                military = 1
+            try:
+                military = int(military)
+            except ValueError:
+                raise StarletteHTTPException(status_code=400)
+            if tz is not None:
+                try:
+                    datetime_obj = datetime.datetime.now(tz=pytz.timezone(str(tz)))
+                except UnknownTimeZoneError:
+                    dict_ = {"error": "Invalid timezone", "valid_timezones": pytz.all_timezones}
+                    return JSONResponse(dict_, status_code=400)
+            else:
+                datetime_obj = datetime.datetime.now(tz=None)
+            if military == 1:
+                return PlainTextResponse(datetime_obj.strftime("%H:%M:%S"))
+            return PlainTextResponse(datetime_obj.strftime("%I:%M:%S %p"))
+
+        @api.get("/datetime")
+        @limiter.limit("5/second")
+        def datetime_endpoint(request: Request):
+            print(1)
+            tz = request.query_params.get("tz")
+            if tz is not None:
+                try:
+                    datetime_obj = datetime.datetime.now(tz=pytz.timezone(str(tz)))
+                except UnknownTimeZoneError:
+                    dict_ = {"error": "Invalid timezone", "valid_timezones": pytz.all_timezones}
+                    return JSONResponse(dict_, status_code=400)
+            else:
+                datetime_obj = datetime.datetime.now(tz=None)
+            if str(request.query_params.get("json")) == "1":
+                date_dict = {
+                "year": datetime_obj.strftime("%Y"),
+                "month": datetime_obj.strftime("%B"),
+                "day": datetime_obj.strftime("%d"),
+                "weekday": datetime_obj.strftime("%A"),
+                "weekday_number": datetime_obj.isoweekday(),
+                "month_number": datetime_obj.strftime("%m"),
+                "am/pm": datetime_obj.strftime("%p"),
+                "week_number_sunday_first": datetime_obj.strftime("%U"),
+                "week_number_monday_first": datetime_obj.strftime("%W"),
+                "second": datetime_obj.strftime("%S"),
+                "minute": datetime_obj.strftime("%M"),
+                "hour": datetime_obj.strftime("%H"),
+                "microsecond": datetime_obj.strftime("%f")
+                }
+                return JSONResponse(date_dict, indent=4)
+            return PlainTextResponse(datetime_obj.strftime("%B %d %Y %I:%M:%S %p"))
 
     class Bot:
 
