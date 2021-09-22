@@ -37,6 +37,12 @@ def var_can_be_type(var, type) -> bool:
 
 # --MAIN WEBSITE CODE--
 
+@app.get("/shop")
+@limiter.limit("5/second")
+def shop(request: Request):
+    return RedirectResponse("https://jgltechnologies.myshopify.com")
+
+
 @app.get("/")
 @app.get("/home")
 @limiter.limit("5/second")
