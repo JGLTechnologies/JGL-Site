@@ -63,7 +63,7 @@ def contact(request: Request):
 
 @app.get("/freelance")
 @limiter.limit("5/second")
-def freelance(request: Request, response: Response):
+def freelance(request: Request):
     context = {"request": request, "file": "freelance.html"}
     return templates.TemplateResponse("base.html", context)
 
