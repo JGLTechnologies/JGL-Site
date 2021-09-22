@@ -291,28 +291,26 @@ class Api:
                     return JSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
-            if str(request.query_params.get("json")).lower() == "true":
-                date_dict = {
-                    "year": datetime_obj.strftime("%Y"),
-                    "month": datetime_obj.strftime("%B"),
-                    "day": datetime_obj.strftime("%d"),
-                    "weekday": datetime_obj.strftime("%A"),
-                    "weekday_number": datetime_obj.isoweekday(),
-                    "month_number": datetime_obj.strftime("%m"),
-                    "am/pm": datetime_obj.strftime("%p"),
-                    "week_number_sunday_first": datetime_obj.strftime("%U"),
-                    "week_number_monday_first": datetime_obj.strftime("%W"),
-                    "second": datetime_obj.strftime("%S"),
-                    "minute": datetime_obj.strftime("%M"),
-                    "hour": datetime_obj.strftime("%H"),
-                    "microsecond": datetime_obj.strftime("%f"),
-                    "time_12_hour": datetime_obj.strftime("%I:%M:%S %p"),
-                    "time_24_hour": datetime_obj.strftime("%H:%M:%S"),
-                    "date": datetime_obj.strftime("%Y-%B-%d"),
-                    "datime_formatted": datetime_obj.strftime("%B %d %Y %I:%M:%S %p")
-                }
-                return JSONResponse(date_dict, indent=4)
-            return PlainTextResponse(datetime_obj.strftime("%B %d %Y %I:%M:%S %p"))
+            date_dict = {
+                "year": datetime_obj.strftime("%Y"),
+                "month": datetime_obj.strftime("%B"),
+                "day": datetime_obj.strftime("%d"),
+                "weekday": datetime_obj.strftime("%A"),
+                "weekday_number": datetime_obj.isoweekday(),
+                "month_number": datetime_obj.strftime("%m"),
+                "am/pm": datetime_obj.strftime("%p"),
+                "week_number_sunday_first": datetime_obj.strftime("%U"),
+                "week_number_monday_first": datetime_obj.strftime("%W"),
+                "second": datetime_obj.strftime("%S"),
+                "minute": datetime_obj.strftime("%M"),
+                "hour": datetime_obj.strftime("%H"),
+                "microsecond": datetime_obj.strftime("%f"),
+                "time_12_hour": datetime_obj.strftime("%I:%M:%S %p"),
+                "time_24_hour": datetime_obj.strftime("%H:%M:%S"),
+                "date": datetime_obj.strftime("%Y-%B-%d"),
+                "datime_formatted": datetime_obj.strftime("%B %d %Y %I:%M:%S %p")
+            }
+            return JSONResponse(date_dict, indent=4)
 
     class Bot:
 
