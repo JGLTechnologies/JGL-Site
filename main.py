@@ -227,8 +227,7 @@ class Api:
 
         @api.get("/weekday")
         @limiter.limit("5/second")
-        def weekday_endpoint(request: Request):
-            date = request.query_params.get("date")
+        def weekday_endpoint(request: Request, date: str):
             if date is None or date.count("-") != 2 or "/" in date:
                 return JSONResponse({"error": "Invalid parameters."})
             for number in date.split("-"):
@@ -244,8 +243,7 @@ class Api:
 
         @api.get("/date")
         @limiter.limit("5/second")
-        def date_endpoint(request: Request):
-            tz = request.query_params.get("tz")
+        def date_endpoint(request: Request, tz: str = None):
             if tz is not None:
                 try:
                     datetime_obj = datetime.datetime.now(
@@ -260,9 +258,7 @@ class Api:
 
         @api.get("/time")
         @limiter.limit("5/second")
-        def time_endpoint(request: Request):
-            tz = request.query_params.get("tz")
-            military = request.query_params.get("24_hour")
+        def time_endpoint(request: Request, tz: str = None, military: str = "true"):
             if tz is not None:
                 try:
                     datetime_obj = datetime.datetime.now(
@@ -279,8 +275,7 @@ class Api:
 
         @api.get("/datetime")
         @limiter.limit("5/second")
-        def datetime_endpoint(request: Request):
-            tz = request.query_params.get("tz")
+        def datetime_endpoint(request: Request, tz: str = None):
             if tz is not None:
                 try:
                     datetime_obj = datetime.datetime.now(
