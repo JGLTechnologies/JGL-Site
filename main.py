@@ -468,7 +468,7 @@ def startup():
                     "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
                 return
             os.system(
-                "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
+                "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81 -k trio")
 
 
 startup()
