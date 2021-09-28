@@ -20,15 +20,25 @@ import datetime
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
+def handler(request: Request, exc: RateLimitExceeded) -> Response:
+    response = PlainTextResponse(
+        "Too many requests", status_code=429
+    )
+    response = request.app.state.limiter._inject_headers(
+        response, request.state.view_rate_limit
+    )
+    return response
+
+
 logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR,
                     format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
 limiter = Limiter(key_func=get_ipaddr)
 app = FastAPI(docs_url=None, redoc_url=None)
 api = FastAPI(redoc_url=None, description="The rate limit is 10 requests per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
 api.state.limiter = limiter
-api.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+api.add_exception_handler(RateLimitExceeded, handler)
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RateLimitExceeded, handler)
 templates = Jinja2Templates(directory="web files")
 
 
@@ -46,6 +56,11 @@ def var_can_be_type(var, type) -> bool:
 @limiter.limit("5/second")
 def shop(request: Request):
     return RedirectResponse("https://jgltechnologies.myshopify.com")
+
+
+@app.get("/aiohttp-ratelimiter")
+def aiohttp_ratelimiter(request: Request):
+     return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
 
 
 @app.get("/")
@@ -440,13 +455,13 @@ class Api:
 
 
 @app.exception_handler(StarletteHTTPException)
-def invalid_path(request, exc):
+def invalid_path(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
         return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
 
 
 @api.exception_handler(StarletteHTTPException)
-def api_invalid_path(request, exc):
+def api_invalid_path(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
         return RedirectResponse("/api/docs")
 
