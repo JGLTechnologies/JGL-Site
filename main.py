@@ -480,7 +480,7 @@ def startup():
                 import uvloop
                 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
                 os.system(
-                    "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker --reload -b 0.0.0.0:81")
+                    "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:81 --reload")
                 return
             os.system(
                 "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81 -k trio")
