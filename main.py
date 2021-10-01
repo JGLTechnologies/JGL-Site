@@ -59,6 +59,7 @@ def shop(request: Request):
 
 
 @app.get("/aiohttp-ratelimiter")
+@limiter.limit("5/second")
 def aiohttp_ratelimiter(request: Request):
      return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
 
