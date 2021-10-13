@@ -18,6 +18,7 @@ import pytz
 from pytz.exceptions import UnknownTimeZoneError
 import datetime
 
+
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 def handler(request: Request, exc: RateLimitExceeded) -> Response:
@@ -34,7 +35,8 @@ logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERRO
                     format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
 limiter = Limiter(key_func=get_ipaddr)
 app = FastAPI(docs_url=None, redoc_url=None)
-api = FastAPI(redoc_url=None, description="The rate limit is 10 requests per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
+api = FastAPI(redoc_url=None,
+              description="The rate limit is 10 requests per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
 api.state.limiter = limiter
 api.add_exception_handler(RateLimitExceeded, handler)
 app.state.limiter = limiter
@@ -49,6 +51,7 @@ def var_can_be_type(var, type) -> bool:
         return False
     return True
 
+
 # --MAIN WEBSITE CODE--
 
 
@@ -61,7 +64,7 @@ def shop(request: Request):
 @app.get("/aiohttp-ratelimiter")
 @limiter.limit("5/second")
 def aiohttp_ratelimiter(request: Request):
-     return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
+    return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
 
 
 @app.get("/")
@@ -145,13 +148,14 @@ def src(request: Request):
 
 
 class Test:
-
+    @staticmethod
     @app.get("/test/bmi")
     @limiter.limit("5/second")
     def bmi_main(request: Request):
         context = {"request": request, "file": "test/bmi/index.html"}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
+    @staticmethod
     @app.get("/test/bmi/calc")
     @limiter.limit("5/second")
     def bmi_calc(weight, heightft, heightin, request: Request, response: Response):
@@ -165,10 +169,10 @@ class Test:
                     return templates.TemplateResponse("test/bmi/invalid.html", {"request": request}, status_code=400)
             # bmi = 703*(weight(lbs)/height(in)**2)
             bmi = float(weight) / \
-                (((float(heightft) * 12) + heightin)**2) * 703
+                  (((float(heightft) * 12) + heightin) ** 2) * 703
             if bmi > 24.9:
                 new_weight = (
-                    24.9 / 703 * ((float(heightft) * 12) + heightin)**2)
+                        24.9 / 703 * ((float(heightft) * 12) + heightin) ** 2)
                 weight = float(weight) - new_weight
                 if weight >= 1:
                     context = {
@@ -180,7 +184,7 @@ class Test:
                         "request": request, "bmi": round(bmi, 2), "weight": ""}
             elif bmi < 18.5:
                 new_weight = (
-                    18.5 / 703 * ((float(heightft) * 12) + heightin)**2)
+                        18.5 / 703 * ((float(heightft) * 12) + heightin) ** 2)
                 weight = new_weight - float(weight)
                 if weight >= 1:
                     context = {
@@ -202,45 +206,32 @@ class Test:
 
 
 class Api:
-
     class Main:
-
+        @staticmethod
         @api.post("/contact", include_in_schema=False)
         @limiter.limit("1/second")
-        async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
+        async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None),
+                              message: str = Form(None), token: str = Form(None)):
             ip = request.headers.get("X-Forwarded-For") or request.client.host
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us/contact", json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message, "token": token}) as response:
+                async with session.post("http://jglbotapi.us/contact",
+                                        json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message,
+                                              "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
+        @staticmethod
         @api.post("/freelance", include_in_schema=False)
         @limiter.limit("1/second")
-        async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None), message: str = Form(None), token: str = Form(None)):
+        async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None),
+                                message: str = Form(None), token: str = Form(None)):
             ip = request.headers.get("X-Forwarded-For") or request.client.host
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us/freelance", json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message, "token": token}) as response:
+                async with session.post("http://jglbotapi.us/freelance",
+                                        json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message,
+                                              "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
-        # Deprecated
-        # @api.get("/ip/{ip}", description="Gets info about an ip address")
-        # @limiter.limit("1/second")
-        async def ip_info(request: Request, ip: str):
-            async with aiohttp.ClientSession() as session:
-                try:
-                    async with session.get(f"https://tools.keycdn.com/geo.json?host={ip}", headers={f"User-Agent": "keycdn-tools:http://{ip}"}) as res:
-                        data = await res.json()
-                        for x in data.get("data").get("geo"):
-                            if data.get("data").get("geo").get(x) is None or data.get(
-                                    "data").get("geo").get(x) == "":
-                                data["data"]["geo"][x] = "Not Found"
-                        if res.status == 429:
-                            return JSONResponse(data, status_code=429)
-                        return JSONResponse(
-                            data.get("data").get("geo"), indent=4)
-                except:
-                    return PlainTextResponse(
-                        "Domain/IP not found!", status_code=404)
-
+        @staticmethod
         @api.get("/weekday")
         @limiter.limit("5/second")
         def weekday_endpoint(request: Request, date: str):
@@ -257,6 +248,7 @@ class Api:
                 return JSONResponse({"error": "Invalid parameters."})
             return PlainTextResponse(datetime_obj.strftime("%A"))
 
+        @staticmethod
         @api.get("/date")
         @limiter.limit("5/second")
         def date_endpoint(request: Request, tz: str = None):
@@ -272,6 +264,7 @@ class Api:
                 datetime_obj = datetime.datetime.now(tz=None)
             return PlainTextResponse(datetime_obj.strftime("%Y-%m-%d"))
 
+        @staticmethod
         @api.get("/time")
         @limiter.limit("5/second")
         def time_endpoint(request: Request, tz: str = None, military: str = "true"):
@@ -289,6 +282,7 @@ class Api:
                 return PlainTextResponse(datetime_obj.strftime("%I:%M:%S %p"))
             return PlainTextResponse(datetime_obj.strftime("%H:%M:%S"))
 
+        @staticmethod
         @api.get("/datetime")
         @limiter.limit("5/second")
         def datetime_endpoint(request: Request, tz: str = None):
@@ -325,6 +319,7 @@ class Api:
 
     class Bot:
 
+        @staticmethod
         @api.get("/bot/status",
                  description="Checks if the JGL Bot is online or offline")
         @limiter.limit("5/second")
@@ -339,6 +334,7 @@ class Api:
                 response = {"online": False}
             return response
 
+        @staticmethod
         @api.get("/bot/info", description="Gets info for the JGL Bot")
         @limiter.limit("5/second")
         async def get_info_for_jgl_bot(request: Request):
@@ -372,6 +368,7 @@ class Api:
                         "kb": size_kb}}
                 return JSONResponse(dict, indent=4)
 
+        @staticmethod
         @api.get("/dpys", description="Gets info for DPYS")
         @limiter.limit("5/second")
         async def dpys_info(request: Request):
@@ -379,20 +376,23 @@ class Api:
                 async with session.get("https://pypi.org/pypi/dpys/json") as response:
                     data = await response.json()
                     version = data["info"]["version"]
-                async with session.get(f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz") as response:
+                async with session.get(
+                        f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz") as response:
                     file_bytes = str(await response.read())
             response_data = {"version": version, "file_bytes": file_bytes}
             return JSONResponse(response_data, indent=4)
 
     # The forum api is not finished.
     class Forum:
+
+        @staticmethod
         @api.get("/forum/login", include_in_schema=False)
         @limiter.limit("5/second")
         async def login(request: Request):
             try:
                 username = request.headers["username"]
                 passw = request.headers["password"]
-            except:
+            except KeyError:
                 return "login configured wrong"
             async with aiosqlite.connect("users.db") as db:
                 async with db.execute("""
@@ -405,17 +405,20 @@ class Api:
                             return {"success": True}
                     return {"success": False}
 
+        @staticmethod
         @api.post("/forum/createacc", include_in_schema=False)
         @limiter.limit("5/second")
         async def createacc(request: Request):
             async with aiosqlite.connect("users.db") as db:
                 try:
-                    await db.execute("INSERT INTO accounts (username,password) VALUES (?,?)", (request.headers["username"], request.headers["password"]))
+                    await db.execute("INSERT INTO accounts (username,password) VALUES (?,?)",
+                                     (request.headers["username"], request.headers["password"]))
                     await db.commit()
                     return "account created"
                 except:
                     return "account already exists"
 
+        @staticmethod
         @api.post("/forum/sendmsg", include_in_schema=False)
         @limiter.limit("5/second")
         async def sendmsg(request: Request):
@@ -440,6 +443,7 @@ class Api:
                 except:
                     return "username does not exist"
 
+        @staticmethod
         async def setup():
             async with aiosqlite.connect("users.db") as db:
                 await db.execute("""CREATE TABLE IF NOT EXISTS messages(
@@ -484,7 +488,7 @@ def startup():
                     "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:81 --reload")
                 return
             os.system(
-                "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81 -k trio")
+                "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
 
 
 startup()
