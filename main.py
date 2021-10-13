@@ -34,7 +34,7 @@ def handler(request: Request, exc: RateLimitExceeded) -> Response:
 logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR,
                     format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
 limiter = Limiter(key_func=get_ipaddr)
-app = FastAPI(docs_url=None, redoc_url=None)
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 api = FastAPI(redoc_url=None,
               description="The rate limit is 10 requests per second. When we upgrade our server we will allow people to make more requests. Also if you reach over 200 requests in 10 seconds your IP will be banned for 1 minute.")
 api.state.limiter = limiter
