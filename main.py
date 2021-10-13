@@ -56,93 +56,79 @@ def var_can_be_type(var, type) -> bool:
 
 
 @app.get("/shop")
-@limiter.limit("5/second")
 def shop(request: Request):
     return RedirectResponse("https://jgltechnologies.myshopify.com")
 
 
 @app.get("/aiohttp-ratelimiter")
-@limiter.limit("5/second")
 def aiohttp_ratelimiter(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
 
 
 @app.get("/")
 @app.get("/home")
-@limiter.limit("5/second")
 def home(request: Request):
     context = {"request": request, "file": "home.html"}
     return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/contact")
-@limiter.limit("5/second")
 def contact(request: Request):
     context = {"request": request, "file": "contact.html"}
     return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/freelance")
-@limiter.limit("5/second")
 def freelance(request: Request):
     context = {"request": request, "file": "freelance.html"}
     return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/discord")
-@limiter.limit("5/second")
 def discord(request: Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
 
 
 @app.get("/favicon.ico")
-@limiter.limit("5/second")
 def ico(request: Request):
     return RedirectResponse(
         "https://raw.githubusercontent.com/Nebulizer1213/JGL-Plugins/main/favicon.ico")
 
 
 @app.get("/dpys/donate")
-@limiter.limit("5/second")
 def dpys_donate(request: Request):
     return RedirectResponse(
         "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
 
 
 @app.get("/bot/donate")
-@limiter.limit("5/second")
 def bot_donate(request: Request):
     return RedirectResponse(
         "https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
 
 
 @app.get("/bot")
-@limiter.limit("5/second")
 def bot(request: Request):
     return HTMLResponse(
         "JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
 
 
 @app.get("/dpys")
-@limiter.limit("5/second")
 def dpys(request: Request):
     return RedirectResponse("https://sites.google.com/view/dpys")
 
 
 @app.get("/dpys/src")
-@limiter.limit("5/second")
 def dpys_src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/dpys")
 
 
 @app.get("/dpys/pypi")
-@limiter.limit("5/second")
 def dpys_src(request: Request):
     return RedirectResponse("https://pypi.org/project/dpys")
 
 
 @app.get("/src")
-@limiter.limit("5/second")
 def src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
 
@@ -150,14 +136,12 @@ def src(request: Request):
 class Test:
     @staticmethod
     @app.get("/test/bmi")
-    @limiter.limit("5/second")
     def bmi_main(request: Request):
         context = {"request": request, "file": "test/bmi/index.html"}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
     @staticmethod
     @app.get("/test/bmi/calc")
-    @limiter.limit("5/second")
     def bmi_calc(weight, heightft, heightin, request: Request, response: Response):
         if var_can_be_type(weight, float) and var_can_be_type(heightft, float):
             if heightin == "":
@@ -233,7 +217,6 @@ class Api:
 
         @staticmethod
         @api.get("/weekday")
-        @limiter.limit("5/second")
         def weekday_endpoint(request: Request, date: str):
             if date is None or date.count("-") != 2 or "/" in date:
                 return JSONResponse({"error": "Invalid parameters."})
@@ -250,7 +233,6 @@ class Api:
 
         @staticmethod
         @api.get("/date")
-        @limiter.limit("5/second")
         def date_endpoint(request: Request, tz: str = None):
             if tz is not None:
                 try:
@@ -266,7 +248,6 @@ class Api:
 
         @staticmethod
         @api.get("/time")
-        @limiter.limit("5/second")
         def time_endpoint(request: Request, tz: str = None, military: str = "true"):
             if tz is not None:
                 try:
@@ -284,7 +265,6 @@ class Api:
 
         @staticmethod
         @api.get("/datetime")
-        @limiter.limit("5/second")
         def datetime_endpoint(request: Request, tz: str = None):
             if tz is not None:
                 try:
@@ -322,7 +302,6 @@ class Api:
         @staticmethod
         @api.get("/bot/status",
                  description="Checks if the JGL Bot is online or offline")
-        @limiter.limit("5/second")
         async def jgl_bot_status(request: Request):
             try:
                 async with aiohttp.ClientSession() as session:
@@ -336,7 +315,6 @@ class Api:
 
         @staticmethod
         @api.get("/bot/info", description="Gets info for the JGL Bot")
-        @limiter.limit("5/second")
         async def get_info_for_jgl_bot(request: Request):
             async with aiohttp.ClientSession() as session:
                 try:
@@ -370,7 +348,6 @@ class Api:
 
         @staticmethod
         @api.get("/dpys", description="Gets info for DPYS")
-        @limiter.limit("5/second")
         async def dpys_info(request: Request):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://pypi.org/pypi/dpys/json") as response:
@@ -387,7 +364,6 @@ class Api:
 
         @staticmethod
         @api.get("/forum/login", include_in_schema=False)
-        @limiter.limit("5/second")
         async def login(request: Request):
             try:
                 username = request.headers["username"]
@@ -407,7 +383,6 @@ class Api:
 
         @staticmethod
         @api.post("/forum/createacc", include_in_schema=False)
-        @limiter.limit("5/second")
         async def createacc(request: Request):
             async with aiosqlite.connect("users.db") as db:
                 try:
@@ -420,7 +395,6 @@ class Api:
 
         @staticmethod
         @api.post("/forum/sendmsg", include_in_schema=False)
-        @limiter.limit("5/second")
         async def sendmsg(request: Request):
             try:
                 body = request.headers["body"]
