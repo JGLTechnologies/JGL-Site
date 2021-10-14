@@ -124,8 +124,23 @@ def dpys_src(request: Request):
 
 
 @app.get("/dpys/pypi")
-def dpys_src(request: Request):
+def dpys_pypi(request: Request):
     return RedirectResponse("https://pypi.org/project/dpys")
+
+
+@app.get("/aiohttplimiter")
+def aiohttplimiter(request: Request):
+    return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
+
+
+@app.get("/aiohttplimiter/src")
+def aiohttplimiter_src(request: Request):
+    return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
+
+
+@app.get("/aiohttplimiter/pypi")
+def aiohttplimiter_pypi(request: Request):
+    return RedirectResponse("https://pypi.org/project/aiohttp_ratelimiter")
 
 
 @app.get("/src")
@@ -297,7 +312,7 @@ class Api:
             }
             return JSONResponse(date_dict, indent=4)
 
-    class Bot:
+    class BotAndLibs:
 
         @staticmethod
         @api.get("/bot/status",
@@ -355,6 +370,19 @@ class Api:
                     version = data["info"]["version"]
                 async with session.get(
                         f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz") as response:
+                    file_bytes = str(await response.read())
+            response_data = {"version": version, "file_bytes": file_bytes}
+            return JSONResponse(response_data, indent=4)
+
+        @staticmethod
+        @api.get("/aiohttplimiter", description="Gets info for aiohttp-ratelimiter")
+        async def dpys_info(request: Request):
+            async with aiohttp.ClientSession() as session:
+                async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json") as response:
+                    data = await response.json()
+                    version = data["info"]["version"]
+                async with session.get(
+                        f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/dpys-{version}.tar.gz") as response:
                     file_bytes = str(await response.read())
             response_data = {"version": version, "file_bytes": file_bytes}
             return JSONResponse(response_data, indent=4)
