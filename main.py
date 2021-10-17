@@ -376,13 +376,13 @@ class Api:
 
         @staticmethod
         @api.get("/aiohttplimiter", description="Gets info for aiohttp-ratelimiter")
-        async def   aiohttplimiter_info(request: Request):
+        async def aiohttplimiter_info(request: Request):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json") as response:
                     data = await response.json()
                     version = data["info"]["version"]
                 async with session.get(
-                        f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/dpys-{version}.tar.gz") as response:
+                        f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz") as response:
                     file_bytes = str(await response.read())
             response_data = {"version": version, "file_bytes": file_bytes}
             return JSONResponse(response_data, indent=4)
