@@ -376,7 +376,7 @@ class Api:
 
         @staticmethod
         @api.get("/aiohttplimiter", description="Gets info for aiohttp-ratelimiter")
-        async def dpys_info(request: Request):
+        async def   aiohttplimiter_info(request: Request):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json") as response:
                     data = await response.json()
