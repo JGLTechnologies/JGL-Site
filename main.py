@@ -56,108 +56,108 @@ def var_can_be_type(var, type) -> bool:
 
 
 @app.get("/shop")
-def shop(request: Request):
+async def shop(request: Request):
     return RedirectResponse("https://jgltechnologies.myshopify.com")
 
 
 @app.get("/aiohttp-ratelimiter")
-def aiohttp_ratelimiter(request: Request):
+async def aiohttp_ratelimiter(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
 
 
 @app.get("/")
 @app.get("/home")
-def home(request: Request):
+async def home(request: Request):
     context = {"request": request, "file": "home.html"}
     return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/contact")
-def contact(request: Request):
+async def contact(request: Request):
     context = {"request": request, "file": "contact.html"}
     return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/freelance")
-def freelance(request: Request):
+async def freelance(request: Request):
     context = {"request": request, "file": "freelance.html"}
     return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/discord")
-def discord(request: Request):
+async def discord(request: Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
 
 
 @app.get("/favicon.ico")
-def ico(request: Request):
+async def ico(request: Request):
     return RedirectResponse(
         "https://raw.githubusercontent.com/Nebulizer1213/JGL-Plugins/main/favicon.ico")
 
 
 @app.get("/dpys/donate")
-def dpys_donate(request: Request):
+async def dpys_donate(request: Request):
     return RedirectResponse(
         "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
 
 
 @app.get("/bot/donate")
-def bot_donate(request: Request):
+async def bot_donate(request: Request):
     return RedirectResponse(
         "https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
 
 
 @app.get("/bot")
-def bot(request: Request):
+async def bot(request: Request):
     return HTMLResponse(
         "JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
 
 
 @app.get("/dpys")
-def dpys(request: Request):
+async def dpys(request: Request):
     return RedirectResponse("https://sites.google.com/view/dpys")
 
 
 @app.get("/dpys/src")
-def dpys_src(request: Request):
+async def dpys_src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/dpys")
 
 
 @app.get("/dpys/pypi")
-def dpys_pypi(request: Request):
+async def dpys_pypi(request: Request):
     return RedirectResponse("https://pypi.org/project/dpys")
 
 
 @app.get("/aiohttplimiter")
-def aiohttplimiter(request: Request):
+async def aiohttplimiter(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
 
 
 @app.get("/aiohttplimiter/src")
-def aiohttplimiter_src(request: Request):
+async def aiohttplimiter_src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
 
 
 @app.get("/aiohttplimiter/pypi")
-def aiohttplimiter_pypi(request: Request):
+async def aiohttplimiter_pypi(request: Request):
     return RedirectResponse("https://pypi.org/project/aiohttp_ratelimiter")
 
 
 @app.get("/src")
-def src(request: Request):
+async def src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
 
 
 class Test:
     @staticmethod
     @app.get("/test/bmi")
-    def bmi_main(request: Request):
+    async def bmi_main(request: Request):
         context = {"request": request, "file": "test/bmi/index.html"}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
     @staticmethod
     @app.get("/test/bmi/calc")
-    def bmi_calc(weight, heightft, heightin, request: Request, response: Response):
+    async def bmi_calc(weight, heightft, heightin, request: Request, response: Response):
         if var_can_be_type(weight, float) and var_can_be_type(heightft, float):
             if heightin == "":
                 heightin = 0
@@ -232,7 +232,7 @@ class Api:
 
         @staticmethod
         @api.get("/weekday")
-        def weekday_endpoint(request: Request, date: str):
+        async def weekday_endpoint(request: Request, date: str):
             if date is None or date.count("-") != 2 or "/" in date:
                 return JSONResponse({"error": "Invalid parameters."})
             for number in date.split("-"):
@@ -248,7 +248,7 @@ class Api:
 
         @staticmethod
         @api.get("/date")
-        def date_endpoint(request: Request, tz: str = None):
+        async def date_endpoint(request: Request, tz: str = None):
             if tz is not None:
                 try:
                     datetime_obj = datetime.datetime.now(
@@ -263,7 +263,7 @@ class Api:
 
         @staticmethod
         @api.get("/time")
-        def time_endpoint(request: Request, tz: str = None, military: str = "true"):
+        async def time_endpoint(request: Request, tz: str = None, military: str = "true"):
             if tz is not None:
                 try:
                     datetime_obj = datetime.datetime.now(
@@ -280,7 +280,7 @@ class Api:
 
         @staticmethod
         @api.get("/datetime")
-        def datetime_endpoint(request: Request, tz: str = None):
+        async def datetime_endpoint(request: Request, tz: str = None):
             if tz is not None:
                 try:
                     datetime_obj = datetime.datetime.now(
@@ -317,6 +317,7 @@ class Api:
         @staticmethod
         @api.get("/bot/status",
                  description="Checks if the JGL Bot is online or offline")
+        @limiter.limit("5/second")
         async def jgl_bot_status(request: Request):
             try:
                 async with aiohttp.ClientSession() as session:
@@ -330,6 +331,7 @@ class Api:
 
         @staticmethod
         @api.get("/bot/info", description="Gets info for the JGL Bot")
+        @limiter.limit("5/second")
         async def get_info_for_jgl_bot(request: Request):
             async with aiohttp.ClientSession() as session:
                 try:
@@ -350,7 +352,7 @@ class Api:
                     size_mb = "Not Found"
                     size_kb = "Not Found"
                     ping = "Not Found"
-                dict = {
+                dict_ = {
                     "guilds": guilds,
                     "shards": shards,
                     "cogs": cogs,
@@ -359,10 +361,11 @@ class Api:
                         "gb": size_gb,
                         "mb": size_mb,
                         "kb": size_kb}}
-                return JSONResponse(dict, indent=4)
+                return JSONResponse(dict_, indent=4)
 
         @staticmethod
         @api.get("/dpys", description="Gets info for DPYS")
+        @limiter.limit("5/second")
         async def dpys_info(request: Request):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://pypi.org/pypi/dpys/json") as response:
@@ -376,6 +379,7 @@ class Api:
 
         @staticmethod
         @api.get("/aiohttplimiter", description="Gets info for aiohttp-ratelimiter")
+        @limiter.limit("5/second")
         async def aiohttplimiter_info(request: Request):
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json") as response:
@@ -391,7 +395,7 @@ class Api:
     class Forum:
 
         @staticmethod
-        @api.get("/forum/login", include_in_schema=False)
+        # @api.get("/forum/login", include_in_schema=False)
         async def login(request: Request):
             try:
                 username = request.headers["username"]
@@ -410,7 +414,7 @@ class Api:
                     return {"success": False}
 
         @staticmethod
-        @api.post("/forum/createacc", include_in_schema=False)
+        # @api.post("/forum/createacc", include_in_schema=False)
         async def createacc(request: Request):
             async with aiosqlite.connect("users.db") as db:
                 try:
@@ -422,7 +426,7 @@ class Api:
                     return "account already exists"
 
         @staticmethod
-        @api.post("/forum/sendmsg", include_in_schema=False)
+        # @api.post("/forum/sendmsg", include_in_schema=False)
         async def sendmsg(request: Request):
             try:
                 body = request.headers["body"]
@@ -462,13 +466,13 @@ class Api:
 
 
 @app.exception_handler(StarletteHTTPException)
-def invalid_path(request: Request, exc: StarletteHTTPException):
+async def invalid_path(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
         return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
 
 
 @api.exception_handler(StarletteHTTPException)
-def api_invalid_path(request: Request, exc: StarletteHTTPException):
+async def api_invalid_path(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
         return RedirectResponse("/api/docs")
 
