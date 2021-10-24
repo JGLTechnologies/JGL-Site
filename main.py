@@ -12,14 +12,19 @@ import aiosqlite
 from slowapi import Limiter
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
-from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse, UJSONResponse
 import logging
 import pytz
 from pytz.exceptions import UnknownTimeZoneError
 import datetime
+import ssl
+import certifi
 
 
 # --GLOBAL VARIABLES / INITIALIZERS--
+
+sslcontext = ssl.create_default_context(cafile=certifi.where())
+
 
 def handler(request: Request, exc: RateLimitExceeded) -> Response:
     response = PlainTextResponse(
@@ -344,7 +349,7 @@ class Api:
                         size_mb = data["size"]["mb"]
                         size_kb = data["size"]["kb"]
                         ping = data["ping"]
-                except:
+                except asyncio.TimeoutError:
                     guilds = "Not Found"
                     cogs = "Not Found"
                     shards = "Not Found"
@@ -368,11 +373,11 @@ class Api:
         @limiter.limit("5/second")
         async def dpys_info(request: Request):
             async with aiohttp.ClientSession() as session:
-                async with session.get("https://pypi.org/pypi/dpys/json") as response:
+                async with session.get("https://pypi.org/pypi/dpys/json", ssl=sslcontext) as response:
                     data = await response.json()
                     version = data["info"]["version"]
                 async with session.get(
-                        f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz") as response:
+                        f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz", ssl=sslcontext) as response:
                     file_bytes = str(await response.read())
             response_data = {"version": version, "file_bytes": file_bytes}
             return JSONResponse(response_data, indent=4)
@@ -382,11 +387,11 @@ class Api:
         @limiter.limit("5/second")
         async def aiohttplimiter_info(request: Request):
             async with aiohttp.ClientSession() as session:
-                async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json") as response:
+                async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json", ssl=sslcontext) as response:
                     data = await response.json()
                     version = data["info"]["version"]
                 async with session.get(
-                        f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz") as response:
+                        f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz", ssl=sslcontext) as response:
                     file_bytes = str(await response.read())
             response_data = {"version": version, "file_bytes": file_bytes}
             return JSONResponse(response_data, indent=4)
