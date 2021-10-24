@@ -12,7 +12,7 @@ import aiosqlite
 from slowapi import Limiter
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
-from fastapi.responses import PlainTextResponse, HTMLResponse, RedirectResponse, ORJSONResponse
+from fastapi.responses import PlainTextResponse, HTMLResponse, RedirectResponse, UJSONResponse
 import logging
 import pytz
 from pytz.exceptions import UnknownTimeZoneError
@@ -239,16 +239,16 @@ class Api:
         @api.get("/weekday")
         async def weekday_endpoint(request: Request, date: str):
             if date is None or date.count("-") != 2 or "/" in date:
-                return ORJSONResponse({"error": "Invalid parameters."})
+                return UJSONResponse({"error": "Invalid parameters."})
             for number in date.split("-"):
                 if not var_can_be_type(number, int):
-                    return ORJSONResponse({"error": "Invalid parameters."})
+                    return UJSONResponse({"error": "Invalid parameters."})
             number_list = [int(string) for string in date.split("-")]
             try:
                 datetime_obj = datetime.datetime(
                     number_list[0], number_list[1], number_list[2])
             except ValueError:
-                return ORJSONResponse({"error": "Invalid parameters."})
+                return UJSONResponse({"error": "Invalid parameters."})
             return PlainTextResponse(datetime_obj.strftime("%A"))
 
         @staticmethod
@@ -261,7 +261,7 @@ class Api:
                 except UnknownTimeZoneError:
                     dict_ = {"error": "Invalid timezone",
                              "valid_timezones": pytz.all_timezones}
-                    return ORJSONResponse(dict_, status_code=400)
+                    return UJSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
             return PlainTextResponse(datetime_obj.strftime("%Y-%m-%d"))
@@ -276,7 +276,7 @@ class Api:
                 except UnknownTimeZoneError:
                     dict_ = {"error": "Invalid timezone",
                              "valid_timezones": pytz.all_timezones}
-                    return ORJSONResponse(dict_, status_code=400)
+                    return UJSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
             if str(military).lower() == "false":
@@ -293,7 +293,7 @@ class Api:
                 except UnknownTimeZoneError:
                     dict_ = {"error": "Invalid timezone",
                              "valid_timezones": pytz.all_timezones}
-                    return ORJSONResponse(dict_, status_code=400)
+                    return UJSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
             date_dict = {
@@ -315,7 +315,7 @@ class Api:
                 "date": datetime_obj.strftime("%Y-%m-%d"),
                 "datime_formatted": datetime_obj.strftime("%B %d, %Y %I:%M:%S %p")
             }
-            return ORJSONResponse(date_dict)
+            return UJSONResponse(date_dict)
 
     class BotAndLibs:
 
@@ -366,7 +366,7 @@ class Api:
                         "gb": size_gb,
                         "mb": size_mb,
                         "kb": size_kb}}
-                return ORJSONResponse(dict_)
+                return UJSONResponse(dict_)
 
         @staticmethod
         @api.get("/dpys", summary="Gets info for DPYS")
@@ -380,7 +380,7 @@ class Api:
                         f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz", ssl=sslcontext) as response:
                     file_bytes = str(await response.read())
             response_data = {"version": version, "file_bytes": file_bytes}
-            return ORJSONResponse(response_data)
+            return UJSONResponse(response_data)
 
         @staticmethod
         @api.get("/aiohttplimiter", summary="Gets info for aiohttp-ratelimiter")
@@ -394,7 +394,7 @@ class Api:
                         f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz", ssl=sslcontext) as response:
                     file_bytes = str(await response.read())
             response_data = {"version": version, "file_bytes": file_bytes}
-            return ORJSONResponse(response_data)
+            return UJSONResponse(response_data)
 
     # The forum api is not finished.
     class Forum:
