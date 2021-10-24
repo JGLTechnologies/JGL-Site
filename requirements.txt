@@ -10,6 +10,6 @@ hypercorn
 uvloop
 gunicorn
 pytz
-ujson
+orjson
 certifi
 # Use this version of Starlette https://github.com/Nebulizer1213/starlette

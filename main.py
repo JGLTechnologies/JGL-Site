@@ -12,7 +12,7 @@ import aiosqlite
 from slowapi import Limiter
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
-from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse, UJSONResponse
+from fastapi.responses import PlainTextResponse, HTMLResponse, RedirectResponse, ORJSONResponse
 import logging
 import pytz
 from pytz.exceptions import UnknownTimeZoneError
@@ -239,16 +239,16 @@ class Api:
         @api.get("/weekday")
         async def weekday_endpoint(request: Request, date: str):
             if date is None or date.count("-") != 2 or "/" in date:
-                return JSONResponse({"error": "Invalid parameters."})
+                return ORJSONResponse({"error": "Invalid parameters."})
             for number in date.split("-"):
                 if not var_can_be_type(number, int):
-                    return JSONResponse({"error": "Invalid parameters."})
+                    return ORJSONResponse({"error": "Invalid parameters."})
             number_list = [int(string) for string in date.split("-")]
             try:
                 datetime_obj = datetime.datetime(
                     number_list[0], number_list[1], number_list[2])
             except ValueError:
-                return JSONResponse({"error": "Invalid parameters."})
+                return ORJSONResponse({"error": "Invalid parameters."})
             return PlainTextResponse(datetime_obj.strftime("%A"))
 
         @staticmethod
@@ -261,7 +261,7 @@ class Api:
                 except UnknownTimeZoneError:
                     dict_ = {"error": "Invalid timezone",
                              "valid_timezones": pytz.all_timezones}
-                    return JSONResponse(dict_, status_code=400)
+                    return ORJSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
             return PlainTextResponse(datetime_obj.strftime("%Y-%m-%d"))
@@ -276,7 +276,7 @@ class Api:
                 except UnknownTimeZoneError:
                     dict_ = {"error": "Invalid timezone",
                              "valid_timezones": pytz.all_timezones}
-                    return JSONResponse(dict_, status_code=400)
+                    return ORJSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
             if str(military).lower() == "false":
@@ -293,7 +293,7 @@ class Api:
                 except UnknownTimeZoneError:
                     dict_ = {"error": "Invalid timezone",
                              "valid_timezones": pytz.all_timezones}
-                    return JSONResponse(dict_, status_code=400)
+                    return ORJSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
             date_dict = {
@@ -315,18 +315,18 @@ class Api:
                 "date": datetime_obj.strftime("%Y-%m-%d"),
                 "datime_formatted": datetime_obj.strftime("%B %d, %Y %I:%M:%S %p")
             }
-            return JSONResponse(date_dict, indent=4)
+            return ORJSONResponse(date_dict)
 
     class BotAndLibs:
 
         @staticmethod
         @api.get("/bot/status",
-                 description="Checks if the JGL Bot is online or offline")
+                 summary="Checks if the JGL Bot is online or offline")
         @limiter.limit("5/second")
         async def jgl_bot_status(request: Request):
             try:
                 async with aiohttp.ClientSession() as session:
-                    async with session.get("http://jglbotapi.us/bot_is_online", timeout=.1) as bot_response:
+                    async with session.get("http://jglbotapi.us/bot_is_online", timeout=1) as bot_response:
                         data = await bot_response.json()
                         if data["online"]:
                             response = {"online": True}
@@ -335,12 +335,12 @@ class Api:
             return response
 
         @staticmethod
-        @api.get("/bot/info", description="Gets info for the JGL Bot")
+        @api.get("/bot/info", summary="Gets info for the JGL Bot")
         @limiter.limit("5/second")
         async def get_info_for_jgl_bot(request: Request):
             async with aiohttp.ClientSession() as session:
                 try:
-                    async with session.get("http://jglbotapi.us/info", timeout=.1) as response:
+                    async with session.get("http://jglbotapi.us/info", timeout=1) as response:
                         data = await response.json()
                         guilds = data["guilds"]
                         cogs = data["cogs"]
@@ -366,10 +366,10 @@ class Api:
                         "gb": size_gb,
                         "mb": size_mb,
                         "kb": size_kb}}
-                return JSONResponse(dict_, indent=4)
+                return ORJSONResponse(dict_)
 
         @staticmethod
-        @api.get("/dpys", description="Gets info for DPYS")
+        @api.get("/dpys", summary="Gets info for DPYS")
         @limiter.limit("5/second")
         async def dpys_info(request: Request):
             async with aiohttp.ClientSession() as session:
@@ -380,10 +380,10 @@ class Api:
                         f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz", ssl=sslcontext) as response:
                     file_bytes = str(await response.read())
             response_data = {"version": version, "file_bytes": file_bytes}
-            return JSONResponse(response_data, indent=4)
+            return ORJSONResponse(response_data)
 
         @staticmethod
-        @api.get("/aiohttplimiter", description="Gets info for aiohttp-ratelimiter")
+        @api.get("/aiohttplimiter", summary="Gets info for aiohttp-ratelimiter")
         @limiter.limit("5/second")
         async def aiohttplimiter_info(request: Request):
             async with aiohttp.ClientSession() as session:
@@ -394,7 +394,7 @@ class Api:
                         f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz", ssl=sslcontext) as response:
                     file_bytes = str(await response.read())
             response_data = {"version": version, "file_bytes": file_bytes}
-            return JSONResponse(response_data, indent=4)
+            return ORJSONResponse(response_data)
 
     # The forum api is not finished.
     class Forum:
