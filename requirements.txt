@@ -12,4 +12,3 @@ gunicorn
 pytz
 ujson
 certifi
-# Use this version of Starlette https://github.com/Nebulizer1213/starlette
