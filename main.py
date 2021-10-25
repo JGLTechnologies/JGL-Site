@@ -19,6 +19,7 @@ from pytz.exceptions import UnknownTimeZoneError
 import datetime
 import ssl
 import certifi
+import uvicorn
 
 
 # --GLOBAL VARIABLES / INITIALIZERS--
@@ -303,7 +304,7 @@ class Api:
                 "weekday": datetime_obj.strftime("%A"),
                 "weekday_number": datetime_obj.isoweekday(),
                 "month_number": datetime_obj.strftime("%m"),
-                "am/pm": datetime_obj.strftime("%p"),
+                "am-pm": datetime_obj.strftime("%p"),
                 "week_number_sunday_first": datetime_obj.strftime("%U"),
                 "week_number_monday_first": datetime_obj.strftime("%W"),
                 "second": datetime_obj.strftime("%S"),
@@ -500,6 +501,7 @@ def startup():
                 return
             os.system(
                 "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
+            uvicorn.run(app, port=81)
 
 
 startup()
