@@ -163,7 +163,7 @@ class Test:
 
     @staticmethod
     @app.get("/test/bmi/calc")
-    async def bmi_calc(weight, heightft, heightin, request: Request, response: Response):
+    async def bmi_calc(weight, heightft, heightin, request: Request):
         if var_can_be_type(weight, float) and var_can_be_type(heightft, float):
             if heightin == "":
                 heightin = 0
@@ -215,7 +215,7 @@ class Api:
         @staticmethod
         @api.post("/contact", include_in_schema=False)
         @limiter.limit("1/second")
-        async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None),
+        async def contact_api(request: Request, name: str = Form(None), email: str = Form(None),
                               message: str = Form(None), token: str = Form(None)):
             ip = request.headers.get("X-Forwarded-For") or request.client.host
             async with aiohttp.ClientSession() as session:
@@ -227,7 +227,7 @@ class Api:
         @staticmethod
         @api.post("/freelance", include_in_schema=False)
         @limiter.limit("1/second")
-        async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None),
+        async def freelance_api(request: Request, name: str = Form(None), email: str = Form(None),
                                 message: str = Form(None), token: str = Form(None)):
             ip = request.headers.get("X-Forwarded-For") or request.client.host
             async with aiohttp.ClientSession() as session:
@@ -473,13 +473,13 @@ class Api:
 
 @app.exception_handler(StarletteHTTPException)
 async def invalid_path(request: Request, exc: StarletteHTTPException):
-    if exc.status_code == 404:
+    if exc.status_code == 404 or exc.status_code == 405:
         return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
 
 
 @api.exception_handler(StarletteHTTPException)
 async def api_invalid_path(request: Request, exc: StarletteHTTPException):
-    if exc.status_code == 404:
+    if exc.status_code == 404 or exc.status_code == 405:
         return RedirectResponse("/api/docs")
 
 
