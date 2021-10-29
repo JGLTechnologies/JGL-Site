@@ -20,17 +20,13 @@ import datetime
 import ssl
 import certifi
 import uvicorn
-import aiomemcached
+import aiomcache
 import ujson
 
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 sslcontext = ssl.create_default_context(cafile=certifi.where())
-if platform.system().lower() == "linux":
-    client = aiomemcached.Client(host="localhost", port=8000)
-else:
-    client = aiomemcached.Client(host="jglbotapi.us", port=8000)
 PORT = 81
 
 
@@ -67,6 +63,13 @@ def var_can_be_type(var, type) -> bool:
 
 # --MAIN WEBSITE CODE--
 
+
+@app.on_event("startup")
+async def setup_cache():
+    if platform.system().lower() == "linux":
+        app.client = aiomcache.Client(host="localhost", port=8000)
+    else:
+        app.client = aiomcache.Client(host="jglbotapi.us", port=8000)
 
 @app.get("/shop")
 async def shop(request: Request):
@@ -346,8 +349,8 @@ class Api:
         @api.get("/bot/info", summary="Gets info for the JGL Bot")
         @limiter.limit("5/second")
         async def get_info_for_jgl_bot(request: Request):
-            cached = await client.get(b"jgl_bot_info")
-            if cached[0] is None:
+            cached = await app.client.get(b"jgl_bot_info")
+            if cached is None:
                 async with aiohttp.ClientSession() as session:
                     try:
                         async with session.get("http://jglbotapi.us/info", timeout=1) as response:
@@ -368,7 +371,7 @@ class Api:
                                     "gb": size_gb,
                                     "mb": size_mb,
                                     "kb": size_kb}}
-                        await client.set(b"jgl_bot_info", bytes(ujson.dumps(dict_), "utf-8"), exptime=1800)
+                        await app.client.set(b"jgl_bot_info", bytes(ujson.dumps(dict_), "utf-8"), exptime=1800)
                     except asyncio.TimeoutError:
                         guilds = "Not Found"
                         cogs = "Not Found"
@@ -378,7 +381,7 @@ class Api:
                         size_kb = "Not Found"
                         ping = "Not Found"
             else:
-                data = ujson.loads(cached[0])
+                data = ujson.loads(cached)
                 guilds = data["guilds"]
                 cogs = data["cogs"]
                 shards = data["shards"]
@@ -405,14 +408,14 @@ class Api:
                 async with session.get("https://pypi.org/pypi/dpys/json", ssl=sslcontext) as response:
                     data = await response.json()
                     version = data["info"]["version"]
-                cached = await client.get(bytes(f"dpys_{version}", "utf-8"))
-                if cached[0] is None:
+                cached = await app.client.get(bytes(f"dpys_{version}", "utf-8"))
+                if cached is None:
                     async with session.get(
                             f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz", ssl=sslcontext) as response:
                         file_bytes = await response.read()
-                    await client.set(bytes(f"dpys_{version}", "utf-8"), file_bytes)
+                    await app.client.set(bytes(f"dpys_{version}", "utf-8"), file_bytes)
                 else:
-                    file_bytes = cached[0]
+                    file_bytes = cached
             response_data = {"version": version, "file_bytes": str(file_bytes)}
             return UJSONResponse(response_data)
 
@@ -424,14 +427,14 @@ class Api:
                 async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json", ssl=sslcontext) as response:
                     data = await response.json()
                     version = data["info"]["version"]
-                cached = await client.get(bytes(f"aiohttplimiter_{version}", "utf-8"))
-                if cached[0] is None:
+                cached = await app.client.get(bytes(f"aiohttplimiter_{version}", "utf-8"))
+                if cached is None:
                     async with session.get(
                             f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz", ssl=sslcontext) as response:
                         file_bytes = await response.read()
-                    await client.set(bytes(f"aiohttplimiter_{version}", "utf-8"), file_bytes)
+                    await app.client.set(bytes(f"aiohttplimiter_{version}", "utf-8"), file_bytes)
                 else:
-                    file_bytes = cached[0]
+                    file_bytes = cached
             response_data = {"version": version, "file_bytes": str(file_bytes)}
             return UJSONResponse(response_data)
 
