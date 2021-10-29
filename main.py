@@ -94,12 +94,6 @@ async def contact(request: Request):
     return templates.TemplateResponse("base.html", context)
 
 
-@app.get("/freelance")
-async def freelance(request: Request):
-    context = {"request": request, "file": "freelance.html"}
-    return templates.TemplateResponse("base.html", context)
-
-
 @app.get("/discord")
 async def discord(request: Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
@@ -230,18 +224,6 @@ class Api:
             ip = request.headers.get("X-Forwarded-For") or request.client.host
             async with aiohttp.ClientSession() as session:
                 async with session.post("http://jglbotapi.us/contact",
-                                        json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message,
-                                              "token": token}) as response:
-                    return HTMLResponse(await response.read(), status_code=response.status)
-
-        @staticmethod
-        @api.post("/freelance", include_in_schema=False)
-        @limiter.limit("1/second")
-        async def freelance_api(request: Request, name: str = Form(None), email: str = Form(None),
-                                message: str = Form(None), token: str = Form(None)):
-            ip = request.headers.get("X-Forwarded-For") or request.client.host
-            async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us/freelance",
                                         json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message,
                                               "token": token}) as response:
                     return HTMLResponse(await response.read(), status_code=response.status)
