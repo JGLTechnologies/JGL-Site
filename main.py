@@ -76,11 +76,6 @@ async def shop(request: Request):
     return RedirectResponse("https://jgltechnologies.myshopify.com")
 
 
-@app.get("/aiohttp-ratelimiter")
-async def aiohttp_ratelimiter(request: Request):
-    return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
-
-
 @app.get("/")
 @app.get("/home")
 async def home(request: Request):
