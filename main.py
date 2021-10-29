@@ -1,5 +1,5 @@
 # --IMPORTS--
-
+import json
 import os
 import asyncio
 import platform
@@ -21,12 +21,16 @@ import ssl
 import certifi
 import uvicorn
 import aiomemcached
+import ujson
 
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 sslcontext = ssl.create_default_context(cafile=certifi.where())
-client = aiomemcached.Client(host="jglbotapi.us", port=8000)
+if platform.system().lower() == "linux":
+    client = aiomemcached.Client(host="localhost", port=8000)
+else:
+    client = aiomemcached.Client(host="jglbotapi.us", port=8000)
 PORT = 81
 
 
@@ -342,35 +346,56 @@ class Api:
         @api.get("/bot/info", summary="Gets info for the JGL Bot")
         @limiter.limit("5/second")
         async def get_info_for_jgl_bot(request: Request):
-            async with aiohttp.ClientSession() as session:
-                try:
-                    async with session.get("http://jglbotapi.us/info", timeout=1) as response:
-                        data = await response.json()
-                        guilds = data["guilds"]
-                        cogs = data["cogs"]
-                        shards = data["shards"]
-                        size_gb = data["size"]["gb"]
-                        size_mb = data["size"]["mb"]
-                        size_kb = data["size"]["kb"]
-                        ping = data["ping"]
-                except asyncio.TimeoutError:
-                    guilds = "Not Found"
-                    cogs = "Not Found"
-                    shards = "Not Found"
-                    size_gb = "Not Found"
-                    size_mb = "Not Found"
-                    size_kb = "Not Found"
-                    ping = "Not Found"
-                dict_ = {
-                    "guilds": guilds,
-                    "shards": shards,
-                    "cogs": cogs,
-                    "ping": ping,
-                    "size": {
-                        "gb": size_gb,
-                        "mb": size_mb,
-                        "kb": size_kb}}
-                return UJSONResponse(dict_)
+            cached = await client.get(b"jgl_bot_info")
+            if cached[0] is None:
+                async with aiohttp.ClientSession() as session:
+                    try:
+                        async with session.get("http://jglbotapi.us/info", timeout=1) as response:
+                            data = await response.json()
+                            guilds = data["guilds"]
+                            cogs = data["cogs"]
+                            shards = data["shards"]
+                            size_gb = data["size"]["gb"]
+                            size_mb = data["size"]["mb"]
+                            size_kb = data["size"]["kb"]
+                            ping = data["ping"]
+                            dict_ = {
+                                "guilds": guilds,
+                                "shards": shards,
+                                "cogs": cogs,
+                                "ping": ping,
+                                "size": {
+                                    "gb": size_gb,
+                                    "mb": size_mb,
+                                    "kb": size_kb}}
+                        await client.set(b"jgl_bot_info", bytes(ujson.dumps(dict_), "utf-8"), exptime=1800)
+                    except asyncio.TimeoutError:
+                        guilds = "Not Found"
+                        cogs = "Not Found"
+                        shards = "Not Found"
+                        size_gb = "Not Found"
+                        size_mb = "Not Found"
+                        size_kb = "Not Found"
+                        ping = "Not Found"
+            else:
+                data = ujson.loads(cached[0])
+                guilds = data["guilds"]
+                cogs = data["cogs"]
+                shards = data["shards"]
+                size_gb = data["size"]["gb"]
+                size_mb = data["size"]["mb"]
+                size_kb = data["size"]["kb"]
+                ping = data["ping"]
+            dict_ = {
+                "guilds": guilds,
+                "shards": shards,
+                "cogs": cogs,
+                "ping": ping,
+                "size": {
+                    "gb": size_gb,
+                    "mb": size_mb,
+                    "kb": size_kb}}
+            return UJSONResponse(dict_)
 
         @staticmethod
         @api.get("/dpys", summary="Gets info for DPYS")
