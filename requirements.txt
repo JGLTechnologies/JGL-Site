@@ -12,3 +12,4 @@ gunicorn
 pytz
 ujson
 certifi
+aiomemcached

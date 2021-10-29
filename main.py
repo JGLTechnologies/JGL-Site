@@ -20,11 +20,14 @@ import datetime
 import ssl
 import certifi
 import uvicorn
+import aiomemcached
 
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 sslcontext = ssl.create_default_context(cafile=certifi.where())
+client = aiomemcached.Client(host="jglbotapi.us", port=8000)
+PORT = 81
 
 
 def handler(request: Request, exc: RateLimitExceeded) -> Response:
@@ -377,10 +380,15 @@ class Api:
                 async with session.get("https://pypi.org/pypi/dpys/json", ssl=sslcontext) as response:
                     data = await response.json()
                     version = data["info"]["version"]
-                async with session.get(
-                        f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz", ssl=sslcontext) as response:
-                    file_bytes = str(await response.read())
-            response_data = {"version": version, "file_bytes": file_bytes}
+                cached = await client.get(bytes(f"dpys_{version}", "utf-8"))
+                if cached[0] is None:
+                    async with session.get(
+                            f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz", ssl=sslcontext) as response:
+                        file_bytes = await response.read()
+                    await client.set(bytes(f"dpys_{version}", "utf-8"), file_bytes)
+                else:
+                    file_bytes = cached[0]
+            response_data = {"version": version, "file_bytes": str(file_bytes)}
             return UJSONResponse(response_data)
 
         @staticmethod
@@ -391,10 +399,15 @@ class Api:
                 async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json", ssl=sslcontext) as response:
                     data = await response.json()
                     version = data["info"]["version"]
-                async with session.get(
-                        f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz", ssl=sslcontext) as response:
-                    file_bytes = str(await response.read())
-            response_data = {"version": version, "file_bytes": file_bytes}
+                cached = await client.get(bytes(f"aiohttplimiter_{version}", "utf-8"))
+                if cached[0] is None:
+                    async with session.get(
+                            f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz", ssl=sslcontext) as response:
+                        file_bytes = await response.read()
+                    await client.set(bytes(f"aiohttplimiter_{version}", "utf-8"), file_bytes)
+                else:
+                    file_bytes = cached[0]
+            response_data = {"version": version, "file_bytes": str(file_bytes)}
             return UJSONResponse(response_data)
 
     # The forum api is not finished.
@@ -497,11 +510,11 @@ def startup():
                 import uvloop
                 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
                 os.system(
-                    "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:81 --reload")
+                    f"python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:{PORT} --reload")
                 return
             os.system(
-                "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
-            uvicorn.run(app, port=81)
+                f"python -m hypercorn main:app --workers 9 --bind 0.0.0.0:{PORT}")
+            uvicorn.run(app, port=PORT)
 
 
 startup()
