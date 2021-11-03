@@ -27,7 +27,7 @@ import ujson
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 sslcontext = ssl.create_default_context(cafile=certifi.where())
-PORT = 85
+PORT = 81
 
 
 def handler(request: Request, exc: RateLimitExceeded) -> Response:
