@@ -60,11 +60,6 @@ def shop(request: Request):
     return RedirectResponse("https://jgltechnologies.myshopify.com")
 
 
-@app.get("/aiohttp-ratelimiter")
-def aiohttp_ratelimiter(request: Request):
-    return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
-
-
 @app.get("/")
 @app.get("/home")
 def home(request: Request):
@@ -490,7 +485,7 @@ def startup():
                     "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:81 --reload")
                 return
             os.system(
-                "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:81")
+                "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:82")
 
 
 startup()
