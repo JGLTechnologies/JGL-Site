@@ -27,7 +27,7 @@ import ujson
 # --GLOBAL VARIABLES / INITIALIZERS--
 
 sslcontext = ssl.create_default_context(cafile=certifi.where())
-PORT = 81
+PORT = 85
 
 
 def handler(request: Request, exc: RateLimitExceeded) -> Response:
@@ -70,6 +70,7 @@ async def setup_cache():
         app.client = aiomcache.Client(host="localhost", port=8000)
     else:
         app.client = aiomcache.Client(host="jglbotapi.us", port=8000)
+
 
 @app.get("/shop")
 async def shop(request: Request):
@@ -157,8 +158,13 @@ class Test:
     @staticmethod
     @app.get("/test/bmi")
     async def bmi_main(request: Request):
-        context = {"request": request, "file": "test/bmi/index.html"}
+        last = request.cookies.get("BMI_LAST")
+        if last is None:
+            context = {"request": request, "file": "test/bmi/index.html", "last": "Not Found"}
+        else:
+            context = {"request": request, "file": "test/bmi/index.html", "last": last}
         return templates.TemplateResponse("test/bmi/styles.html", context)
+
 
     @staticmethod
     @app.get("/test/bmi/calc")
@@ -206,7 +212,9 @@ class Test:
 
         else:
             return templates.TemplateResponse("test/bmi/invalid.html", {"request": request}, status_code=400)
-        return templates.TemplateResponse("test/bmi/bmi.html", context)
+        res = templates.TemplateResponse("test/bmi/bmi.html", context)
+        res.set_cookie("BMI_LAST", str(round(bmi, 2)), path="/test/bmi", domain="jgltechnologies.com", secure=True)
+        return res
 
 
 class Api:
