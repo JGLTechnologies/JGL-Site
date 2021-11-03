@@ -1,5 +1,5 @@
 # --IMPORTS--
-
+import json
 import os
 import asyncio
 import platform
@@ -12,14 +12,23 @@ import aiosqlite
 from slowapi import Limiter
 from slowapi.util import get_ipaddr
 from slowapi.errors import RateLimitExceeded
-from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import PlainTextResponse, HTMLResponse, RedirectResponse, UJSONResponse
 import logging
 import pytz
 from pytz.exceptions import UnknownTimeZoneError
 import datetime
+import ssl
+import certifi
+import uvicorn
+import aiomcache
+import ujson
 
 
 # --GLOBAL VARIABLES / INITIALIZERS--
+
+sslcontext = ssl.create_default_context(cafile=certifi.where())
+PORT = 81
+
 
 def handler(request: Request, exc: RateLimitExceeded) -> Response:
     response = PlainTextResponse(
@@ -55,104 +64,105 @@ def var_can_be_type(var, type) -> bool:
 # --MAIN WEBSITE CODE--
 
 
+@app.on_event("startup")
+async def setup_cache():
+    if platform.system().lower() == "linux":
+        app.client = aiomcache.Client(host="localhost", port=8000)
+    else:
+        app.client = aiomcache.Client(host="jglbotapi.us", port=8000)
+
 @app.get("/shop")
-def shop(request: Request):
+async def shop(request: Request):
     return RedirectResponse("https://jgltechnologies.myshopify.com")
 
 
 @app.get("/")
 @app.get("/home")
-def home(request: Request):
+async def home(request: Request):
     context = {"request": request, "file": "home.html"}
     return templates.TemplateResponse("base.html", context)
 
 
 @app.get("/contact")
-def contact(request: Request):
+async def contact(request: Request):
     context = {"request": request, "file": "contact.html"}
     return templates.TemplateResponse("base.html", context)
 
 
-@app.get("/freelance")
-def freelance(request: Request):
-    context = {"request": request, "file": "freelance.html"}
-    return templates.TemplateResponse("base.html", context)
-
-
 @app.get("/discord")
-def discord(request: Request):
+async def discord(request: Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
 
 
 @app.get("/favicon.ico")
-def ico(request: Request):
+async def ico(request: Request):
     return RedirectResponse(
         "https://raw.githubusercontent.com/Nebulizer1213/JGL-Plugins/main/favicon.ico")
 
 
 @app.get("/dpys/donate")
-def dpys_donate(request: Request):
+async def dpys_donate(request: Request):
     return RedirectResponse(
         "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
 
 
 @app.get("/bot/donate")
-def bot_donate(request: Request):
+async def bot_donate(request: Request):
     return RedirectResponse(
         "https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
 
 
 @app.get("/bot")
-def bot(request: Request):
+async def bot(request: Request):
     return HTMLResponse(
         "JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
 
 
 @app.get("/dpys")
-def dpys(request: Request):
+async def dpys(request: Request):
     return RedirectResponse("https://sites.google.com/view/dpys")
 
 
 @app.get("/dpys/src")
-def dpys_src(request: Request):
+async def dpys_src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/dpys")
 
 
 @app.get("/dpys/pypi")
-def dpys_pypi(request: Request):
+async def dpys_pypi(request: Request):
     return RedirectResponse("https://pypi.org/project/dpys")
 
 
 @app.get("/aiohttplimiter")
-def aiohttplimiter(request: Request):
+async def aiohttplimiter(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
 
 
 @app.get("/aiohttplimiter/src")
-def aiohttplimiter_src(request: Request):
+async def aiohttplimiter_src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
 
 
 @app.get("/aiohttplimiter/pypi")
-def aiohttplimiter_pypi(request: Request):
+async def aiohttplimiter_pypi(request: Request):
     return RedirectResponse("https://pypi.org/project/aiohttp_ratelimiter")
 
 
 @app.get("/src")
-def src(request: Request):
+async def src(request: Request):
     return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
 
 
 class Test:
     @staticmethod
     @app.get("/test/bmi")
-    def bmi_main(request: Request):
+    async def bmi_main(request: Request):
         context = {"request": request, "file": "test/bmi/index.html"}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
     @staticmethod
     @app.get("/test/bmi/calc")
-    def bmi_calc(weight, heightft, heightin, request: Request, response: Response):
+    async def bmi_calc(weight, heightft, heightin, request: Request):
         if var_can_be_type(weight, float) and var_can_be_type(heightft, float):
             if heightin == "":
                 heightin = 0
@@ -204,7 +214,7 @@ class Api:
         @staticmethod
         @api.post("/contact", include_in_schema=False)
         @limiter.limit("1/second")
-        async def contact_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None),
+        async def contact_api(request: Request, name: str = Form(None), email: str = Form(None),
                               message: str = Form(None), token: str = Form(None)):
             ip = request.headers.get("X-Forwarded-For") or request.client.host
             async with aiohttp.ClientSession() as session:
@@ -214,36 +224,24 @@ class Api:
                     return HTMLResponse(await response.read(), status_code=response.status)
 
         @staticmethod
-        @api.post("/freelance", include_in_schema=False)
-        @limiter.limit("1/second")
-        async def freelance_api(response: Response, request: Request, name: str = Form(None), email: str = Form(None),
-                                message: str = Form(None), token: str = Form(None)):
-            ip = request.headers.get("X-Forwarded-For") or request.client.host
-            async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us/freelance",
-                                        json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message,
-                                              "token": token}) as response:
-                    return HTMLResponse(await response.read(), status_code=response.status)
-
-        @staticmethod
         @api.get("/weekday")
-        def weekday_endpoint(request: Request, date: str):
+        async def weekday_endpoint(request: Request, date: str):
             if date is None or date.count("-") != 2 or "/" in date:
-                return JSONResponse({"error": "Invalid parameters."})
+                return UJSONResponse({"error": "Invalid parameters."})
             for number in date.split("-"):
                 if not var_can_be_type(number, int):
-                    return JSONResponse({"error": "Invalid parameters."})
+                    return UJSONResponse({"error": "Invalid parameters."})
             number_list = [int(string) for string in date.split("-")]
             try:
                 datetime_obj = datetime.datetime(
                     number_list[0], number_list[1], number_list[2])
             except ValueError:
-                return JSONResponse({"error": "Invalid parameters."})
+                return UJSONResponse({"error": "Invalid parameters."})
             return PlainTextResponse(datetime_obj.strftime("%A"))
 
         @staticmethod
         @api.get("/date")
-        def date_endpoint(request: Request, tz: str = None):
+        async def date_endpoint(request: Request, tz: str = None):
             if tz is not None:
                 try:
                     datetime_obj = datetime.datetime.now(
@@ -251,14 +249,14 @@ class Api:
                 except UnknownTimeZoneError:
                     dict_ = {"error": "Invalid timezone",
                              "valid_timezones": pytz.all_timezones}
-                    return JSONResponse(dict_, status_code=400)
+                    return UJSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
             return PlainTextResponse(datetime_obj.strftime("%Y-%m-%d"))
 
         @staticmethod
         @api.get("/time")
-        def time_endpoint(request: Request, tz: str = None, military: str = "true"):
+        async def time_endpoint(request: Request, tz: str = None, military: str = "true"):
             if tz is not None:
                 try:
                     datetime_obj = datetime.datetime.now(
@@ -266,7 +264,7 @@ class Api:
                 except UnknownTimeZoneError:
                     dict_ = {"error": "Invalid timezone",
                              "valid_timezones": pytz.all_timezones}
-                    return JSONResponse(dict_, status_code=400)
+                    return UJSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
             if str(military).lower() == "false":
@@ -275,7 +273,7 @@ class Api:
 
         @staticmethod
         @api.get("/datetime")
-        def datetime_endpoint(request: Request, tz: str = None):
+        async def datetime_endpoint(request: Request, tz: str = None):
             if tz is not None:
                 try:
                     datetime_obj = datetime.datetime.now(
@@ -283,7 +281,7 @@ class Api:
                 except UnknownTimeZoneError:
                     dict_ = {"error": "Invalid timezone",
                              "valid_timezones": pytz.all_timezones}
-                    return JSONResponse(dict_, status_code=400)
+                    return UJSONResponse(dict_, status_code=400)
             else:
                 datetime_obj = datetime.datetime.now(tz=None)
             date_dict = {
@@ -293,7 +291,7 @@ class Api:
                 "weekday": datetime_obj.strftime("%A"),
                 "weekday_number": datetime_obj.isoweekday(),
                 "month_number": datetime_obj.strftime("%m"),
-                "am/pm": datetime_obj.strftime("%p"),
+                "am-pm": datetime_obj.strftime("%p"),
                 "week_number_sunday_first": datetime_obj.strftime("%U"),
                 "week_number_monday_first": datetime_obj.strftime("%W"),
                 "second": datetime_obj.strftime("%S"),
@@ -305,17 +303,18 @@ class Api:
                 "date": datetime_obj.strftime("%Y-%m-%d"),
                 "datime_formatted": datetime_obj.strftime("%B %d, %Y %I:%M:%S %p")
             }
-            return JSONResponse(date_dict, indent=4)
+            return UJSONResponse(date_dict)
 
     class BotAndLibs:
 
         @staticmethod
         @api.get("/bot/status",
-                 description="Checks if the JGL Bot is online or offline")
+                 summary="Checks if the JGL Bot is online or offline")
+        @limiter.limit("5/second")
         async def jgl_bot_status(request: Request):
             try:
                 async with aiohttp.ClientSession() as session:
-                    async with session.get("http://jglbotapi.us/bot_is_online", timeout=.1) as bot_response:
+                    async with session.get("http://jglbotapi.us/bot_is_online", timeout=1) as bot_response:
                         data = await bot_response.json()
                         if data["online"]:
                             response = {"online": True}
@@ -324,69 +323,103 @@ class Api:
             return response
 
         @staticmethod
-        @api.get("/bot/info", description="Gets info for the JGL Bot")
+        @api.get("/bot/info", summary="Gets info for the JGL Bot")
+        @limiter.limit("5/second")
         async def get_info_for_jgl_bot(request: Request):
-            async with aiohttp.ClientSession() as session:
-                try:
-                    async with session.get("http://jglbotapi.us/info", timeout=.1) as response:
-                        data = await response.json()
-                        guilds = data["guilds"]
-                        cogs = data["cogs"]
-                        shards = data["shards"]
-                        size_gb = data["size"]["gb"]
-                        size_mb = data["size"]["mb"]
-                        size_kb = data["size"]["kb"]
-                        ping = data["ping"]
-                except:
-                    guilds = "Not Found"
-                    cogs = "Not Found"
-                    shards = "Not Found"
-                    size_gb = "Not Found"
-                    size_mb = "Not Found"
-                    size_kb = "Not Found"
-                    ping = "Not Found"
-                dict = {
-                    "guilds": guilds,
-                    "shards": shards,
-                    "cogs": cogs,
-                    "ping": ping,
-                    "size": {
-                        "gb": size_gb,
-                        "mb": size_mb,
-                        "kb": size_kb}}
-                return JSONResponse(dict, indent=4)
+            cached = await app.client.get(b"jgl_bot_info")
+            if cached is None:
+                async with aiohttp.ClientSession() as session:
+                    try:
+                        async with session.get("http://jglbotapi.us/info", timeout=1) as response:
+                            data = await response.json()
+                            guilds = data["guilds"]
+                            cogs = data["cogs"]
+                            shards = data["shards"]
+                            size_gb = data["size"]["gb"]
+                            size_mb = data["size"]["mb"]
+                            size_kb = data["size"]["kb"]
+                            ping = data["ping"]
+                            dict_ = {
+                                "guilds": guilds,
+                                "shards": shards,
+                                "cogs": cogs,
+                                "ping": ping,
+                                "size": {
+                                    "gb": size_gb,
+                                    "mb": size_mb,
+                                    "kb": size_kb}}
+                        await app.client.set(b"jgl_bot_info", bytes(ujson.dumps(dict_), "utf-8"), exptime=1800)
+                    except asyncio.TimeoutError:
+                        guilds = "Not Found"
+                        cogs = "Not Found"
+                        shards = "Not Found"
+                        size_gb = "Not Found"
+                        size_mb = "Not Found"
+                        size_kb = "Not Found"
+                        ping = "Not Found"
+            else:
+                data = ujson.loads(cached)
+                guilds = data["guilds"]
+                cogs = data["cogs"]
+                shards = data["shards"]
+                size_gb = data["size"]["gb"]
+                size_mb = data["size"]["mb"]
+                size_kb = data["size"]["kb"]
+                ping = data["ping"]
+            dict_ = {
+                "guilds": guilds,
+                "shards": shards,
+                "cogs": cogs,
+                "ping": ping,
+                "size": {
+                    "gb": size_gb,
+                    "mb": size_mb,
+                    "kb": size_kb}}
+            return UJSONResponse(dict_)
 
         @staticmethod
-        @api.get("/dpys", description="Gets info for DPYS")
+        @api.get("/dpys", summary="Gets info for DPYS")
+        @limiter.limit("5/second")
         async def dpys_info(request: Request):
             async with aiohttp.ClientSession() as session:
-                async with session.get("https://pypi.org/pypi/dpys/json") as response:
+                async with session.get("https://pypi.org/pypi/dpys/json", ssl=sslcontext) as response:
                     data = await response.json()
                     version = data["info"]["version"]
-                async with session.get(
-                        f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz") as response:
-                    file_bytes = str(await response.read())
-            response_data = {"version": version, "file_bytes": file_bytes}
-            return JSONResponse(response_data, indent=4)
+                cached = await app.client.get(bytes(f"dpys_{version}", "utf-8"))
+                if cached is None:
+                    async with session.get(
+                            f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz", ssl=sslcontext) as response:
+                        file_bytes = await response.read()
+                    await app.client.set(bytes(f"dpys_{version}", "utf-8"), file_bytes)
+                else:
+                    file_bytes = cached
+            response_data = {"version": version, "file_bytes": str(file_bytes)}
+            return UJSONResponse(response_data)
 
         @staticmethod
-        @api.get("/aiohttplimiter", description="Gets info for aiohttp-ratelimiter")
+        @api.get("/aiohttplimiter", summary="Gets info for aiohttp-ratelimiter")
+        @limiter.limit("5/second")
         async def aiohttplimiter_info(request: Request):
             async with aiohttp.ClientSession() as session:
-                async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json") as response:
+                async with session.get("https://pypi.org/pypi/aiohttp_ratelimiter/json", ssl=sslcontext) as response:
                     data = await response.json()
                     version = data["info"]["version"]
-                async with session.get(
-                        f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz") as response:
-                    file_bytes = str(await response.read())
-            response_data = {"version": version, "file_bytes": file_bytes}
-            return JSONResponse(response_data, indent=4)
+                cached = await app.client.get(bytes(f"aiohttplimiter_{version}", "utf-8"))
+                if cached is None:
+                    async with session.get(
+                            f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz", ssl=sslcontext) as response:
+                        file_bytes = await response.read()
+                    await app.client.set(bytes(f"aiohttplimiter_{version}", "utf-8"), file_bytes)
+                else:
+                    file_bytes = cached
+            response_data = {"version": version, "file_bytes": str(file_bytes)}
+            return UJSONResponse(response_data)
 
     # The forum api is not finished.
     class Forum:
 
         @staticmethod
-        @api.get("/forum/login", include_in_schema=False)
+        # @api.get("/forum/login", include_in_schema=False)
         async def login(request: Request):
             try:
                 username = request.headers["username"]
@@ -405,7 +438,7 @@ class Api:
                     return {"success": False}
 
         @staticmethod
-        @api.post("/forum/createacc", include_in_schema=False)
+        # @api.post("/forum/createacc", include_in_schema=False)
         async def createacc(request: Request):
             async with aiosqlite.connect("users.db") as db:
                 try:
@@ -417,7 +450,7 @@ class Api:
                     return "account already exists"
 
         @staticmethod
-        @api.post("/forum/sendmsg", include_in_schema=False)
+        # @api.post("/forum/sendmsg", include_in_schema=False)
         async def sendmsg(request: Request):
             try:
                 body = request.headers["body"]
@@ -457,14 +490,14 @@ class Api:
 
 
 @app.exception_handler(StarletteHTTPException)
-def invalid_path(request: Request, exc: StarletteHTTPException):
-    if exc.status_code == 404:
+async def invalid_path(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404 or exc.status_code == 405:
         return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
 
 
 @api.exception_handler(StarletteHTTPException)
-def api_invalid_path(request: Request, exc: StarletteHTTPException):
-    if exc.status_code == 404:
+async def api_invalid_path(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404 or exc.status_code == 405:
         return RedirectResponse("/api/docs")
 
 
@@ -482,10 +515,11 @@ def startup():
                 import uvloop
                 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
                 os.system(
-                    "python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:81 --reload")
+                    f"python3.9 -m gunicorn main:app --workers=9 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:{PORT} --reload")
                 return
             os.system(
-                "python -m hypercorn main:app --workers 9 --bind 0.0.0.0:82")
+                f"python -m hypercorn main:app --workers 9 --bind 0.0.0.0:{PORT}")
+            uvicorn.run(app, port=PORT)
 
 
 startup()
