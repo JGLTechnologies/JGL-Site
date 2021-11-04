@@ -213,7 +213,8 @@ class Test:
         else:
             return templates.TemplateResponse("test/bmi/invalid.html", {"request": request}, status_code=400)
         res = templates.TemplateResponse("test/bmi/bmi.html", context)
-        res.set_cookie("BMI_LAST", str(round(bmi, 2)), path="/test/bmi", domain="jgltechnologies.com", secure=True)
+        max_age = round((datetime.datetime(year=2038, day=1, month=1) - datetime.datetime.now()).total_seconds())
+        res.set_cookie("BMI_LAST", str(round(bmi, 2)), path="/test/bmi", domain="jgltechnologies.com", secure=True, max_age=max_age)
         return res
 
 
