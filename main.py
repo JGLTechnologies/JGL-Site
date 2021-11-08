@@ -7,6 +7,7 @@ import aiohttp
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Request, Response, Form
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from utils import handler, var_can_be_type
 from fastapi.templating import Jinja2Templates
 import aiosqlite
 from slowapi import Limiter
@@ -22,26 +23,14 @@ import certifi
 import uvicorn
 import aiomcache
 import ujson
-
+from fastapi.middleware.cors import CORSMiddleware
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
-sslcontext = ssl.create_default_context(cafile=certifi.where())
-PORT = 81
-
-
-def handler(request: Request, exc: RateLimitExceeded) -> Response:
-    response = PlainTextResponse(
-        "Too many requests", status_code=429
-    )
-    response = request.app.state.limiter._inject_headers(
-        response, request.state.view_rate_limit
-    )
-    return response
-
-
 logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR,
                     format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
+sslcontext = ssl.create_default_context(cafile=certifi.where())
+PORT = 81
 limiter = Limiter(key_func=get_ipaddr)
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 api = FastAPI(redoc_url=None,
@@ -51,18 +40,13 @@ api.add_exception_handler(RateLimitExceeded, handler)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, handler)
 templates = Jinja2Templates(directory="web files")
-
-
-def var_can_be_type(var, type) -> bool:
-    try:
-        type(var)
-    except:
-        return False
-    return True
+api.add_middleware(CORSMiddleware, allow_origins=["*"],
+                   allow_credentials=False,
+                   allow_methods=["*"],
+                   allow_headers=["*"])
 
 
 # --MAIN WEBSITE CODE--
-
 
 @app.on_event("startup")
 async def setup_cache():
@@ -165,7 +149,6 @@ class Test:
             context = {"request": request, "file": "test/bmi/index.html", "last": last}
         return templates.TemplateResponse("test/bmi/styles.html", context)
 
-
     @staticmethod
     @app.get("/test/bmi/calc")
     async def bmi_calc(weight, heightft, heightin, request: Request):
@@ -214,7 +197,8 @@ class Test:
             return templates.TemplateResponse("test/bmi/invalid.html", {"request": request}, status_code=400)
         res = templates.TemplateResponse("test/bmi/bmi.html", context)
         max_age = round((datetime.datetime(year=2038, day=1, month=1) - datetime.datetime.now()).total_seconds())
-        res.set_cookie("BMI_LAST", str(round(bmi, 2)), path="/test/bmi", domain="jgltechnologies.com", secure=True, max_age=max_age)
+        res.set_cookie("BMI_LAST", str(round(bmi, 2)), path="/test/bmi", domain="jgltechnologies.com", secure=True,
+                       max_age=max_age)
         return res
 
 
@@ -397,7 +381,8 @@ class Api:
                 cached = await app.client.get(bytes(f"dpys_{version}", "utf-8"))
                 if cached is None:
                     async with session.get(
-                            f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz", ssl=sslcontext) as response:
+                            f"https://raw.githubusercontent.com/Nebulizer1213/DPYS/main/dist/dpys-{version}.tar.gz",
+                            ssl=sslcontext) as response:
                         file_bytes = await response.read()
                     await app.client.set(bytes(f"dpys_{version}", "utf-8"), file_bytes)
                 else:
@@ -416,7 +401,8 @@ class Api:
                 cached = await app.client.get(bytes(f"aiohttplimiter_{version}", "utf-8"))
                 if cached is None:
                     async with session.get(
-                            f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz", ssl=sslcontext) as response:
+                            f"https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-{version}.tar.gz",
+                            ssl=sslcontext) as response:
                         file_bytes = await response.read()
                     await app.client.set(bytes(f"aiohttplimiter_{version}", "utf-8"), file_bytes)
                 else:
