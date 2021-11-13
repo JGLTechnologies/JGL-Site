@@ -210,7 +210,10 @@ class Api:
                                         json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message,
                                               "token": token}) as response:
                     # return HTMLResponse(await response.read(), status_code=response.status)
-                    data = await response.json()
+                    try:
+                        data = await response.json()
+                    except:
+                        data = {}
             if response.status == 401:
                 return templates.TemplateResponse("captcha.html", {"request": request})
             elif response.status == 429:
