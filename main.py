@@ -215,14 +215,19 @@ class Api:
                     except:
                         data = {}
             if response.status == 401:
-                return templates.TemplateResponse("captcha.html", {"request": request})
+                return templates.TemplateResponse("captcha.html", {"request": request}, status_code=response.status)
             elif response.status == 429:
-                return templates.TemplateResponse("limit.html", {"request": request, "remaining": data.get("remaining") or "Not Found"})
+                return templates.TemplateResponse("limit.html", {"request": request,
+                                                                 "remaining": data.get("remaining") or "Not Found"},
+                                                  status_code=response.status)
             elif response.status == 403:
-                return templates.TemplateResponse("bl.html", {"request": request})
+                return templates.TemplateResponse("bl.html", {"request": request}, status_code=response.status)
             elif response.status == 200:
-                return templates.TemplateResponse("thank-you.html", {"request": request})
-
+                return templates.TemplateResponse("thank-you.html", {"request": request}, status_code=response.status)
+            else:
+                return templates.TemplateResponse("error.html",
+                                                  {"request": request, "error": data.get("error") or "Not Found"},
+                                                  status_code=response.status)
 
         @staticmethod
         @api.get("/weekday")
