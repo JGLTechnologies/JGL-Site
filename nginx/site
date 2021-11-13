@@ -40,6 +40,7 @@ server{
     listen [::]:80;
     server_name jglbotapi.us;
     allow 192.168.1.1;
+    allow 73.141.70.88;
     deny all;
     location / {
         proxy_pass http://192.168.1.254:83;
