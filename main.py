@@ -23,12 +23,11 @@ import certifi
 import uvicorn
 import aiomcache
 import ujson
-from fastapi.middleware.cors import CORSMiddleware
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
-logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR,
-                    format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
+# logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR,
+#                     format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
 sslcontext = ssl.create_default_context(cafile=certifi.where())
 PORT = 81
 limiter = Limiter(key_func=get_ipaddr)
@@ -40,10 +39,6 @@ api.add_exception_handler(RateLimitExceeded, handler)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, handler)
 templates = Jinja2Templates(directory="web files")
-api.add_middleware(CORSMiddleware, allow_origins=["*"],
-                   allow_credentials=False,
-                   allow_methods=["*"],
-                   allow_headers=["*"])
 
 
 # --MAIN WEBSITE CODE--
@@ -214,7 +209,17 @@ class Api:
                 async with session.post("http://jglbotapi.us/contact",
                                         json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message,
                                               "token": token}) as response:
-                    return HTMLResponse(await response.read(), status_code=response.status)
+                    # return HTMLResponse(await response.read(), status_code=response.status)
+                    data = await response.json()
+            if response.status == 401:
+                return templates.TemplateResponse("captcha.html", {"request": request})
+            elif response.status == 429:
+                return templates.TemplateResponse("limit.html", {"request": request, "remaining": data.get("remaining") or "Not Found"})
+            elif response.status == 403:
+                return templates.TemplateResponse("bl.html", {"request": request})
+            elif response.status == 200:
+                return templates.TemplateResponse("thank-you.html", {"request": request})
+
 
         @staticmethod
         @api.get("/weekday")

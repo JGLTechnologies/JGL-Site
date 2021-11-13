@@ -5,65 +5,66 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <title>404 Not Found</title>
+    <title>Too many form submissions</title>
     <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap');
 #head{
     position: relative;
-    bottom: 130px;
-    font-size: 250px;
+    top: 150px;
+    font-size: 100px;
     font-family: Montserrat, sans-serif;
 }
 #text{
     font-family: Montserrat, sans-serif;
     position: relative;
-    bottom: 400px;
-    
+    top: 65px;
+
 }
 #button{
     position: relative;
-    bottom: 390px;
     background-color: dodgerblue;
     padding: 7px;
     border-radius: 5px;
     width: 115px;
     height: 40px;
-    border-color: currentColor; 
+    border-color: currentColor;
+    top: 70px;
 }
 @media only screen and (max-width: 1000px) {
 #head {
-    font-size: 250px;
+    font-size: 85px;
 }
 }
 @media only screen and (max-width: 800px) {
 #head {
-    font-size: 230px;
+    font-size: 75px;
 }
 #button {
     padding: 6px;
     width: 110px;
     height: 35px;
-    bottom: 380px;
+    top: 90px;
 }
 #text {
-    bottom: 390px;
+    top: 95px;
 }
 }
 @media only screen and (max-width: 600px) {
 #head {
-    font-size: 200px;
+    font-size: 50px;
 }
 #button {
     padding: 5.3px;
     width: 102px;
     height: 32px;
-    bottom: 350px;
+    top: 120px;
 }
 #text {
-    bottom: 350px;
+    top: 120px;
 }
 }
 body{
+    min-height: 600px;
     padding: 0;
     margin: 0;
 }
@@ -76,8 +77,10 @@ body{
 </head>
 <body>
 <center>
-<p id="head">404</p>
-<h3><p id="text">The page you requested does not exist.</p></h3>
+<p id="head">Too many form submissions</p>
+<h3><p id="text">You or someone else on your network has already submitted a form in the last 30 minutes.
+<br>Time remaining: {{ remaining }}} minutes
+</p></h3>
 <button onclick="returnHome()" id="button">Return Home</button>
 </center>
 </body>
