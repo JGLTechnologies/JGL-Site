@@ -56,7 +56,7 @@ server{
     location = /discord {
         return 301 https://discord.gg/u9rMf2F3zX;
     }
-    location / {
+    location = / {
         return 301 https://hl-server.tebex.io;
     }
 }
