@@ -75,12 +75,6 @@ async def discord(request: Request):
     return RedirectResponse("https://discord.gg/TUUbzTa3B7")
 
 
-# @app.get("/favicon.ico")
-# async def ico(request: Request):
-#     return RedirectResponse(
-#         "https://raw.githubusercontent.com/Nebulizer1213/JGL-Plugins/main/favicon.ico")
-
-
 @app.get("/dpys/donate")
 async def dpys_donate(request: Request):
     return RedirectResponse(
