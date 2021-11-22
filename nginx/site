@@ -58,3 +58,12 @@ server{
         return 301 https://hl-server.tebex.io;
     }
 }
+
+server{
+    listen 80;
+    listen [::]:80;
+    server_name discord.hlclan.net;
+    location / {
+        return 301 https://discord.gg/u9rMf2F3zX;
+    }
+}
