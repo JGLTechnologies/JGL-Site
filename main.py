@@ -206,7 +206,7 @@ class Api:
                               message: str = Form(None), token: str = Form(None)):
             ip = request.headers.get("X-Forwarded-For") or request.client.host
             async with aiohttp.ClientSession() as session:
-                async with session.post("http://jglbotapi.us/contact",
+                async with session.post("https://jglbotapi.us/contact",
                                         json={"ip": ip.split(",")[0], "name": name, "email": email, "message": message,
                                               "token": token}) as response:
                     # return HTMLResponse(await response.read(), status_code=response.status)
