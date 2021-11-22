@@ -71,6 +71,10 @@ server{
     listen [::]:80;
     server_name jglbotapi.us;
 
+    if ($proxy_add_x_forwarded_for != 98.115.81.31) {
+        return 403;
+    }
+
     allow 103.21.244.0/22;
     allow 103.22.200.0/22;
     allow 103.31.4.0/22;
