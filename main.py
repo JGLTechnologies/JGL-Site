@@ -25,6 +25,7 @@ import aiomcache
 import ujson
 
 # --GLOBAL VARIABLES / INITIALIZERS--
+# TODO: Fix html for form submission pages
 
 # logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR,
 #                     format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
