@@ -48,3 +48,15 @@ server{
         proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     }
 }
+
+server{
+    listen 80;
+    listen [::]:80;
+    server_name hlclan.net;
+    location /discord {
+        return 301 https://discord.gg/u9rMf2F3zX;
+    }
+    location / {
+        return 301 https://hl-server.tebex.io;
+    }
+}
