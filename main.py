@@ -52,11 +52,6 @@ async def setup_cache():
         app.client = aiomcache.Client(host="jglbotapi.us", port=8000)
 
 
-@app.get("/shop")
-async def shop(request: Request):
-    return RedirectResponse("https://jgltechnologies.myshopify.com")
-
-
 @app.get("/")
 @app.get("/home")
 async def home(request: Request):
@@ -70,62 +65,10 @@ async def contact(request: Request):
     return templates.TemplateResponse("base.html", context)
 
 
-@app.get("/discord")
-async def discord(request: Request):
-    return RedirectResponse("https://discord.gg/TUUbzTa3B7")
-
-
-@app.get("/dpys/donate")
-async def dpys_donate(request: Request):
-    return RedirectResponse(
-        "https://www.paypal.com/donate?business=4RE48WGW7R5YS&no_recurring=0&item_name=DPYS+is+a+python+library+with+a+goal+to+make+bot+development+easy+for+beginners.+We+would+appreciate+if+you+could+donate.+&currency_code=USD")
-
-
-@app.get("/bot/donate")
-async def bot_donate(request: Request):
-    return RedirectResponse(
-        "https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD")
-
-
 @app.get("/bot")
 async def bot(request: Request):
     return HTMLResponse(
         "JGL Bot documentation is coming soon!<br><a href='/bot/donate'>Donation link</a>")
-
-
-@app.get("/dpys")
-async def dpys(request: Request):
-    return RedirectResponse("https://sites.google.com/view/dpys")
-
-
-@app.get("/dpys/src")
-async def dpys_src(request: Request):
-    return RedirectResponse("https://github.com/Nebulizer1213/dpys")
-
-
-@app.get("/dpys/pypi")
-async def dpys_pypi(request: Request):
-    return RedirectResponse("https://pypi.org/project/dpys")
-
-
-@app.get("/aiohttplimiter")
-async def aiohttplimiter(request: Request):
-    return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
-
-
-@app.get("/aiohttplimiter/src")
-async def aiohttplimiter_src(request: Request):
-    return RedirectResponse("https://github.com/Nebulizer1213/aiohttp-ratelimiter")
-
-
-@app.get("/aiohttplimiter/pypi")
-async def aiohttplimiter_pypi(request: Request):
-    return RedirectResponse("https://pypi.org/project/aiohttp_ratelimiter")
-
-
-@app.get("/src")
-async def src(request: Request):
-    return RedirectResponse("https://github.com/Nebulizer1213/jgl-site")
 
 
 class Test:

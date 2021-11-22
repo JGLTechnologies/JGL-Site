@@ -41,6 +41,51 @@ server {
         alias /var/www/html/static/favicon.ico;
     }
 
+    location = /shop {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://jgltechnologies.myshopify.com;
+    }
+
+    location = /discord {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://discord.gg/TUUbzTa3B7;
+    }
+
+    location = /bot/donate {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD;
+    }
+
+    location = /dpys {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://sites.google.com/view/dpys;
+    }
+
+    location = /dpys/src {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://github.com/Nebulizer1213/dpys;
+    }
+
+    location = /dpys/pypi {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://pypi.org/project/dpys;
+    }
+
+    location = /aiohttplimiter {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://github.com/Nebulizer1213/aiohttp-ratelimiter;
+    }
+
+    location = /aiohttplimiter/pypi {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://pypi.org/project/aiohttp-ratelimiter;
+    }
+
+    location = /src {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://github.com/Nebulizer1213/jgl-site;
+    }
+
     location / {
         limit_req zone=mylimit burst=20 nodelay;
         proxy_pass http://127.0.0.1:81;
