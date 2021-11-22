@@ -2,16 +2,7 @@ limit_req_zone $proxy_add_x_forwarded_for zone=mylimit:10m rate=5r/s;
 
 server {
 
-        server_name jgltechnologies.com;
-
-        location / {
-        limit_req zone=mylimit burst=20 nodelay;
-
-        proxy_pass http://127.0.0.1:81;
-        proxy_set_header   Host             $host;
-        proxy_set_header   X-Real-IP        $remote_addr;
-        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
-        }
+    server_name jgltechnologies.com;
 
     listen [::]:443 ssl ipv6only=on; # managed by Certbot
     listen 443 ssl; # managed by Certbot
@@ -19,6 +10,14 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/jgltechnologies.com/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+    location / {
+    limit_req zone=mylimit burst=20 nodelay;
+    proxy_pass http://127.0.0.1:81;
+    proxy_set_header   Host             $host;
+    proxy_set_header   X-Real-IP        $remote_addr;
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    }
 
 }server {
     if ($host = jgltechnologies.com) {
@@ -32,7 +31,6 @@ server {
 
         server_name jgltechnologies.com;
     return 404; # managed by Certbot
-
 }
 
 server{
