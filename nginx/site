@@ -50,15 +50,13 @@ server {
         return 301 https://$host$request_uri;
     } # managed by Certbot
 
-    #listen 80 default_server;
-    #listen [::]:80 default_server;
 
-    #server_name jgltechnologies.com;
+        listen 80 default_server;
+        listen [::]:80 default_server;
 
-    location / {
-        deny all;
-        return 404; # managed by Certbot
-    }
+        server_name jgltechnologies.com;
+
+    return 404; # managed by Certbot
 }
 
 server{
