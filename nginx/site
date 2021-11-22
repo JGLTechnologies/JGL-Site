@@ -72,7 +72,7 @@ server{
     server_name jglbotapi.us;
 
     if ($remote_addr != 98.115.81.31) {
-        return 403;
+        return 200 $remote_addr;
     }
 
     allow 103.21.244.0/22;
