@@ -53,10 +53,8 @@ server{
     listen 80;
     listen [::]:80;
     server_name hlclan.net;
-    location = /discord {
+    location /discord {
         return 301 https://discord.gg/u9rMf2F3zX;
     }
-    location = / {
-        return 301 https://hl-server.tebex.io;
-    }
+
 }
