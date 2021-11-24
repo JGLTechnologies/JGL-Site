@@ -25,7 +25,8 @@ import aiomcache
 import ujson
 
 # --GLOBAL VARIABLES / INITIALIZERS--
-# TODO: Fix html for form submission pages
+
+ip_whitelist = None
 
 # logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR,
 #                     format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
@@ -44,12 +45,18 @@ templates = Jinja2Templates(directory="web files")
 
 # --MAIN WEBSITE CODE--
 
+@app.middleware("http")
+async def ip_check(request: Request, call_next):
+    ip = (request.headers.get("X-Forwarded-For") or request.client.host).split(",")[0]
+    if ip_whitelist is not None and ip not in ip_whitelist:
+        return PlainTextResponse("403 Forbidden", status_code=403)
+    else:
+        return await call_next(request)
+
+
 @app.on_event("startup")
 async def setup_cache():
-    if platform.system().lower() == "linux":
-        app.client = aiomcache.Client(host="localhost", port=8000)
-    else:
-        app.client = aiomcache.Client(host="jglbotapi.us", port=8000)
+    app.client = aiomcache.Client(host="localhost", port=8000)
 
 
 @app.get("/")
@@ -439,12 +446,16 @@ class Api:
 async def invalid_path(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404 or exc.status_code == 405:
         return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+    elif exc.status_code == 403:
+        return PlainTextResponse("403 Forbidden", status_code=403)
 
 
 @api.exception_handler(StarletteHTTPException)
 async def api_invalid_path(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404 or exc.status_code == 405:
         return RedirectResponse("/api/docs")
+    elif exc.status_code == 403:
+        return PlainTextResponse("403 Forbidden", status_code=403)
 
 
 # @app.on_event("startup")
