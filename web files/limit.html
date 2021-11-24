@@ -66,6 +66,7 @@
 body{
     padding: 0;
     margin: 0;
+    min-height: 600px;
 }
 </style>
     <script>
@@ -75,12 +76,12 @@ body{
     </script>
 </head>
 <body>
-<center>
+<div style="text-align: center;">
 <p id="head">Too many form submissions</p>
 <h3><p id="text">You or someone else on your network has already submitted a form in the last 30 minutes.
 <br>Time remaining: {{ remaining }} minutes
 </p></h3>
 <button onclick="returnHome()" id="button">Return Home</button>
-</center>
+</div>
 </body>
 </html>
