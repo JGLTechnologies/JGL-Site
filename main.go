@@ -80,7 +80,6 @@ func main() {
 }
 
 func home(c *gin.Context) {
-	fmt.Println(getIP(c))
 	c.HTML(200, "home", gin.H{})
 }
 
