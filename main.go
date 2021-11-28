@@ -51,7 +51,7 @@ func main() {
 	r.AddFromFiles("contact-error", "go web files/error.html")
 	mc = memcache.New("localhost:8000")
 	server := gin.Default()
-	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
+	//server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
 	server.HTMLRender = r
 	server.GET("/", home)
 	server.GET("/contact", contact)
