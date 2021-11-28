@@ -193,7 +193,7 @@ func dpys(c *gin.Context) {
 				return
 			}
 			mc.Set(&memcache.Item{
-				Key:        "dpys-" + version,
+				Key:        "dpys_" + version,
 				Value:      data,
 				Flags:      0,
 				Expiration: 3600,
@@ -221,7 +221,7 @@ func aiohttpRateLimiter(c *gin.Context) {
 		}
 		json.Unmarshal(bodyBytes, &data)
 		version := data["info"]["version"]
-		cached, err := mc.Get("dpys_" + version)
+		cached, err := mc.Get("aiohttplimiter_" + version)
 		if err != nil {
 			res, err := http.Get("https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-" + version + ".tar.gz")
 			if err != nil {
@@ -235,7 +235,7 @@ func aiohttpRateLimiter(c *gin.Context) {
 				return
 			}
 			mc.Set(&memcache.Item{
-				Key:        "dpys-" + version,
+				Key:        "aiohttplimiter_" + version,
 				Value:      data,
 				Flags:      0,
 				Expiration: 3600,
