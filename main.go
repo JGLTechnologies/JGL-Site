@@ -202,7 +202,7 @@ func dpys(c *gin.Context) {
 		} else {
 			fileBytes = cached.Value
 		}
-		c.JSON(200, gin.H{"version": version, "file_bytes": fileBytes})
+		c.JSON(200, gin.H{"version": version, "file_bytes": string(fileBytes)})
 	}
 }
 
@@ -244,7 +244,7 @@ func aiohttpRateLimiter(c *gin.Context) {
 		} else {
 			fileBytes = cached.Value
 		}
-		c.JSON(200, gin.H{"version": version, "file_bytes": fileBytes})
+		c.JSON(200, gin.H{"version": version, "file_bytes": string(fileBytes)})
 	}
 }
 
