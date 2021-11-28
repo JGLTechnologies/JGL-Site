@@ -12,6 +12,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -19,10 +20,19 @@ var mc *memcache.Client
 
 func getMW(rate int, limit int) func(c *gin.Context) {
 	return GinRateLimit.RateLimiter(func(c *gin.Context) string {
-		return c.ClientIP() + c.FullPath()
+		return getIP(c) + c.FullPath()
 	}, func(c *gin.Context) {
 		c.String(429, "Too many requests")
 	}, GinRateLimit.InMemoryStore(rate, limit))
+}
+
+func getIP(c *gin.Context) string {
+	ip := c.GetHeader("X-Forwarded-For")
+	if ip == "" {
+		ip = c.ClientIP()
+	}
+	ip = strings.Split(ip, ",")[0]
+	return ip
 }
 
 func main() {
@@ -70,6 +80,7 @@ func main() {
 }
 
 func home(c *gin.Context) {
+	fmt.Println(getIP(c))
 	c.HTML(200, "home", gin.H{})
 }
 
@@ -221,7 +232,7 @@ func apiContact(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "no token was specified"})
 		return
 	}
-	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": c.ClientIP()}
+	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": getIP(c)}
 	jsonData, _ := json.Marshal(data)
 	res, err := http.Post("https://jglbotapi.us/contact", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
