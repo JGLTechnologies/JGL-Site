@@ -26,8 +26,6 @@ import ujson
 
 # --GLOBAL VARIABLES / INITIALIZERS--
 
-ip_whitelist = None
-
 # logging.basicConfig(filename='jglsite.log', encoding='utf-8', level=logging.ERROR,
 #                     format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%m-%d-%Y %I:%M:%S %p")
 sslcontext = ssl.create_default_context(cafile=certifi.where())
@@ -44,14 +42,6 @@ templates = Jinja2Templates(directory="web files")
 
 
 # --MAIN WEBSITE CODE--
-
-@app.middleware("http")
-async def ip_check(request: Request, call_next):
-    ip = (request.headers.get("X-Forwarded-For") or request.client.host).split(",")[0]
-    if ip_whitelist is not None and ip not in ip_whitelist:
-        return PlainTextResponse("403 Forbidden", status_code=403)
-    else:
-        return await call_next(request)
 
 
 @app.on_event("startup")
@@ -265,7 +255,7 @@ class Api:
         async def jgl_bot_status(request: Request):
             try:
                 async with aiohttp.ClientSession() as session:
-                    async with session.get("http://jglbotapi.us/bot_is_online", timeout=1) as bot_response:
+                    async with session.get("https://jglbotapi.us/bot_is_online", timeout=1) as bot_response:
                         data = await bot_response.json()
                         if data["online"]:
                             response = {"online": True}
@@ -281,7 +271,7 @@ class Api:
             if cached is None:
                 async with aiohttp.ClientSession() as session:
                     try:
-                        async with session.get("http://jglbotapi.us/info", timeout=1) as response:
+                        async with session.get("https://jglbotapi.us/info", timeout=1) as response:
                             data = await response.json()
                             guilds = data["guilds"]
                             cogs = data["cogs"]
