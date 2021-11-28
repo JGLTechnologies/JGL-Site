@@ -166,7 +166,6 @@ func botInfo(c *gin.Context) {
 
 func dpys(c *gin.Context) {
 	var data map[string]map[string]string
-	var fileBytes []byte
 	res, err := http.Get("https://pypi.org/pypi/dpys/json")
 	if err != nil {
 		c.JSON(500, gin.H{"error": err})
@@ -179,36 +178,12 @@ func dpys(c *gin.Context) {
 		}
 		json.Unmarshal(bodyBytes, &data)
 		version := data["info"]["version"]
-		cached, err := mc.Get("dpys_" + version)
-		if err != nil {
-			res, err := http.Get("https://raw.githubusercontent.com/Nebulizer1213/dpys/main/dist/dpys-" + version + ".tar.gz")
-			if err != nil {
-				c.JSON(500, gin.H{"error": err})
-				return
-			}
-			defer res.Body.Close()
-			data, err := ioutil.ReadAll(res.Body)
-			if err != nil {
-				c.JSON(500, gin.H{"error": err})
-				return
-			}
-			mc.Set(&memcache.Item{
-				Key:        "dpys_" + version,
-				Value:      data,
-				Flags:      0,
-				Expiration: 3600,
-			})
-			fileBytes = data
-		} else {
-			fileBytes = cached.Value
-		}
-		c.JSON(200, gin.H{"version": version, "file_bytes": string(fileBytes)})
+		c.JSON(200, gin.H{"version": version})
 	}
 }
 
 func aiohttpRateLimiter(c *gin.Context) {
 	var data map[string]map[string]string
-	var fileBytes []byte
 	res, err := http.Get("https://pypi.org/pypi/aiohttp-ratelimiter/json")
 	if err != nil {
 		c.JSON(500, gin.H{"error": err})
@@ -221,30 +196,7 @@ func aiohttpRateLimiter(c *gin.Context) {
 		}
 		json.Unmarshal(bodyBytes, &data)
 		version := data["info"]["version"]
-		cached, err := mc.Get("aiohttplimiter_" + version)
-		if err != nil {
-			res, err := http.Get("https://raw.githubusercontent.com/Nebulizer1213/aiohttp-ratelimiter/main/dist/aiohttp-ratelimiter-" + version + ".tar.gz")
-			if err != nil {
-				c.JSON(500, gin.H{"error": err})
-				return
-			}
-			defer res.Body.Close()
-			data, err := ioutil.ReadAll(res.Body)
-			if err != nil {
-				c.JSON(500, gin.H{"error": err})
-				return
-			}
-			mc.Set(&memcache.Item{
-				Key:        "aiohttplimiter_" + version,
-				Value:      data,
-				Flags:      0,
-				Expiration: 3600,
-			})
-			fileBytes = data
-		} else {
-			fileBytes = cached.Value
-		}
-		c.JSON(200, gin.H{"version": version, "file_bytes": string(fileBytes)})
+		c.JSON(200, gin.H{"version": version})
 	}
 }
 
