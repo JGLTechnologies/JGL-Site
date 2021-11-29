@@ -54,19 +54,19 @@ func BMICalc(c *gin.Context) {
 
 	if bmi > 24.9 {
 		newWeight := 24.9 / 703 * math.Pow((feetNum*12)+inchesNum, 2)
-		pounds := fmt.Sprintf("%f", math.Round(weightNum-newWeight))
-		poundsNum, _ := strconv.Atoi(pounds)
+		pounds := fmt.Sprintf("%.2f", weightNum-newWeight)
+		poundsNum, _ := strconv.ParseFloat(pounds, 64)
 		if poundsNum >= 1 {
-			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": "You need to loose " + pounds + "pounds to be healthy."}
+			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": "You need to loose " + pounds + " pounds to be healthy."}
 		} else {
 			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": ""}
 		}
 	} else if bmi < 18.5 {
 		newWeight := 18.5 / 703 * math.Pow((feetNum*12)+inchesNum, 2)
-		pounds := fmt.Sprintf("%f", math.Round(newWeight-weightNum))
-		poundsNum, _ := strconv.Atoi(pounds)
+		pounds := fmt.Sprintf("%.2f", newWeight-weightNum)
+		poundsNum, _ := strconv.ParseFloat(pounds, 64)
 		if poundsNum >= 1 {
-			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": "You need to gain " + pounds + "pounds to be healthy."}
+			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": "You need to gain " + pounds + " pounds to be healthy."}
 		} else {
 			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": ""}
 		}
