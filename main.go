@@ -1,18 +1,12 @@
 package main
 
 import (
+	"JGLSite/api"
+	"JGLSite/test"
 	"JGLSite/utils"
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
-	"math"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 var mc *memcache.Client
@@ -45,20 +39,20 @@ func main() {
 	server.GET("/bot", func(c *gin.Context) {
 		c.String(200, "JGL Bot documentation is coming soon.")
 	})
-	test := server.Group("/test")
+	testGroup := server.Group("/test")
 	{
-		test.GET("/bmi", bmiHome)
-		test.GET("/bmi/calc", bmiCalc)
+		testGroup.GET("/bmi", test.BMIHome)
+		testGroup.GET("/bmi/calc", test.BMICalc)
 
 	}
-	api := server.Group("/api")
+	apiGroup := server.Group("/api")
 	{
 		apiMW := utils.GetMW(1, 5)
-		api.GET("/bot/status", apiMW, botStatus)
-		api.GET("/bot/info", apiMW, botInfo)
-		api.GET("/dpys", apiMW, dpys)
-		api.GET("/aiohttplimiter", apiMW, aiohttpRateLimiter)
-		api.POST("/contact", utils.GetMW(1, 1), apiContact)
+		apiGroup.GET("/bot/status", apiMW, api.BotStatus)
+		apiGroup.GET("/bot/info", apiMW, api.BotInfo)
+		apiGroup.GET("/dpys", apiMW, api.DPYS)
+		apiGroup.GET("/aiohttplimiter", apiMW, api.AIOHTTPRateLimiter)
+		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 
 	}
 	server.NoRoute(noRoute)
@@ -72,176 +66,6 @@ func home(c *gin.Context) {
 
 func contact(c *gin.Context) {
 	c.HTML(200, "contact", gin.H{})
-}
-
-func bmiHome(c *gin.Context) {
-	lastBMI, err := c.Cookie("BMI_LAST")
-	if err != nil {
-		c.HTML(200, "bmi-home", gin.H{"last": "Not Found"})
-	} else {
-		c.HTML(200, "bmi-home", gin.H{"last": lastBMI})
-	}
-}
-
-func bmiCalc(c *gin.Context) {
-	var context gin.H
-	feet := c.Query("heightft")
-	inches := c.Query("heightin")
-	weight := c.Query("weight")
-
-	if inches == "" {
-		inches = "0"
-	}
-
-	feetNum, err := strconv.ParseFloat(feet, 64)
-	if err != nil {
-		c.HTML(400, "bmi-invalid", gin.H{})
-	}
-
-	inchesNum, err := strconv.ParseFloat(inches, 64)
-	if err != nil {
-		c.HTML(400, "bmi-invalid", gin.H{})
-	}
-
-	weightNum, err := strconv.ParseFloat(weight, 64)
-	if err != nil {
-		c.HTML(400, "bmi-invalid", gin.H{})
-	}
-
-	bmi := weightNum / math.Pow((feetNum*12)+inchesNum, 2) * 703
-
-	if bmi > 24.9 {
-		newWeight := 24.9 / 703 * math.Pow((feetNum*12)+inchesNum, 2)
-		pounds := fmt.Sprintf("%f", math.Round(weightNum-newWeight))
-		poundsNum, _ := strconv.Atoi(pounds)
-		if poundsNum >= 1 {
-			context = gin.H{"bmi": math.Round(bmi), "weight": "You need to loose " + pounds + "pounds to be healthy."}
-		} else {
-			context = gin.H{"bmi": math.Round(bmi), "weight": ""}
-		}
-	} else if bmi < 18.5 {
-		newWeight := 18.5 / 703 * math.Pow((feetNum*12)+inchesNum, 2)
-		pounds := fmt.Sprintf("%f", math.Round(newWeight-weightNum))
-		poundsNum, _ := strconv.Atoi(pounds)
-		if poundsNum >= 1 {
-			context = gin.H{"bmi": math.Round(bmi), "weight": "You need to gain " + pounds + "pounds to be healthy."}
-		} else {
-			context = gin.H{"bmi": math.Round(bmi), "weight": ""}
-		}
-	} else {
-		context = gin.H{"bmi": math.Round(bmi), "weight": ""}
-	}
-	maxAge := time.Date(2038, 1, 1, 0, 0, 0, 0, time.Local).Unix() - time.Now().Unix()
-	c.SetCookie("BMI_LAST", fmt.Sprintf("%f", bmi), int(maxAge), "/test/bmi", "jgltechnologies.com", true, false)
-	c.HTML(200, "bmi-calc", context)
-}
-
-func botStatus(c *gin.Context) {
-	_, err := http.Get("https://jglbotapi.us/status")
-	if err != nil {
-		c.JSON(200, gin.H{"online": false})
-	} else {
-		c.JSON(200, gin.H{"online": true})
-	}
-}
-
-func botInfo(c *gin.Context) {
-	var data map[string]interface{}
-	res, err := http.Get("https://jglbotapi.us/info")
-	if err != nil {
-		c.JSON(200, gin.H{"guilds": "Not Found", "cogs": "Not Found", "shards": "Not Found", "size": gin.H{"gb": "Not Found", "mb": "Not Found", "kb": "Not Found"}, "ping": "Not Found"})
-	} else {
-		defer res.Body.Close()
-		bodyBytes, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err})
-		}
-		json.Unmarshal(bodyBytes, &data)
-		c.JSON(200, data)
-	}
-}
-
-func dpys(c *gin.Context) {
-	var data map[string]map[string]string
-	res, err := http.Get("https://pypi.org/pypi/dpys/json")
-	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-	} else {
-		defer res.Body.Close()
-		bodyBytes, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err})
-			return
-		}
-		json.Unmarshal(bodyBytes, &data)
-		version := data["info"]["version"]
-		c.JSON(200, gin.H{"version": version})
-	}
-}
-
-func aiohttpRateLimiter(c *gin.Context) {
-	var data map[string]map[string]string
-	res, err := http.Get("https://pypi.org/pypi/aiohttp-ratelimiter/json")
-	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-	} else {
-		defer res.Body.Close()
-		bodyBytes, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err})
-			return
-		}
-		json.Unmarshal(bodyBytes, &data)
-		version := data["info"]["version"]
-		c.JSON(200, gin.H{"version": version})
-	}
-}
-
-func apiContact(c *gin.Context) {
-	name, exists := c.GetPostForm("name")
-	if !exists {
-		c.JSON(400, gin.H{"error": "no name was specified"})
-		return
-	}
-	email, exists := c.GetPostForm("email")
-	if !exists {
-		c.JSON(400, gin.H{"error": "no email was specified"})
-		return
-	}
-	message, exists := c.GetPostForm("message")
-	if !exists {
-		c.JSON(400, gin.H{"error": "no message was specified"})
-		return
-	}
-	token, exists := c.GetPostForm("token")
-	if !exists {
-		c.JSON(400, gin.H{"error": "no token was specified"})
-		return
-	}
-	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": utils.GetIP(c)}
-	jsonData, _ := json.Marshal(data)
-	res, err := http.Post("https://jglbotapi.us/contact", "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		c.HTML(500, "contact-error", gin.H{"error": err})
-	} else {
-		defer res.Body.Close()
-		var resJSON map[string]interface{}
-		resData, _ := ioutil.ReadAll(res.Body)
-		json.Unmarshal(resData, &resJSON)
-		if res.StatusCode == 200 {
-			c.HTML(200, "contact-thank-you", gin.H{})
-		} else if res.StatusCode == 429 {
-			fmt.Println(data)
-			c.HTML(429, "contact-limit", gin.H{"remaining": resJSON["remaining"]})
-		} else if res.StatusCode == 401 {
-			c.HTML(401, "contact-captcha", gin.H{})
-		} else if res.StatusCode == 403 {
-			c.HTML(403, "contact-bl", gin.H{})
-		} else {
-			c.HTML(500, "contact-error", gin.H{"error": resJSON["error"]})
-		}
-	}
-
 }
 
 func noRoute(c *gin.Context) {
