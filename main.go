@@ -1,10 +1,10 @@
 package main
 
 import (
+	"JGLSite/utils"
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Nebulizer1213/GinRateLimit"
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
@@ -12,28 +12,10 @@ import (
 	"math"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 )
 
 var mc *memcache.Client
-
-func getMW(rate int, limit int) func(c *gin.Context) {
-	return GinRateLimit.RateLimiter(func(c *gin.Context) string {
-		return getIP(c) + c.FullPath()
-	}, func(c *gin.Context) {
-		c.String(429, "Too many requests")
-	}, GinRateLimit.InMemoryStore(rate, limit))
-}
-
-func getIP(c *gin.Context) string {
-	ip := c.GetHeader("X-Forwarded-For")
-	if ip == "" {
-		ip = c.ClientIP()
-	}
-	ip = strings.Split(ip, ",")[0]
-	return ip
-}
 
 func main() {
 	gin.SetMode(gin.ReleaseMode)
@@ -50,7 +32,11 @@ func main() {
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("contact-error", "go web files/error.html")
 	mc = memcache.New("localhost:8000")
-	server := gin.Default()
+	server := gin.New()
+	server.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
+		c.HTML(500, "contact-error", gin.H{"error": err})
+	}))
+	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
 	server.HTMLRender = r
 	server.GET("/", home)
@@ -67,12 +53,12 @@ func main() {
 	}
 	api := server.Group("/api")
 	{
-		apiMW := getMW(1, 5)
+		apiMW := utils.GetMW(1, 5)
 		api.GET("/bot/status", apiMW, botStatus)
 		api.GET("/bot/info", apiMW, botInfo)
 		api.GET("/dpys", apiMW, dpys)
 		api.GET("/aiohttplimiter", apiMW, aiohttpRateLimiter)
-		api.POST("/contact", getMW(1, 1), apiContact)
+		api.POST("/contact", utils.GetMW(1, 1), apiContact)
 
 	}
 	server.NoRoute(noRoute)
@@ -145,7 +131,7 @@ func bmiCalc(c *gin.Context) {
 	} else {
 		context = gin.H{"bmi": math.Round(bmi), "weight": ""}
 	}
-	maxAge := time.Now().Unix() - time.Date(2038, 1, 1, 0, 0, 0, 0, time.Local).Unix()
+	maxAge := time.Date(2038, 1, 1, 0, 0, 0, 0, time.Local).Unix() - time.Now().Unix()
 	c.SetCookie("BMI_LAST", fmt.Sprintf("%f", bmi), int(maxAge), "/test/bmi", "jgltechnologies.com", true, false)
 	c.HTML(200, "bmi-calc", context)
 }
@@ -232,7 +218,7 @@ func apiContact(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "no token was specified"})
 		return
 	}
-	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": getIP(c)}
+	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": utils.GetIP(c)}
 	jsonData, _ := json.Marshal(data)
 	res, err := http.Post("https://jglbotapi.us/contact", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {

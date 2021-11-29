@@ -3,45 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>BMI Calculator</title>
     <style>
-        form{
+        form {
             position: relative;
             top: 50px;
             margin: 0;
         }
-        form input{
+
+        form input {
             padding: 5px;
         }
-        form button{
+
+        form button {
             padding: 5px;
             background-color: white;
             border-color: white;
             color: black;
         }
-        body{
+
+        body {
             background-color: darkcyan;
             overflow: hidden;
         }
+
         @media only screen and (max-width: 1000px) {
             #header {
                 font-size: 30px;
             }
         }
+
         @media only screen and (max-width: 800px) {
             #header {
                 font-size: 25px;
             }
         }
+
         @media only screen and (max-width: 600px) {
             #header {
                 font-size: 20px;
             }
-            form input{
+
+            form input {
                 padding: 2.5px;
             }
-            form button{
+
+            form button {
                 padding: 2.5px;
                 border-radius: 4px;
             }
@@ -49,8 +57,8 @@
     </style>
 </head>
 <body>
-    <h1 id="header">BMI Calculator</h1>
-    <center>
+<h1 id="header">BMI Calculator</h1>
+<div style="text-align: center;">
     <form id="form" method="GET" action="/test/bmi/calc">
         <input name="weight" id="weight" placeholder="weight" required/>
         <br>
@@ -62,14 +70,14 @@
         <br>
         <br>
         <button type="submit" id="button">Calculate</button>
-        </form>
-        <br>
-        <br>
-        <br>
-        <h3>Last BMI: {{ .last }}</h3>
-    </center>
-    <script>
-        </script>
-    
+    </form>
+    <br>
+    <br>
+    <br>
+    <h3>Last BMI: {{ .last }}</h3>
+</div>
+<script>
+</script>
+
 </body>
 </html>
