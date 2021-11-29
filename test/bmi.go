@@ -30,16 +30,24 @@ func BMICalc(c *gin.Context) {
 	feetNum, err := strconv.ParseFloat(feet, 64)
 	if err != nil {
 		c.HTML(400, "bmi-invalid", gin.H{})
+		return
 	}
 
 	inchesNum, err := strconv.ParseFloat(inches, 64)
 	if err != nil {
 		c.HTML(400, "bmi-invalid", gin.H{})
+		return
 	}
 
 	weightNum, err := strconv.ParseFloat(weight, 64)
 	if err != nil {
 		c.HTML(400, "bmi-invalid", gin.H{})
+		return
+	}
+
+	if weightNum == 0 || feetNum == 0 {
+		c.HTML(400, "bmi-invalid", gin.H{})
+		return
 	}
 
 	bmi := weightNum / math.Pow((feetNum*12)+inchesNum, 2) * 703
