@@ -5,6 +5,7 @@ import (
 	"JGLSite/test"
 	"JGLSite/utils"
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 )
@@ -31,6 +32,7 @@ func main() {
 		c.HTML(500, "contact-error", gin.H{"error": err})
 	}))
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
+	server.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedExtensions([]string{".pdf", ".mp4"})))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
 	server.HTMLRender = r
 	server.GET("/", home)
