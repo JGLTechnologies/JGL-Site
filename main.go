@@ -43,7 +43,6 @@ func main() {
 	{
 		testGroup.GET("/bmi", test.BMIHome)
 		testGroup.GET("/bmi/calc", test.BMICalc)
-
 	}
 	apiGroup := server.Group("/api")
 	{
@@ -53,7 +52,6 @@ func main() {
 		apiGroup.GET("/dpys", apiMW, api.DPYS)
 		apiGroup.GET("/aiohttplimiter", apiMW, api.AIOHTTPRateLimiter)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
-
 	}
 	server.NoRoute(noRoute)
 	server.NoMethod(noRoute)
