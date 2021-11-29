@@ -49,23 +49,23 @@ func BMICalc(c *gin.Context) {
 		pounds := fmt.Sprintf("%f", math.Round(weightNum-newWeight))
 		poundsNum, _ := strconv.Atoi(pounds)
 		if poundsNum >= 1 {
-			context = gin.H{"bmi": math.Round(bmi), "weight": "You need to loose " + pounds + "pounds to be healthy."}
+			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": "You need to loose " + pounds + "pounds to be healthy."}
 		} else {
-			context = gin.H{"bmi": math.Round(bmi), "weight": ""}
+			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": ""}
 		}
 	} else if bmi < 18.5 {
 		newWeight := 18.5 / 703 * math.Pow((feetNum*12)+inchesNum, 2)
 		pounds := fmt.Sprintf("%f", math.Round(newWeight-weightNum))
 		poundsNum, _ := strconv.Atoi(pounds)
 		if poundsNum >= 1 {
-			context = gin.H{"bmi": math.Round(bmi), "weight": "You need to gain " + pounds + "pounds to be healthy."}
+			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": "You need to gain " + pounds + "pounds to be healthy."}
 		} else {
-			context = gin.H{"bmi": math.Round(bmi), "weight": ""}
+			context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": ""}
 		}
 	} else {
-		context = gin.H{"bmi": math.Round(bmi), "weight": ""}
+		context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": ""}
 	}
 	maxAge := time.Date(2038, 1, 1, 0, 0, 0, 0, time.Local).Unix() - time.Now().Unix()
-	c.SetCookie("BMI_LAST", fmt.Sprintf("%f", bmi), int(maxAge), "/test/bmi", "jgltechnologies.com", false, false)
+	c.SetCookie("BMI_LAST", fmt.Sprintf("%.2f", bmi), int(maxAge), "/test/bmi", "jgltechnologies.com", false, false)
 	c.HTML(200, "bmi-calc", context)
 }
