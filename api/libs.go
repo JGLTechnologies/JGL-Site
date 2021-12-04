@@ -12,12 +12,12 @@ func DPYS(c *gin.Context) {
 	var data map[string]map[string]string
 	res, err := http.Get("https://pypi.org/pypi/dpys/json")
 	if err != nil {
-		c.JSON(500, gin.H{"error": fmt.Sprintf("error: %s", err)})
+		c.JSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
 	} else {
 		defer res.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			c.JSON(500, gin.H{"error": fmt.Sprintf("error: %s", err)})
+			c.JSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
 			return
 		}
 		json.Unmarshal(bodyBytes, &data)
@@ -35,7 +35,7 @@ func AIOHTTPRateLimiter(c *gin.Context) {
 		defer res.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			c.JSON(500, gin.H{"error": fmt.Sprintf("error: %s", err)})
+			c.JSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
 			return
 		}
 		json.Unmarshal(bodyBytes, &data)

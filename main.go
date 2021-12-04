@@ -4,12 +4,15 @@ import (
 	"JGLSite/api"
 	"JGLSite/test"
 	"JGLSite/utils"
-	"github.com/bradfitz/gomemcache/memcache"
+	"fmt"
+	"github.com/gin-contrib/cache"
+	"github.com/gin-contrib/cache/persistence"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
-var mc *memcache.Client
+var mc *persistence.MemcachedStore
 
 func main() {
 	gin.SetMode(gin.ReleaseMode)
@@ -25,25 +28,32 @@ func main() {
 	r.AddFromFiles("contact-captcha", "go web files/captcha.html")
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("contact-error", "go web files/error.html")
-	mc = memcache.New("localhost:8000")
+
+	mc = persistence.NewMemcachedStore([]string{"localhost:8000"}, time.Hour)
 	server := gin.New()
+	server.HTMLRender = r
+	store := persistence.NewInMemoryStore(time.Hour)
+
 	server.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
-		c.HTML(500, "contact-error", gin.H{"error": err})
+		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
+		c.AbortWithStatus(500)
 	}))
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
-	server.HTMLRender = r
-	server.GET("/", home)
-	server.GET("/home", home)
-	server.GET("/contact", contact)
+
+	server.GET("/", cache.CachePage(store, time.Minute, home))
+	server.GET("/home", cache.CachePage(store, time.Minute, home))
+	server.GET("/contact", cache.CachePage(store, time.Minute, contact))
 	server.GET("/bot", func(c *gin.Context) {
 		c.String(200, "JGL Bot documentation is coming soon.")
 	})
+
 	testGroup := server.Group("/test")
 	{
 		testGroup.GET("/bmi", test.BMIHome)
 		testGroup.GET("/bmi/calc", test.BMICalc)
 	}
+
 	apiGroup := server.Group("/api")
 	{
 		apiMW := utils.GetMW(1, 5)
@@ -53,6 +63,7 @@ func main() {
 		apiGroup.GET("/aiohttplimiter", apiMW, api.AIOHTTPRateLimiter)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
+
 	server.NoRoute(noRoute)
 	server.NoMethod(noRoute)
 	server.Run(":81")

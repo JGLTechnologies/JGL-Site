@@ -31,7 +31,7 @@ func Contact(c *gin.Context) {
 	jsonData, _ := json.Marshal(data)
 	res, err := http.Post("https://jglbotapi.us/contact", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("error: %s", err)})
+		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
 	} else {
 		defer res.Body.Close()
 		var resJSON map[string]interface{}
