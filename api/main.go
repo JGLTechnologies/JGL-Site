@@ -11,22 +11,22 @@ import (
 )
 
 type postForm struct {
-	name    string `form:"name" binding:"required"`
-	email   string `form:"email" binding:"required"`
-	message string `form:"message" binding:"required"`
-	token   string `form:"token" binding:"required"`
+	Name    string `form:"name" binding:"required"`
+	Email   string `form:"email" binding:"required"`
+	Message string `form:"message" binding:"required"`
+	Token   string `form:"token" binding:"required"`
 }
 
 func Contact(c *gin.Context) {
 	formData := postForm{}
-	if err := c.Bind(formData); err != nil {
+	if err := c.Bind(&formData); err != nil {
 		c.JSON(400, gin.H{"error": "invalid request"})
 		return
 	}
-	name := formData.name
-	email := formData.email
-	message := formData.message
-	token := formData.token
+	name := formData.Name
+	email := formData.Email
+	message := formData.Message
+	token := formData.Token
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": utils.GetIP(c)}
 	jsonData, _ := json.Marshal(data)
 	res, err := http.Post("https://jglbotapi.us/contact", "application/json", bytes.NewBuffer(jsonData))
