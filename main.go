@@ -9,6 +9,7 @@ import (
 	"github.com/gin-contrib/cache/persistence"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
+	"log"
 	"time"
 )
 
@@ -66,7 +67,7 @@ func main() {
 
 	server.NoRoute(noRoute)
 	server.NoMethod(noRoute)
-	server.Run(":81")
+	log.Fatal(server.Run(":81"))
 }
 
 func home(c *gin.Context) {
