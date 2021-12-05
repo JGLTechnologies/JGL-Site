@@ -14,9 +14,12 @@ var BotStatus = timeout.New(timeout.WithTimeout(time.Second), timeout.WithRespon
 var BotInfo = timeout.New(timeout.WithTimeout(time.Second), timeout.WithResponse(botInfoTimeout), timeout.WithHandler(botInfoResponse))
 
 func botStatusResponse(c *gin.Context) {
-	_, err := http.Get("https://jglbotapi.us/status")
+	client := http.Client{
+		Timeout: time.Second,
+	}
+	_, err := client.Get("https://jglbotapi.us/status")
 	if err != nil {
-		c.JSON(200, gin.H{"online": false})
+		c.Abort()
 	} else {
 		c.JSON(200, gin.H{"online": true})
 	}
@@ -27,10 +30,13 @@ func botStatusTimeout(c *gin.Context) {
 }
 
 func botInfoResponse(c *gin.Context) {
+	client := http.Client{
+		Timeout: time.Second,
+	}
 	var data map[string]interface{}
-	res, err := http.Get("https://jglbotapi.us/info")
+	res, err := client.Get("https://jglbotapi.us/info")
 	if err != nil {
-		c.JSON(200, gin.H{"guilds": "Not Found", "cogs": "Not Found", "shards": "Not Found", "size": gin.H{"gb": "Not Found", "mb": "Not Found", "kb": "Not Found"}, "ping": "Not Found"})
+		c.Abort()
 	} else {
 		defer res.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(res.Body)
