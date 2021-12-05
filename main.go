@@ -42,9 +42,9 @@ func main() {
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
 
-	server.GET("/", cache.CachePage(store, time.Hour, home))
-	server.GET("/home", cache.CachePage(store, time.Hour, home))
-	server.GET("/contact", cache.CachePage(store, time.Hour, contact))
+	server.GET("/", cache.CachePageWithoutQuery(store, time.Hour, home))
+	server.GET("/home", cache.CachePageWithoutQuery(store, time.Hour, home))
+	server.GET("/contact", cache.CachePageWithoutQuery(store, time.Hour, contact))
 	server.GET("/bot", func(c *gin.Context) {
 		c.String(200, "JGL Bot documentation is coming soon.")
 	})
@@ -57,10 +57,10 @@ func main() {
 
 	apiGroup := server.Group("/api")
 	{
-		apiGroup.GET("/bot/status", cache.CachePage(store, time.Minute, api.BotStatus))
-		apiGroup.GET("/bot/info", cache.CachePage(store, time.Hour, api.BotInfo))
-		apiGroup.GET("/dpys", cache.CachePage(store, time.Minute*10, api.DPYS))
-		apiGroup.GET("/aiohttplimiter", cache.CachePage(store, time.Minute*10, api.AIOHTTPRateLimiter))
+		apiGroup.GET("/bot/status", cache.CachePageWithoutQuery(store, time.Minute, api.BotStatus))
+		apiGroup.GET("/bot/info", cache.CachePageWithoutQuery(store, time.Hour, api.BotInfo))
+		apiGroup.GET("/dpys", cache.CachePageWithoutQuery(store, time.Minute*10, api.DPYS))
+		apiGroup.GET("/aiohttplimiter", cache.CachePageWithoutQuery(store, time.Minute*10, api.AIOHTTPRateLimiter))
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
