@@ -13,8 +13,6 @@ import (
 	"time"
 )
 
-var mc *persistence.MemcachedStore
-
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 	r := multitemplate.NewRenderer()
@@ -30,7 +28,6 @@ func main() {
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("contact-error", "go web files/error.html")
 
-	mc = persistence.NewMemcachedStore([]string{"localhost:8000"}, time.Hour)
 	server := gin.New()
 	server.HTMLRender = r
 	store := persistence.NewInMemoryStore(time.Hour)
