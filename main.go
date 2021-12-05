@@ -57,11 +57,10 @@ func main() {
 
 	apiGroup := server.Group("/api")
 	{
-		apiMW := utils.GetMW(1, 5)
-		apiGroup.GET("/bot/status", apiMW, api.BotStatus)
-		apiGroup.GET("/bot/info", apiMW, api.BotInfo)
-		apiGroup.GET("/dpys", apiMW, api.DPYS)
-		apiGroup.GET("/aiohttplimiter", apiMW, api.AIOHTTPRateLimiter)
+		apiGroup.GET("/bot/status", cache.CachePage(store, time.Minute, api.BotStatus))
+		apiGroup.GET("/bot/info", cache.CachePage(store, time.Hour, api.BotInfo))
+		apiGroup.GET("/dpys", cache.CachePage(store, time.Minute*10, api.DPYS))
+		apiGroup.GET("/aiohttplimiter", cache.CachePage(store, time.Minute*10, api.AIOHTTPRateLimiter))
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
