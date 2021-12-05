@@ -1,9 +1,5 @@
 limit_req_zone $proxy_add_x_forwarded_for zone=mylimit:10m rate=5r/s;
 
-upstream poxy {
-    server 127.0.0.1:81;
-}
-
 server {
 
     server_name jgltechnologies.com;
