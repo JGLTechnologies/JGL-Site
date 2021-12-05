@@ -58,7 +58,7 @@ func main() {
 	apiGroup := server.Group("/api")
 	{
 		apiMW := utils.GetMW(1, 5)
-		apiGroup.GET("/bot/status", apiMW, api.BotStatus)
+		apiGroup.GET("/bot/status", apiMW, cache.CachePage(store, time.Second*10, api.BotStatus))
 		apiGroup.GET("/bot/info", apiMW, api.BotInfo)
 		apiGroup.GET("/dpys", apiMW, api.DPYS)
 		apiGroup.GET("/aiohttplimiter", apiMW, api.AIOHTTPRateLimiter)
