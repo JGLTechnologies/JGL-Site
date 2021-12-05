@@ -3,12 +3,17 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
-func BotStatus(c *gin.Context) {
+var BotStatus = timeout.New(timeout.WithTimeout(time.Second), timeout.WithResponse(botStatusTimeout), timeout.WithHandler(botStatusResponse))
+var BotInfo = timeout.New(timeout.WithTimeout(time.Second), timeout.WithResponse(botInfoTimeout), timeout.WithHandler(botInfoResponse))
+
+func botStatusResponse(c *gin.Context) {
 	_, err := http.Get("https://jglbotapi.us/status")
 	if err != nil {
 		c.JSON(200, gin.H{"online": false})
@@ -17,7 +22,11 @@ func BotStatus(c *gin.Context) {
 	}
 }
 
-func BotInfo(c *gin.Context) {
+func botStatusTimeout(c *gin.Context) {
+	c.JSON(200, gin.H{"online": false})
+}
+
+func botInfoResponse(c *gin.Context) {
 	var data map[string]interface{}
 	res, err := http.Get("https://jglbotapi.us/info")
 	if err != nil {
@@ -31,4 +40,8 @@ func BotInfo(c *gin.Context) {
 		json.Unmarshal(bodyBytes, &data)
 		c.JSON(200, data)
 	}
+}
+
+func botInfoTimeout(c *gin.Context) {
+	c.JSON(200, gin.H{"guilds": "Not Found", "cogs": "Not Found", "shards": "Not Found", "size": gin.H{"gb": "Not Found", "mb": "Not Found", "kb": "Not Found"}, "ping": "Not Found"})
 }
