@@ -16,7 +16,7 @@ server {
         alias /var/www/html/static/favicon.ico;
     }
 
-    location = /favicon.ico {
+    location = /logo.png {
             limit_req zone=mylimit burst=20 nodelay;
             alias /var/www/html/static/logo.png;
         }
