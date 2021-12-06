@@ -1,5 +1,5 @@
 limit_req_zone $proxy_add_x_forwarded_for zone=mylimit:10m rate=5r/s;
-proxy_cache_path /tmp/nginx/cache levels=1:2 keys_zone=cache10m use_temp_path=off;
+proxy_cache_path /tmp/nginx/cache levels=1:2 keys_zone=cache:10m use_temp_path=off;
 
 server {
 
