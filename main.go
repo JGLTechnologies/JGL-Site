@@ -39,9 +39,9 @@ func main() {
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
 
-	server.GET("/", cache.CachePageWithoutQuery(store, time.Hour, home))
-	server.GET("/home", cache.CachePageWithoutQuery(store, time.Hour, home))
-	server.GET("/contact", cache.CachePageWithoutQuery(store, time.Hour, contact))
+	server.GET("/", cache.CachePageWithoutQuery(store, time.Hour*24, home))
+	server.GET("/home", cache.CachePageWithoutQuery(store, time.Hour*24, home))
+	server.GET("/contact", cache.CachePageWithoutQuery(store, time.Hour*24, contact))
 	server.GET("/bot", func(c *gin.Context) {
 		c.String(200, "JGL Bot documentation is coming soon.")
 	})
