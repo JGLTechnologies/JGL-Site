@@ -67,6 +67,7 @@ func main() {
 }
 
 func home(c *gin.Context) {
+	c.Header("cache-control", "max-age-3600, public")
 	c.HTML(200, "home", gin.H{})
 }
 

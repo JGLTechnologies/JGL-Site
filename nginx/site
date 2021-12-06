@@ -13,6 +13,7 @@ server {
 
     location = /favicon.ico {
         limit_req zone=mylimit burst=20 nodelay;
+        expires 1d;
         alias /var/www/html/static/favicon.ico;
     }
 
