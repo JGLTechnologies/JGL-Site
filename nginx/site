@@ -16,11 +16,6 @@ server {
         alias /var/www/html/static/favicon.ico;
     }
 
-    location = /logo.png {
-        limit_req zone=mylimit burst=20 nodelay;
-        alias /var/www/html/static/logo.png;
-    }
-
     location = /shop {
         limit_req zone=mylimit burst=20 nodelay;
         return 301 https://jgltechnologies.myshopify.com;
