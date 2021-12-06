@@ -43,6 +43,7 @@ func main() {
 	server.GET("/home", cache.CachePageWithoutQuery(store, time.Hour*24, home))
 	server.GET("/contact", cache.CachePageWithoutQuery(store, time.Hour*24, contact))
 	server.GET("/logo.png", cache.CachePageWithoutQuery(store, time.Hour*24, logo))
+	server.GET("/favicon.ico", cache.CachePageWithoutQuery(store, time.Hour*24, favicon))
 	server.GET("/bot", func(c *gin.Context) {
 		c.String(200, "JGL Bot documentation is coming soon.")
 	})
@@ -65,6 +66,10 @@ func main() {
 	server.NoRoute(noRoute)
 	server.NoMethod(noRoute)
 	log.Fatal(server.Run(":81"))
+}
+
+func favicon(c *gin.Context) {
+	c.File("static/favicon.ico")
 }
 
 func logo(c *gin.Context) {

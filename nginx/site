@@ -11,11 +11,6 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
-    location = /favicon.ico {
-        limit_req zone=mylimit burst=20 nodelay;
-        alias /var/www/html/static/favicon.ico;
-    }
-
     location = /shop {
         limit_req zone=mylimit burst=20 nodelay;
         return 301 https://jgltechnologies.myshopify.com;
