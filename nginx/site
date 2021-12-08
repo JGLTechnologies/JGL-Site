@@ -61,6 +61,11 @@ server {
         return 301 https://github.com/Nebulizer1213/precise-memory-rate-limit;
     }
 
+    location ~ /GinRateLimit {
+        limit_req zone=mylimit burst=20 nodelay;
+        return 301 https://github.com/Nebulizer1213/precise-memory-rate-limit;
+    }
+
     location = /src {
         limit_req zone=mylimit burst=20 nodelay;
         return 301 https://github.com/Nebulizer1213/jgl-site;
