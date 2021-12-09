@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -27,7 +28,6 @@ func main() {
 	r.AddFromFiles("contact-captcha", "go web files/captcha.html")
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("contact-error", "go web files/error.html")
-
 	server := gin.New()
 	server.HTMLRender = r
 	store := persist.NewMemoryStore(time.Hour)
@@ -38,6 +38,7 @@ func main() {
 	}))
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
+	server.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	server.GET("/", cache.CacheByRequestPath(store, time.Hour*24), home)
 	server.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
