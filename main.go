@@ -5,8 +5,8 @@ import (
 	"JGLSite/test"
 	"JGLSite/utils"
 	"fmt"
-	"github.com/gin-contrib/cache"
-	"github.com/gin-contrib/cache/persistence"
+	"github.com/chenyahui/gin-cache"
+	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -30,7 +30,7 @@ func main() {
 
 	server := gin.New()
 	server.HTMLRender = r
-	store := persistence.NewInMemoryStore(time.Hour)
+	store := persist.NewMemoryStore(time.Hour)
 
 	server.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
 		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
@@ -39,11 +39,11 @@ func main() {
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
 
-	server.GET("/", cache.CachePageWithoutQuery(store, time.Hour*24, home))
-	server.GET("/home", cache.CachePageWithoutQuery(store, time.Hour*24, home))
-	server.GET("/contact", cache.CachePageWithoutQuery(store, time.Hour*24, contact))
-	server.GET("/logo.png", cache.CachePageWithoutQuery(store, time.Hour*24, logo))
-	server.GET("/favicon.ico", cache.CachePageWithoutQuery(store, time.Hour*24, favicon))
+	server.GET("/", cache.CacheByRequestPath(store, time.Hour*24), home)
+	server.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
+	server.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
+	server.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
+	server.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
 	server.GET("/bot", func(c *gin.Context) {
 		c.String(200, "JGL Bot documentation is coming soon.")
 	})
@@ -56,10 +56,10 @@ func main() {
 
 	apiGroup := server.Group("/api")
 	{
-		apiGroup.GET("/bot/status", cache.CachePageWithoutQuery(store, time.Minute, api.BotStatus))
-		apiGroup.GET("/bot/info", cache.CachePageWithoutQuery(store, time.Hour, api.BotInfo))
-		apiGroup.GET("/dpys", cache.CachePageWithoutQuery(store, time.Minute*10, api.DPYS))
-		apiGroup.GET("/aiohttplimiter", cache.CachePageWithoutQuery(store, time.Minute*10, api.AIOHTTPRateLimiter))
+		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
+		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
+		apiGroup.GET("/dpys", cache.CacheByRequestPath(store, time.Minute*10), api.DPYS)
+		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(store, time.Minute*10), api.AIOHTTPRateLimiter)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
