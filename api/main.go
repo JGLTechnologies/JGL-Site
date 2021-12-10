@@ -40,7 +40,6 @@ func Contact(c *gin.Context) {
 		if res.StatusCode == 200 {
 			c.HTML(200, "contact-thank-you", gin.H{})
 		} else if res.StatusCode == 429 {
-			fmt.Println(data)
 			c.HTML(429, "contact-limit", gin.H{"remaining": resJSON["remaining"]})
 		} else if res.StatusCode == 401 {
 			c.HTML(401, "contact-captcha", gin.H{})
