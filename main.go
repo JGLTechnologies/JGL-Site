@@ -43,9 +43,6 @@ func main() {
 	server.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
 	server.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	server.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
-	server.GET("/bot", func(c *gin.Context) {
-		c.String(200, "JGL Bot documentation is coming soon.")
-	})
 
 	testGroup := server.Group("/test")
 	{
