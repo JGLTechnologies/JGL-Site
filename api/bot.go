@@ -26,7 +26,7 @@ func botStatusResponse(c *gin.Context) {
 }
 
 func botStatusTimeout(c *gin.Context) {
-	c.JSON(200, gin.H{"online": false})
+	c.AbortWithStatusJSON(200, gin.H{"online": false})
 }
 
 func botInfoResponse(c *gin.Context) {
@@ -49,5 +49,5 @@ func botInfoResponse(c *gin.Context) {
 }
 
 func botInfoTimeout(c *gin.Context) {
-	c.JSON(200, gin.H{"guilds": "Not Found", "cogs": "Not Found", "shards": "Not Found", "size": gin.H{"gb": "Not Found", "mb": "Not Found", "kb": "Not Found"}, "ping": "Not Found"})
+	c.AbortWithStatusJSON(200, gin.H{"guilds": "Not Found", "cogs": "Not Found", "shards": "Not Found", "size": gin.H{"gb": "Not Found", "mb": "Not Found", "kb": "Not Found"}, "ping": "Not Found"})
 }
