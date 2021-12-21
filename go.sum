@@ -1,5 +1,5 @@
-github.com/Nebulizer1213/GinRateLimit v1.0.3 h1:1R7+nnE7T7zZc7QIk/DgKRLoAWbc8oO3OynEDNJP1R0=
-github.com/Nebulizer1213/GinRateLimit v1.0.3/go.mod h1:yR3zvi2MSr9qdpDB0kuIUe0dRmMvq6u6+hXKzc0xsVU=
+github.com/Nebulizer1213/GinRateLimit v1.0.4 h1:JIlpbMl72reb8qzgpw/OYdJPP2iX48gDHtKiKKuISig=
+github.com/Nebulizer1213/GinRateLimit v1.0.4/go.mod h1:yR3zvi2MSr9qdpDB0kuIUe0dRmMvq6u6+hXKzc0xsVU=
 github.com/ReneKroon/ttlcache/v2 v2.9.0 h1:NzwfErbifoNA3djEGwQJXKp/386imbyrc6Qmns5IX7c=
 github.com/ReneKroon/ttlcache/v2 v2.9.0/go.mod h1:mBxvsNY+BT8qLLd6CuAJubbKo6r0jh3nb5et22bbfGY=
 github.com/cespare/xxhash/v2 v2.1.1 h1:6MnRN8NT7+YBpUIWxHtefFZOKTAPgGjpQSxqLNn0+qY=
