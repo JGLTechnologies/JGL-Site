@@ -76,30 +76,82 @@
 <!-- Footer-->
 {{ template "footer" . }}
 <script>
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
     async function loadDownloads() {
-        let stats = await fetch("/api/downloads")
-        stats = await stats.json()
+        if (getCookie("dpys_downloads") === "" || getCookie("aiohttp_downloads") === "" || getCookie("pmrl_downloads") === "" || getCookie("grl_downloads") === "") {
+            let downloads = await fetch("/api/downloads")
+            downloads = await downloads.json()
+            if (getCookie("dpys_downloads") === "") {
+                setCookie("dpys_downloads", downloads["dpys"], .007)
+            }
+            if (getCookie("aiohttp_downloads") === "") {
+                setCookie("aiohttp_downloads", downloads["aiohttp-ratelimiter"], .007)
+            }
+            if (getCookie("grl_downloads") === "") {
+                setCookie("grl_downloads", downloads["GinRateLimit"], .007)
+            }
+            if (getCookie("pmrl_downloads") === "") {
+                setCookie("pmrl_downloads", downloads["precise-memory-rate-limit"], .007)
+            }
+        }
         let dpys = document.getElementById("dpys")
         let aiohttplimiter = document.getElementById("aiohttplimiter")
         let pmrl = document.getElementById("pmrl")
         let grl = document.getElementById("grl")
-        dpys.innerText = "(downloads: " + stats["dpys"] + ")"
-        aiohttplimiter.innerText = "(downloads: " + stats["aiohttp-ratelimiter"] + ")"
-        pmrl.innerText = "(downloads: " + stats["precise-memory-rate-limit"] + ")"
-        grl.innerText = "(downloads: " + stats["GinRateLimit"] + ")"
+        dpys.innerText = "(downloads: " + getCookie("dpys_downloads") + ")"
+        aiohttplimiter.innerText = "(downloads: " + getCookie("aiohttp_downloads") + ")"
+        pmrl.innerText = "(downloads: " + getCookie("pmrl_downloads") + ")"
+        grl.innerText = "(downloads: " + getCookie("grl_downloads") + ")"
     }
 
     async function loadVersions() {
-        let versions = await fetch("/api/versions")
-        versions = await versions.json()
+        if (getCookie("dpys_version") === "" || getCookie("aiohttp_version") === "" || getCookie("pmrl_version") === "" || getCookie("grl_version") === "") {
+            let versions = await fetch("/api/versions")
+            versions = await versions.json()
+            if (getCookie("dpys_version") === "") {
+                setCookie("dpys_version", versions["dpys"], .007)
+            }
+            if (getCookie("aiohttp_version") === "") {
+                setCookie("aiohttp_version", versions["aiohttp-ratelimiter"], .007)
+            }
+            if (getCookie("grl_version") === "") {
+                setCookie("grl_version", versions["GinRateLimit"], .007)
+            }
+            if (getCookie("pmrl_version") === "") {
+                setCookie("pmrl_version", versions["precise-memory-rate-limit"], .007)
+            }
+        }
         let dpys = document.getElementById("dpys_version")
         let aiohttplimiter = document.getElementById("aiohttplimiter_version")
         let pmrl = document.getElementById("pmrl_version")
         let grl = document.getElementById("grl_version")
-        dpys.innerText = "(current version: " + versions["dpys"] + ")"
-        aiohttplimiter.innerText = "(current version: " + versions["aiohttp-ratelimiter"] + ")"
-        pmrl.innerText = "(current version: " + versions["precise-memory-rate-limit"] + ")"
-        grl.innerText = "(current version: " + versions["GinRateLimit"] + ")"
+        dpys.innerText = "(current version: " + getCookie("dpys_version") + ")"
+        aiohttplimiter.innerText = "(current version: " + getCookie("aiohttp_version") + ")"
+        pmrl.innerText = "(current version: " + getCookie("pmrl_version") + ")"
+        grl.innerText = "(current version: " + getCookie("grl_version") + ")"
     }
 
     window.onload = () => {
