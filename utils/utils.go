@@ -17,7 +17,7 @@ import (
 )
 
 func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
-	var downloads float64
+	var downloads string
 	if err := store.Get("downloads_"+project, &downloads); err != nil {
 		var data map[string]interface{}
 		client := http.Client{
@@ -43,7 +43,7 @@ func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
 		store.Set("downloads_"+project, data["total_downloads"], time.Hour*24)
 		return strconv.Itoa(int(data["total_downloads"].(float64)))
 	} else {
-		return strconv.Itoa(int(downloads))
+		return downloads
 	}
 }
 
@@ -52,7 +52,7 @@ func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
 	date += strconv.Itoa(time.Now().Year())
 	date += strconv.Itoa(int(time.Now().Month()))
 	date += strconv.Itoa(time.Now().Day())
-	var downloads float64
+	var downloads string
 	if err := store.Get("downloads_"+project, &downloads); err != nil {
 		var data map[string]interface{}
 		client := http.Client{
@@ -78,13 +78,13 @@ func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
 		store.Set("downloads_"+project, data["downloads"], time.Hour*24)
 		return strconv.Itoa(int(data["downloads"].(float64)))
 	} else {
-		return strconv.Itoa(int(downloads))
+		return downloads
 	}
 }
 
 func GetGoLibDownloads(project string, store *persist.MemoryStore) string {
 	request := req.New()
-	var downloads float64
+	var downloads string
 	if err := store.Get("downloads_"+project, &downloads); err != nil {
 		var data map[string]interface{}
 		client := http.Client{
@@ -106,7 +106,7 @@ func GetGoLibDownloads(project string, store *persist.MemoryStore) string {
 		store.Set("downloads_"+project, data["uniques"], time.Hour*24)
 		return strconv.Itoa(int(data["uniques"].(float64)))
 	} else {
-		return strconv.Itoa(int(downloads))
+		return downloads
 	}
 }
 
