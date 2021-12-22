@@ -6,6 +6,7 @@ import (
 	"github.com/Nebulizer1213/GinRateLimit"
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-gonic/gin"
+	"github.com/imroc/req"
 	"github.com/mattn/go-isatty"
 	"io/ioutil"
 	"net/http"
@@ -76,6 +77,35 @@ func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
 		}
 		store.Set("downloads_"+project, data["downloads"], time.Hour*24)
 		return strconv.Itoa(int(data["downloads"].(float64)))
+	} else {
+		return strconv.Itoa(int(downloads))
+	}
+}
+
+func GetGoLibDownloads(project string, store *persist.MemoryStore) string {
+	request := req.New()
+	var downloads float64
+	if err := store.Get("downloads_"+project, &downloads); err != nil {
+		var data map[string]interface{}
+		client := http.Client{
+			Timeout: time.Second * 5,
+		}
+		request.SetClient(&client)
+		header := make(http.Header)
+		header.Set("Authorization", "token "+os.Getenv("gh_token"))
+		res, err := request.Get("https://api.github.com/repos/Nebulizer1213/"+project+"/traffic/clones?per=week", header)
+		if err != nil {
+			store.Set("downloads_"+project, "Not Found", time.Minute*10)
+			return "Not Found"
+		}
+		jsonErr := res.ToJSON(&data)
+		if jsonErr != nil {
+			fmt.Println(fmt.Sprintf("%s", jsonErr))
+			store.Set("downloads_"+project, "Not Found", time.Minute*10)
+			return "Not Found"
+		}
+		store.Set("downloads_"+project, data["uniques"], time.Hour*24)
+		return strconv.Itoa(int(data["uniques"].(float64)))
 	} else {
 		return strconv.Itoa(int(downloads))
 	}

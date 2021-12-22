@@ -75,6 +75,7 @@ func downloads(c *gin.Context) {
 		"dpys":                      utils.GetPythonLibDownloads("dpys", Store),
 		"aiohttp-ratelimiter":       utils.GetPythonLibDownloads("aiohttp-ratelimiter", Store),
 		"precise-memory-rate-limit": utils.GetNPMLibDownloads("precise-memory-rate-limit", Store),
+		"GinRateLimit":              utils.GetGoLibDownloads("GinRateLimit", Store),
 	})
 }
 

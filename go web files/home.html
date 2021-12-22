@@ -42,14 +42,14 @@
                     <h2 class="fw-bolder">Current Projects</h2>
                     <p class="lead fw-normal text-muted mb-0">
                         <a href="/dpys" style="color: var(--bs-dark); text-decoration: none;">DPYS <span id="dpys"></span>:</a>
-                        <br>A Python library that makes it easier to create a Discord bot
-                        <a href="/aiohttplimiter" style="color: var(--bs-dark); text-decoration: none;">aiohttp-ratelimiter <span id="aiohttplimiter"></span>:</a>
-                        <br>A Python library that provides rate limiting for the aiohttp.web framework
+                        <br>A Python library that makes it easier to create a Discord bot <span id="dpys_version"></span>
+                        <br><a href="/aiohttplimiter" style="color: var(--bs-dark); text-decoration: none;">aiohttp-ratelimiter <span id="aiohttplimiter"></span>:</a>
+                        <br>A Python library that provides rate limiting for the aiohttp.web framework <span id="aiohttplimiter_version"></span>
                         <br><a href="/precise-memory-rate-limit" style="color: var(--bs-dark); text-decoration: none;">precise-memory-rate-limit <span id="pmrl"></span>:</a>
                         <br>A datastore for <a style="color: var(--bs-dark); text-decoration: none;" href="https://www.npmjs.com/package/express-rate-limit">express-rate-limit</a>
-                        that uses the token bucket algorithm
-                        <br><a href="/GinRateLimit" style="color: var(--bs-dark); text-decoration: none;">GinRateLimit:</a>
-                        <br>A Golang library to provide rate limiting for the Gin web framework
+                        that uses the token bucket algorithm <span id="pmrl_version"></span>
+                        <br><a href="/GinRateLimit" style="color: var(--bs-dark); text-decoration: none;">GinRateLimit <span id="grl"></span>:</a>
+                        <br>A Golang library to provide rate limiting for the Gin web framework <span id="grl_version"></span>
                     </p>
                 </div>
             </div>
@@ -76,19 +76,35 @@
 <!-- Footer-->
 {{ template "footer" . }}
 <script>
-    async function loadStats() {
+    async function loadDownloads() {
         let stats = await fetch("/api/downloads")
         stats = await stats.json()
         let dpys = document.getElementById("dpys")
         let aiohttplimiter = document.getElementById("aiohttplimiter")
         let pmrl = document.getElementById("pmrl")
+        let grl = document.getElementById("grl")
         dpys.innerText = "(downloads: " + stats["dpys"] + ")"
         aiohttplimiter.innerText = "(downloads: " + stats["aiohttp-ratelimiter"] + ")"
         pmrl.innerText = "(downloads: " + stats["precise-memory-rate-limit"] + ")"
+        grl.innerText = "(downloads: " + stats["GinRateLimit"] + ")"
+    }
+
+    async function loadVersions() {
+        let versions = await fetch("/api/versions")
+        versions = await versions.json()
+        let dpys = document.getElementById("dpys_version")
+        let aiohttplimiter = document.getElementById("aiohttplimiter_version")
+        let pmrl = document.getElementById("pmrl_version")
+        let grl = document.getElementById("grl_version")
+        dpys.innerText = "(current version: v" + versions["dpys"] + ")"
+        aiohttplimiter.innerText = "(current version: v" + versions["aiohttp-ratelimiter"] + ")"
+        pmrl.innerText = "(current version: " + versions["precise-memory-rate-limit"] + ")"
+        grl.innerText = "(current version: " + versions["GinRateLimit"] + ")"
     }
 
     window.onload = () => {
-        loadStats()
+        loadVersions()
+        loadDownloads()
     }
 </script>
 <!-- Bootstrap core JS-->
