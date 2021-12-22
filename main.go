@@ -10,6 +10,7 @@ import (
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -19,6 +20,7 @@ import (
 var Store *persist.MemoryStore
 
 func main() {
+	godotenv.Load("../.env")
 	gin.SetMode(gin.ReleaseMode)
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
