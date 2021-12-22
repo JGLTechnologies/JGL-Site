@@ -20,7 +20,7 @@ func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
 	if err := store.Get("downloads_"+project, &downloads); err != nil {
 		var data map[string]interface{}
 		client := http.Client{
-			Timeout: time.Second * 1,
+			Timeout: time.Second * 3,
 		}
 		res, err := client.Get("https://api.pepy.tech/api/projects/" + project)
 		if err != nil {
@@ -51,7 +51,7 @@ func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
 	if err := store.Get("downloads_"+project, &downloads); err != nil {
 		var data map[string]interface{}
 		client := http.Client{
-			Timeout: time.Second * 1,
+			Timeout: time.Second * 3,
 		}
 		res, err := client.Get("https://api.npmjs.org/downloads/point/last-year/" + project)
 		if err != nil {
