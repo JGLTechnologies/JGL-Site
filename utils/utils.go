@@ -40,7 +40,7 @@ func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
 			store.Set("downloads_"+project, "Not Found", time.Minute*10)
 			return "Not Found"
 		}
-		store.Set("downloads_"+project, data["total_downloads"], time.Hour*24)
+		store.Set("downloads_"+project, strconv.Itoa(int(data["total_downloads"].(float64))), time.Hour*24)
 		return strconv.Itoa(int(data["total_downloads"].(float64)))
 	} else {
 		return downloads
@@ -75,7 +75,7 @@ func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
 			store.Set("downloads_"+project, "Not Found", time.Minute*10)
 			return "Not Found"
 		}
-		store.Set("downloads_"+project, data["downloads"], time.Hour*24)
+		store.Set("downloads_"+project, strconv.Itoa(int(data["downloads"].(float64))), time.Hour*24)
 		return strconv.Itoa(int(data["downloads"].(float64)))
 	} else {
 		return downloads
@@ -103,7 +103,7 @@ func GetGoLibDownloads(project string, store *persist.MemoryStore) string {
 			store.Set("downloads_"+project, "Not Found", time.Minute*10)
 			return "Not Found"
 		}
-		store.Set("downloads_"+project, data["uniques"], time.Hour*24)
+		store.Set("downloads_"+project, strconv.Itoa(int(data["uniques"].(float64))), time.Hour*24)
 		return strconv.Itoa(int(data["uniques"].(float64)))
 	} else {
 		return downloads
