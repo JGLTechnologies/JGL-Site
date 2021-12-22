@@ -24,7 +24,7 @@ func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
 			Timeout: time.Second * 5,
 		}
 		res, err := client.Get("https://api.pepy.tech/api/projects/" + project)
-		if err != nil {
+		if err != nil || res.StatusCode != 200 {
 			store.Set("downloads_"+project, "Not Found", time.Minute*10)
 			return "Not Found"
 		}
@@ -59,7 +59,7 @@ func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
 			Timeout: time.Second * 5,
 		}
 		res, err := client.Get("https://api.npmjs.org/downloads/point/2020-1-1:" + date + "/" + project)
-		if err != nil {
+		if err != nil || res.StatusCode != 200 {
 			store.Set("downloads_"+project, "Not Found", time.Minute*10)
 			return "Not Found"
 		}
@@ -94,13 +94,12 @@ func GetGoLibDownloads(project string, store *persist.MemoryStore) string {
 		header := make(http.Header)
 		header.Set("Authorization", "token "+os.Getenv("gh_token"))
 		res, err := request.Get("https://api.github.com/repos/Nebulizer1213/"+project+"/traffic/clones?per=week", header)
-		if err != nil {
+		if err != nil || res.Response().StatusCode != 200 {
 			store.Set("downloads_"+project, "Not Found", time.Minute*10)
 			return "Not Found"
 		}
 		jsonErr := res.ToJSON(&data)
 		if jsonErr != nil {
-			fmt.Println(fmt.Sprintf("%s", jsonErr))
 			store.Set("downloads_"+project, "Not Found", time.Minute*10)
 			return "Not Found"
 		}

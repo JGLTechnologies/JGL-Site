@@ -4,12 +4,15 @@ import (
 	"JGLSite/api"
 	"JGLSite/test"
 	"JGLSite/utils"
+	"encoding/json"
 	"fmt"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -60,7 +63,7 @@ func main() {
 		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(Store, time.Minute*10), api.AIOHTTPRateLimiter)
 		apiGroup.GET("/GinRateLimit", cache.CacheByRequestPath(Store, time.Minute*10), api.GinRateLimit)
 		apiGroup.GET("/precise-memory-rate-limit", cache.CacheByRequestPath(Store, time.Minute*10), api.PreciseMemoryRateLimit)
-		apiGroup.GET("/versions", cache.CacheByRequestPath(Store, time.Minute*10), api.Versions)
+		apiGroup.GET("/versions", cache.CacheByRequestPath(Store, time.Minute*10), versions)
 		apiGroup.GET("/downloads", downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
@@ -97,4 +100,103 @@ func contact(c *gin.Context) {
 
 func noRoute(c *gin.Context) {
 	c.HTML(404, "404", gin.H{})
+}
+
+func versions(c *gin.Context) {
+	var grlValue string
+	var pmrlValue string
+	var dpysValue string
+	var aiohttplimiterValue string
+	data := make(map[string]string)
+	var grl map[string]string
+	var pmrl map[string]string
+	var dpys map[string]map[string]string
+	var aiohttplimiter map[string]map[string]string
+
+	client := http.Client{
+		Timeout: time.Second * 5,
+	}
+
+	if grlErr := Store.Get("grl_version", &grlValue); grlErr != nil {
+		res, resErr := client.Get("https://api.github.com/repos/Nebulizer1213/GinRateLimit/releases/latest")
+		if resErr != nil || res.StatusCode != 200 {
+			Store.Set("grl_version", "Not Found", time.Minute*10)
+			data["GinRateLimit"] = "Not Found"
+		} else {
+			defer res.Body.Close()
+			bodyBytes, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				Store.Set("grl_version", "Not Found", time.Minute*10)
+				data["GinRateLimit"] = "Not Found"
+			}
+			json.Unmarshal(bodyBytes, &grl)
+			version := grl["name"]
+			data["GinRateLimit"] = version
+		}
+	} else {
+		data["GinRateLimit"] = grlValue
+	}
+
+	if pmrlErr := Store.Get("pmrl_version", &pmrlValue); pmrlErr != nil {
+		res, resErr := client.Get("https://api.github.com/repos/Nebulizer1213/precise-memory-rate-limit/releases/latest")
+		if resErr != nil || res.StatusCode != 200 {
+			Store.Set("pmrl_version", "Not Found", time.Minute*10)
+			data["precise-memory-rate-limit"] = "Not Found"
+		} else {
+			defer res.Body.Close()
+			bodyBytes, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				Store.Set("pmrl_version", "Not Found", time.Minute*10)
+				data["precise-memory-rate-limit"] = "Not Found"
+			}
+			json.Unmarshal(bodyBytes, &pmrl)
+			version := pmrl["name"]
+			data["precise-memory-rate-limit"] = version
+		}
+	} else {
+		data["precise-memory-rate-limit"] = pmrlValue
+	}
+
+	if dpysErr := Store.Get("dpys_version", &dpysValue); dpysErr != nil {
+		res, resErr := client.Get("https://pypi.org/pypi/dpys/json")
+		if resErr != nil || res.StatusCode != 200 {
+			Store.Set("dpys_version", "Not Found", time.Minute*10)
+			data["dpys"] = "Not Found"
+		} else {
+			defer res.Body.Close()
+			bodyBytes, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				Store.Set("dpys_version", "Not Found", time.Minute*10)
+				data["dpys"] = "Not Found"
+			}
+			json.Unmarshal(bodyBytes, &dpys)
+			version := dpys["info"]["version"]
+			data["dpys"] = version
+		}
+	} else {
+		data["dpys"] = dpysValue
+	}
+
+	if aiohttplimiterErr := Store.Get("aiohttplimiter_version", &aiohttplimiterValue); aiohttplimiterErr != nil {
+		res, resErr := client.Get("https://pypi.org/pypi/aiohttp-ratelimiter/json")
+		if resErr != nil || res.StatusCode != 200 {
+			Store.Set("aiohttplimiter_version", "Not Found", time.Minute*10)
+			data["aiohttp-ratelimiter"] = "Not Found"
+		} else {
+			defer res.Body.Close()
+			bodyBytes, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				Store.Set("aiohttplimiter_version", "Not Found", time.Minute*10)
+				data["aiohttp-ratelimiter"] = "Not Found"
+			}
+			json.Unmarshal(bodyBytes, &aiohttplimiter)
+			version := aiohttplimiter["info"]["version"]
+			data["aiohttp-ratelimiter"] = version
+		}
+	} else {
+		data["aiohttp-ratelimiter"] = aiohttplimiterValue
+	}
+
+	c.JSON(200, data)
+
 }
