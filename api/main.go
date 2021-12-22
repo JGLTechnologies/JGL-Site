@@ -20,7 +20,7 @@ type postForm struct {
 
 func Contact(c *gin.Context) {
 	formData := postForm{}
-	if err := c.Bind(&formData); err != nil {
+	if bindingErr := c.Bind(&formData); bindingErr != nil {
 		c.JSON(400, gin.H{"error": "invalid request"})
 		return
 	}

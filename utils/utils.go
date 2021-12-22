@@ -1,14 +1,81 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/Nebulizer1213/GinRateLimit"
+	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-gonic/gin"
 	"github.com/mattn/go-isatty"
+	"io/ioutil"
+	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
+
+func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
+	var downloads string
+	if err := store.Get("downloads_"+project, &downloads); err != nil {
+		var data map[string]interface{}
+		client := http.Client{
+			Timeout: time.Second * 1,
+		}
+		res, err := client.Get("https://api.pepy.tech/api/projects/" + project)
+		if err != nil {
+			store.Set("downloads_"+project, "Not Found", time.Minute*10)
+			return "Not Found"
+		}
+		defer res.Body.Close()
+		bodyBytes, readErr := ioutil.ReadAll(res.Body)
+		if readErr != nil {
+			store.Set("downloads_"+project, "Not Found", time.Minute*10)
+			return "Not Found"
+		}
+		jsonErr := json.Unmarshal(bodyBytes, &data)
+		if jsonErr != nil {
+			fmt.Println(fmt.Sprintf("%s", jsonErr))
+			store.Set("downloads_"+project, "Not Found", time.Minute*10)
+			return "Not Found"
+		}
+		store.Set("downloads_"+project, data["total_downloads"], time.Hour*24)
+		return strconv.Itoa(int(data["total_downloads"].(float64)))
+	} else {
+		return downloads
+	}
+}
+
+func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
+	var downloads string
+	if err := store.Get("downloads_"+project, &downloads); err != nil {
+		var data map[string]interface{}
+		client := http.Client{
+			Timeout: time.Second * 1,
+		}
+		res, err := client.Get("https://api.npmjs.org/downloads/point/last-year/" + project)
+		if err != nil {
+			store.Set("downloads_"+project, "Not Found", time.Minute*10)
+			return "Not Found"
+		}
+		defer res.Body.Close()
+		bodyBytes, readErr := ioutil.ReadAll(res.Body)
+		if readErr != nil {
+			store.Set("downloads_"+project, "Not Found", time.Minute*10)
+			return "Not Found"
+		}
+		jsonErr := json.Unmarshal(bodyBytes, &data)
+		if jsonErr != nil {
+			fmt.Println(fmt.Sprintf("%s", jsonErr))
+			store.Set("downloads_"+project, "Not Found", time.Minute*10)
+			return "Not Found"
+		}
+		store.Set("downloads_"+project, data["downloads"], time.Hour*24)
+		return strconv.Itoa(int(data["downloads"].(float64)))
+	} else {
+		return downloads
+	}
+}
 
 func GetMW(rate int, limit int) func(c *gin.Context) {
 	return GinRateLimit.RateLimiter(func(c *gin.Context) string {

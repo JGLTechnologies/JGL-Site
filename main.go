@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+var Store *persist.MemoryStore
+
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 	r := multitemplate.NewRenderer()
@@ -29,7 +31,7 @@ func main() {
 	r.AddFromFiles("contact-error", "go web files/error.html")
 	server := gin.New()
 	server.HTMLRender = r
-	store := persist.NewMemoryStore(time.Hour)
+	Store = persist.NewMemoryStore(time.Hour)
 
 	server.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
 		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
@@ -38,11 +40,11 @@ func main() {
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
 
-	server.GET("/", cache.CacheByRequestPath(store, time.Hour*24), home)
-	server.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
-	server.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
-	server.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
-	server.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
+	server.GET("/", cache.CacheByRequestPath(Store, time.Hour*24), home)
+	server.GET("/home", cache.CacheByRequestPath(Store, time.Hour*24), home)
+	server.GET("/contact", cache.CacheByRequestPath(Store, time.Hour*24), contact)
+	server.GET("/logo.png", cache.CacheByRequestPath(Store, time.Hour*24), logo)
+	server.GET("/favicon.ico", cache.CacheByRequestPath(Store, time.Hour*24), favicon)
 
 	testGroup := server.Group("/test")
 	{
@@ -52,11 +54,11 @@ func main() {
 
 	apiGroup := server.Group("/api")
 	{
-		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
-		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
-		apiGroup.GET("/dpys", cache.CacheByRequestPath(store, time.Minute*10), api.DPYS)
-		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(store, time.Minute*10), api.AIOHTTPRateLimiter)
-		apiGroup.GET("/GinRateLimit", cache.CacheByRequestPath(store, time.Minute*10), api.GinRateLimit)
+		apiGroup.GET("/bot/status", cache.CacheByRequestPath(Store, time.Minute), api.BotStatus)
+		apiGroup.GET("/bot/info", cache.CacheByRequestPath(Store, time.Hour), api.BotInfo)
+		apiGroup.GET("/dpys", cache.CacheByRequestPath(Store, time.Minute*10), api.DPYS)
+		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(Store, time.Minute*10), api.AIOHTTPRateLimiter)
+		apiGroup.GET("/GinRateLimit", cache.CacheByRequestPath(Store, time.Minute*10), api.GinRateLimit)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
@@ -74,7 +76,7 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
-	c.HTML(200, "home", gin.H{})
+	c.HTML(200, "home", gin.H{"dpys": utils.GetPythonLibDownloads("dpys", Store), "aiohttplimiter": utils.GetPythonLibDownloads("aiohttp-ratelimiter", Store), "pmrl": utils.GetNPMLibDownloads("precise-memory-rate-limit", Store)})
 }
 
 func contact(c *gin.Context) {
