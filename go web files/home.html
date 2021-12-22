@@ -50,7 +50,6 @@
                         that uses the token bucket algorithm
                         <br><a href="/GinRateLimit" style="color: var(--bs-dark); text-decoration: none;">GinRateLimit:</a>
                         <br>A Golang library to provide rate limiting for the Gin web framework
-                    <div style="text-align: center;"><button style="position: relative; top: 50px;" class="btn btn-primary btn-lg" onclick="statsButton()"><span id="statsButtonText"></span></button></div>
                     </p>
                 </div>
             </div>
@@ -89,41 +88,7 @@
     }
 
     window.onload = () => {
-        let button_text = document.getElementById("statsButtonText")
-        if (getCookie("statsEnabled") === "true") {
-            button_text.innerText = "Disable Download Stats"
-            loadStats()
-        } else {
-            button_text.innerText = "Enable Download Stats"
-        }
-    }
-
-    function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for(let i = 0; i <ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
-
-    function statsButton() {
-        let d = new Date()
-        d.setFullYear(2038, 1)
-        let expires = d.toUTCString()
-        if (getCookie("statsEnabled") != "true") {
-            document.cookie = "statsEnabled=true;expires=" + expires + ";path=/"
-        } else {
-            document.cookie = "statsEnabled=false;expires=" + expires + ";path=/"
-        }
-        location.reload()
+        loadStats()
     }
 </script>
 <!-- Bootstrap core JS-->
