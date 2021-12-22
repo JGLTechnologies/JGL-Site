@@ -16,7 +16,7 @@ import (
 )
 
 func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
-	var downloads string
+	var downloads float64
 	if err := store.Get("downloads_"+project, &downloads); err != nil {
 		var data map[string]interface{}
 		client := http.Client{
@@ -42,12 +42,12 @@ func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
 		store.Set("downloads_"+project, data["total_downloads"], time.Hour*24)
 		return strconv.Itoa(int(data["total_downloads"].(float64)))
 	} else {
-		return downloads
+		return strconv.Itoa(int(downloads))
 	}
 }
 
 func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
-	var downloads string
+	var downloads float64
 	if err := store.Get("downloads_"+project, &downloads); err != nil {
 		var data map[string]interface{}
 		client := http.Client{
@@ -73,7 +73,7 @@ func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
 		store.Set("downloads_"+project, data["downloads"], time.Hour*24)
 		return strconv.Itoa(int(data["downloads"].(float64)))
 	} else {
-		return downloads
+		return strconv.Itoa(int(downloads))
 	}
 }
 

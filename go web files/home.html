@@ -41,15 +41,16 @@
                 <div class="col-lg-6">
                     <h2 class="fw-bolder">Current Projects</h2>
                     <p class="lead fw-normal text-muted mb-0">
-                        <a href="/dpys" style="color: var(--bs-dark); text-decoration: none;">DPYS:</a>
+                        <a href="/dpys" style="color: var(--bs-dark); text-decoration: none;">DPYS <span id="dpys"></span>:</a>
                         <br>A Python library that makes it easier to create a Discord bot
-                        <a href="/aiohttplimiter" style="color: var(--bs-dark); text-decoration: none;">aiohttp-ratelimiter:</a>
+                        <a href="/aiohttplimiter" style="color: var(--bs-dark); text-decoration: none;">aiohttp-ratelimiter <span id="aiohttplimiter"></span>:</a>
                         <br>A Python library that provides rate limiting for the aiohttp.web framework
-                        <br><a href="/GinRateLimit" style="color: var(--bs-dark); text-decoration: none;">GinRateLimit:</a>
-                        <br>A Golang library to provide rate limiting for the Gin web framework
-                        <br><a href="/precise-memory-rate-limit" style="color: var(--bs-dark); text-decoration: none;">precise-memory-rate-limit:</a>
+                        <br><a href="/precise-memory-rate-limit" style="color: var(--bs-dark); text-decoration: none;">precise-memory-rate-limit <span id="pmrl"></span>:</a>
                         <br>A datastore for <a style="color: var(--bs-dark); text-decoration: none;" href="https://www.npmjs.com/package/express-rate-limit">express-rate-limit</a>
                         that uses the token bucket algorithm
+                        <br><a href="/GinRateLimit" style="color: var(--bs-dark); text-decoration: none;">GinRateLimit:</a>
+                        <br>A Golang library to provide rate limiting for the Gin web framework
+                    <div style="text-align: center;"><button style="position: relative; top: 50px;" class="btn btn-primary btn-lg" onclick="statsButton()"><span id="statsButtonText"></span></button></div>
                     </p>
                 </div>
             </div>
@@ -75,6 +76,54 @@
 </main>
 <!-- Footer-->
 {{ template "footer" . }}
+<script>
+    async function loadStats() {
+        let stats = await fetch("/api/downloads")
+        stats = await stats.json()
+        let dpys = document.getElementById("dpys")
+        let aiohttplimiter = document.getElementById("aiohttplimiter")
+        let pmrl = document.getElementById("pmrl")
+        dpys.innerText = "(downloads: " + stats["dpys"] + ")"
+        aiohttplimiter.innerText = "(downloads: " + stats["aiohttp-ratelimiter"] + ")"
+        pmrl.innerText = "(downloads: " + stats["precise-memory-rate-limit"] + ")"
+    }
+
+    window.onload = () => {
+        let button_text = document.getElementById("statsButtonText")
+        if (getCookie("statsEnabled") === "true") {
+            button_text.innerText = "Disable Download Stats"
+            loadStats()
+        } else {
+            button_text.innerText = "Enable Download Stats"
+        }
+    }
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function statsButton() {
+        let expires = Date.UTC(2038, 1)
+        if (getCookie("statsEnabled") != "true") {
+            document.cookie = "statsEnabled=true;expires=" + expires + ";path=/"
+        } else {
+            document.cookie = "statsEnabled=false;expires=" + expires + ";path=/"
+        }
+        location.reload()
+    }
+</script>
 <!-- Bootstrap core JS-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

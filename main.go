@@ -59,12 +59,21 @@ func main() {
 		apiGroup.GET("/dpys", cache.CacheByRequestPath(Store, time.Minute*10), api.DPYS)
 		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(Store, time.Minute*10), api.AIOHTTPRateLimiter)
 		apiGroup.GET("/GinRateLimit", cache.CacheByRequestPath(Store, time.Minute*10), api.GinRateLimit)
+		apiGroup.GET("/downloads", downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
 	server.NoRoute(noRoute)
 	server.NoMethod(noRoute)
 	log.Fatal(server.Run(":81"))
+}
+
+func downloads(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"dpys":                      utils.GetPythonLibDownloads("dpys", Store),
+		"aiohttp-ratelimiter":       utils.GetPythonLibDownloads("aiohttp-ratelimiter", Store),
+		"precise-memory-rate-limit": utils.GetNPMLibDownloads("precise-memory-rate-limit", Store),
+	})
 }
 
 func favicon(c *gin.Context) {
