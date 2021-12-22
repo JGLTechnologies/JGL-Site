@@ -76,7 +76,7 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
-	c.HTML(200, "home", gin.H{"dpys": utils.GetPythonLibDownloads("dpys", Store), "aiohttplimiter": utils.GetPythonLibDownloads("aiohttp-ratelimiter", Store), "pmrl": utils.GetNPMLibDownloads("precise-memory-rate-limit", Store)})
+	c.HTML(200, "home", gin.H{})
 }
 
 func contact(c *gin.Context) {

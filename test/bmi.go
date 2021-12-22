@@ -74,6 +74,6 @@ func BMICalc(c *gin.Context) {
 		context = gin.H{"bmi": fmt.Sprintf("%.2f", bmi), "weight": ""}
 	}
 	maxAge := time.Date(2038, 1, 1, 0, 0, 0, 0, time.Local).Unix() - time.Now().Unix()
-	c.SetCookie("BMI_LAST", fmt.Sprintf("%.2f", bmi), int(maxAge), "/test/bmi", "jgltechnologies.com", false, false)
+	c.SetCookie("BMI_LAST", fmt.Sprintf("%.2f", bmi), int(maxAge), "/test/bmi", "jgltechnologies.com", false, true)
 	c.HTML(200, "bmi-calc", context)
 }
