@@ -93,7 +93,6 @@ func GetGoLibDownloads(project string, store *persist.MemoryStore) string {
 		request.SetClient(&client)
 		header := make(http.Header)
 		header.Set("Authorization", "token "+os.Getenv("gh_token"))
-		fmt.Println("token " + os.Getenv("gh_token"))
 		res, err := request.Get("https://api.github.com/repos/Nebulizer1213/"+project+"/traffic/clones?per=week", header)
 		if err != nil || res.Response().StatusCode != 200 {
 			store.Set("downloads_"+project, "Not Found", time.Minute*10)
