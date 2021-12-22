@@ -10,10 +10,12 @@ import (
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
+	"github.com/imroc/req"
 	"github.com/joho/godotenv"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -65,7 +67,7 @@ func main() {
 		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(Store, time.Minute*10), api.AIOHTTPRateLimiter)
 		apiGroup.GET("/GinRateLimit", cache.CacheByRequestPath(Store, time.Minute*10), api.GinRateLimit)
 		apiGroup.GET("/precise-memory-rate-limit", cache.CacheByRequestPath(Store, time.Minute*10), api.PreciseMemoryRateLimit)
-		apiGroup.GET("/versions", cache.CacheByRequestPath(Store, time.Minute*10), versions)
+		apiGroup.GET("/versions", versions)
 		apiGroup.GET("/downloads", downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
@@ -119,41 +121,44 @@ func versions(c *gin.Context) {
 		Timeout: time.Second * 5,
 	}
 
+	header := make(http.Header)
+	header.Set("Authorization", "token "+os.Getenv("gh_token"))
+	request := req.New()
+	request.SetClient(&client)
+
 	if grlErr := Store.Get("grl_version", &grlValue); grlErr != nil {
-		res, resErr := client.Get("https://api.github.com/repos/Nebulizer1213/GinRateLimit/releases/latest")
-		if resErr != nil || res.StatusCode != 200 {
+		res, resErr := request.Get("https://api.github.com/repos/Nebulizer1213/GinRateLimit/releases/latest", header)
+		if resErr != nil || res.Response().StatusCode != 200 {
 			Store.Set("grl_version", "Not Found", time.Minute*10)
 			data["GinRateLimit"] = "Not Found"
 		} else {
-			defer res.Body.Close()
-			bodyBytes, err := ioutil.ReadAll(res.Body)
+			err := res.ToJSON(&grl)
 			if err != nil {
 				Store.Set("grl_version", "Not Found", time.Minute*10)
 				data["GinRateLimit"] = "Not Found"
 			}
-			json.Unmarshal(bodyBytes, &grl)
 			version := grl["name"]
 			data["GinRateLimit"] = version
+			Store.Set("grl_version", version, time.Minute*10)
 		}
 	} else {
 		data["GinRateLimit"] = grlValue
 	}
 
 	if pmrlErr := Store.Get("pmrl_version", &pmrlValue); pmrlErr != nil {
-		res, resErr := client.Get("https://api.github.com/repos/Nebulizer1213/precise-memory-rate-limit/releases/latest")
-		if resErr != nil || res.StatusCode != 200 {
+		res, resErr := request.Get("https://api.github.com/repos/Nebulizer1213/precise-memory-rate-limit/releases/latest", header)
+		if resErr != nil || res.Response().StatusCode != 200 {
 			Store.Set("pmrl_version", "Not Found", time.Minute*10)
 			data["precise-memory-rate-limit"] = "Not Found"
 		} else {
-			defer res.Body.Close()
-			bodyBytes, err := ioutil.ReadAll(res.Body)
+			err := res.ToJSON(&pmrl)
 			if err != nil {
 				Store.Set("pmrl_version", "Not Found", time.Minute*10)
 				data["precise-memory-rate-limit"] = "Not Found"
 			}
-			json.Unmarshal(bodyBytes, &pmrl)
 			version := pmrl["name"]
 			data["precise-memory-rate-limit"] = version
+			Store.Set("pmrl_version", version, time.Minute*10)
 		}
 	} else {
 		data["precise-memory-rate-limit"] = pmrlValue
@@ -172,8 +177,9 @@ func versions(c *gin.Context) {
 				data["dpys"] = "Not Found"
 			}
 			json.Unmarshal(bodyBytes, &dpys)
-			version := dpys["info"]["version"]
+			version := "v" + dpys["info"]["version"]
 			data["dpys"] = version
+			Store.Set("dpys_version", version, time.Minute*10)
 		}
 	} else {
 		data["dpys"] = dpysValue
@@ -192,8 +198,9 @@ func versions(c *gin.Context) {
 				data["aiohttp-ratelimiter"] = "Not Found"
 			}
 			json.Unmarshal(bodyBytes, &aiohttplimiter)
-			version := aiohttplimiter["info"]["version"]
+			version := "v" + aiohttplimiter["info"]["version"]
 			data["aiohttp-ratelimiter"] = version
+			Store.Set("aiohttplimiter_version", version, time.Minute*10)
 		}
 	} else {
 		data["aiohttp-ratelimiter"] = aiohttplimiterValue
