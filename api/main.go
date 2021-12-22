@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 type postForm struct {
@@ -29,7 +30,10 @@ func Contact(c *gin.Context) {
 	token := formData.Token
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": utils.GetIP(c)}
 	jsonData, _ := json.Marshal(data)
-	res, err := http.Post("https://jglbotapi.us/contact", "application/json", bytes.NewBuffer(jsonData))
+	client := http.Client{
+		Timeout: time.Second * 5,
+	}
+	res, err := client.Post("https://jglbotapi.us/contact", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
 	} else {

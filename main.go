@@ -56,6 +56,7 @@ func main() {
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
 		apiGroup.GET("/dpys", cache.CacheByRequestPath(store, time.Minute*10), api.DPYS)
 		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(store, time.Minute*10), api.AIOHTTPRateLimiter)
+		apiGroup.GET("/GinRateLimit", cache.CacheByRequestPath(store, time.Minute*10), api.GinRateLimit)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
