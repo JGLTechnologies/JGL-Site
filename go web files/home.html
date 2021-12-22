@@ -115,7 +115,9 @@
     }
 
     function statsButton() {
-        let expires = Date.UTC(2038, 1)
+        let d = new Date()
+        d.setFullYear(2038, 1)
+        let expires = d.toUTCString()
         if (getCookie("statsEnabled") != "true") {
             document.cookie = "statsEnabled=true;expires=" + expires + ";path=/"
         } else {
