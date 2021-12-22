@@ -59,6 +59,8 @@ func main() {
 		apiGroup.GET("/dpys", cache.CacheByRequestPath(Store, time.Minute*10), api.DPYS)
 		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(Store, time.Minute*10), api.AIOHTTPRateLimiter)
 		apiGroup.GET("/GinRateLimit", cache.CacheByRequestPath(Store, time.Minute*10), api.GinRateLimit)
+		apiGroup.GET("/precise-memory-rate-limit", cache.CacheByRequestPath(Store, time.Minute*10), api.PreciseMemoryRateLimit)
+		apiGroup.GET("/versions", cache.CacheByRequestPath(Store, time.Minute*10), api.Versions)
 		apiGroup.GET("/downloads", downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}

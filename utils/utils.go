@@ -20,7 +20,7 @@ func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
 	if err := store.Get("downloads_"+project, &downloads); err != nil {
 		var data map[string]interface{}
 		client := http.Client{
-			Timeout: time.Second * 3,
+			Timeout: time.Second * 5,
 		}
 		res, err := client.Get("https://api.pepy.tech/api/projects/" + project)
 		if err != nil {
@@ -47,13 +47,17 @@ func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
 }
 
 func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
+	var date string
+	date += strconv.Itoa(time.Now().Year())
+	date += strconv.Itoa(int(time.Now().Month()))
+	date += strconv.Itoa(time.Now().Day())
 	var downloads float64
 	if err := store.Get("downloads_"+project, &downloads); err != nil {
 		var data map[string]interface{}
 		client := http.Client{
-			Timeout: time.Second * 3,
+			Timeout: time.Second * 5,
 		}
-		res, err := client.Get("https://api.npmjs.org/downloads/point/last-year/" + project)
+		res, err := client.Get("https://api.npmjs.org/downloads/point/2020-1-1:" + date + "/" + project)
 		if err != nil {
 			store.Set("downloads_"+project, "Not Found", time.Minute*10)
 			return "Not Found"
