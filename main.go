@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -72,13 +73,37 @@ func main() {
 }
 
 func updateVersionsAndDownloads() {
+	var dpys string
+	var aiohttplimiter string
+	var grl string
+	var pmrl string
+	var getTotal func() string
+	list := []*string{&dpys, &aiohttplimiter, &grl, &pmrl}
+
 	for {
+		dpys = utils.GetPythonLibDownloads("dpys", store)
+		aiohttplimiter = utils.GetPythonLibDownloads("aiohttp-ratelimiter", store)
+		pmrl = utils.GetNPMLibDownloads("precise-memory-rate-limit", store)
+		grl = utils.GetGoLibDownloads("GinRateLimit", store)
+		getTotal = func() string {
+			total := 0
+			for _, v := range list {
+				if *v == "Not Found" {
+					continue
+				} else {
+					num, _ := strconv.Atoi(*v)
+					total += num
+				}
+			}
+			return strconv.Itoa(total)
+		}
 		store.Set("versions", utils.Versions(store), -1)
 		store.Set("downloads", map[string]string{
-			"dpys":                      utils.GetPythonLibDownloads("dpys", store),
-			"aiohttp-ratelimiter":       utils.GetPythonLibDownloads("aiohttp-ratelimiter", store),
-			"precise-memory-rate-limit": utils.GetNPMLibDownloads("precise-memory-rate-limit", store),
-			"GinRateLimit":              utils.GetGoLibDownloads("GinRateLimit", store),
+			"dpys":                      dpys,
+			"aiohttp-ratelimiter":       aiohttplimiter,
+			"precise-memory-rate-limit": pmrl,
+			"GinRateLimit":              grl,
+			"total":                     getTotal(),
 		}, -1)
 		time.Sleep(time.Minute * 10)
 	}
