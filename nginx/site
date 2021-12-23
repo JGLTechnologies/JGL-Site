@@ -17,10 +17,6 @@ server {
         return 301 https://discord.gg/TUUbzTa3B7;
     }
 
-    location = /bot/donate {
-        return 301 https://www.paypal.com/donate/?business=4RE48WGW7R5YS&no_recurring=0&item_name=The+JGL+Bot+is+a+free+Discord+bot.+We+need+money+to+keep+it+running.+We+would+appreciate+if+you+donated+to+the+bot.&currency_code=USD;
-    }
-
     location = /dpys {
         return 301 https://sites.google.com/view/dpys;
     }

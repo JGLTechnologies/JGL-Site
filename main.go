@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var Store *persist.MemoryStore
+var store *persist.MemoryStore
 
 func main() {
 	godotenv.Load("../.env")
@@ -33,7 +33,7 @@ func main() {
 	r.AddFromFiles("contact-error", "go web files/error.html")
 	server := gin.New()
 	server.HTMLRender = r
-	Store = persist.NewMemoryStore(time.Hour)
+	store = persist.NewMemoryStore(time.Hour)
 
 	server.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
 		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
@@ -42,11 +42,11 @@ func main() {
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
 
-	server.GET("/", cache.CacheByRequestPath(Store, time.Minute*10), home)
-	server.GET("/home", cache.CacheByRequestPath(Store, time.Minute*10), home)
-	server.GET("/contact", cache.CacheByRequestPath(Store, time.Hour*24), contact)
-	server.GET("/logo.png", cache.CacheByRequestPath(Store, time.Hour*24), logo)
-	server.GET("/favicon.ico", cache.CacheByRequestPath(Store, time.Hour*24), favicon)
+	server.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
+	server.GET("/home", cache.CacheByRequestPath(store, time.Minute*10), home)
+	server.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
+	server.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
+	server.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
 
 	testGroup := server.Group("/test")
 	{
@@ -57,12 +57,8 @@ func main() {
 	apiGroup := server.Group("/api")
 	{
 		apiMW := utils.GetMW(1, 10)
-		apiGroup.GET("/bot/status", cache.CacheByRequestPath(Store, time.Minute), api.BotStatus)
-		apiGroup.GET("/bot/info", cache.CacheByRequestPath(Store, time.Hour), api.BotInfo)
-		apiGroup.GET("/dpys", cache.CacheByRequestPath(Store, time.Minute*10), api.DPYS)
-		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(Store, time.Minute*10), api.AIOHTTPRateLimiter)
-		apiGroup.GET("/GinRateLimit", cache.CacheByRequestPath(Store, time.Minute*10), api.GinRateLimit)
-		apiGroup.GET("/precise-memory-rate-limit", cache.CacheByRequestPath(Store, time.Minute*10), api.PreciseMemoryRateLimit)
+		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
+		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
 		apiGroup.GET("/versions", apiMW, versions)
 		apiGroup.GET("/downloads", apiMW, downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
@@ -77,12 +73,12 @@ func main() {
 
 func updateVersionsAndDownloads() {
 	for {
-		Store.Set("versions", utils.Versions(Store), -1)
-		Store.Set("downloads", map[string]string{
-			"dpys":                      utils.GetPythonLibDownloads("dpys", Store),
-			"aiohttp-ratelimiter":       utils.GetPythonLibDownloads("aiohttp-ratelimiter", Store),
-			"precise-memory-rate-limit": utils.GetNPMLibDownloads("precise-memory-rate-limit", Store),
-			"GinRateLimit":              utils.GetGoLibDownloads("GinRateLimit", Store),
+		store.Set("versions", utils.Versions(store), -1)
+		store.Set("downloads", map[string]string{
+			"dpys":                      utils.GetPythonLibDownloads("dpys", store),
+			"aiohttp-ratelimiter":       utils.GetPythonLibDownloads("aiohttp-ratelimiter", store),
+			"precise-memory-rate-limit": utils.GetNPMLibDownloads("precise-memory-rate-limit", store),
+			"GinRateLimit":              utils.GetGoLibDownloads("GinRateLimit", store),
 		}, -1)
 		time.Sleep(time.Minute * 10)
 	}
@@ -90,13 +86,13 @@ func updateVersionsAndDownloads() {
 
 func versions(c *gin.Context) {
 	var data map[string]string
-	Store.Get("versions", &data)
+	store.Get("versions", &data)
 	c.JSON(200, data)
 }
 
 func downloads(c *gin.Context) {
 	var data map[string]string
-	Store.Get("downloads", &data)
+	store.Get("downloads", &data)
 	c.JSON(200, data)
 }
 
@@ -112,8 +108,8 @@ func home(c *gin.Context) {
 	var downloads map[string]string
 	var versions map[string]string
 
-	Store.Get("downloads", &downloads)
-	Store.Get("versions", &versions)
+	store.Get("downloads", &downloads)
+	store.Get("versions", &versions)
 
 	c.HTML(200, "home", gin.H{
 		"dpys_downloads":           downloads["dpys"],
