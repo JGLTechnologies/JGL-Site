@@ -4,18 +4,13 @@ import (
 	"JGLSite/api"
 	"JGLSite/test"
 	"JGLSite/utils"
-	"encoding/json"
 	"fmt"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
-	"github.com/imroc/req"
 	"github.com/joho/godotenv"
-	"io/ioutil"
 	"log"
-	"net/http"
-	"os"
 	"time"
 )
 
@@ -47,8 +42,8 @@ func main() {
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
 
-	server.GET("/", cache.CacheByRequestPath(Store, time.Hour*24), home)
-	server.GET("/home", cache.CacheByRequestPath(Store, time.Hour*24), home)
+	server.GET("/", cache.CacheByRequestPath(Store, time.Minute*10), home)
+	server.GET("/home", cache.CacheByRequestPath(Store, time.Minute*10), home)
 	server.GET("/contact", cache.CacheByRequestPath(Store, time.Hour*24), contact)
 	server.GET("/logo.png", cache.CacheByRequestPath(Store, time.Hour*24), logo)
 	server.GET("/favicon.ico", cache.CacheByRequestPath(Store, time.Hour*24), favicon)
@@ -61,29 +56,48 @@ func main() {
 
 	apiGroup := server.Group("/api")
 	{
+		apiMW := utils.GetMW(1, 10)
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(Store, time.Minute), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(Store, time.Hour), api.BotInfo)
 		apiGroup.GET("/dpys", cache.CacheByRequestPath(Store, time.Minute*10), api.DPYS)
 		apiGroup.GET("/aiohttplimiter", cache.CacheByRequestPath(Store, time.Minute*10), api.AIOHTTPRateLimiter)
 		apiGroup.GET("/GinRateLimit", cache.CacheByRequestPath(Store, time.Minute*10), api.GinRateLimit)
 		apiGroup.GET("/precise-memory-rate-limit", cache.CacheByRequestPath(Store, time.Minute*10), api.PreciseMemoryRateLimit)
-		apiGroup.GET("/versions", versions)
-		apiGroup.GET("/downloads", downloads)
+		apiGroup.GET("/versions", apiMW, versions)
+		apiGroup.GET("/downloads", apiMW, downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
 	server.NoRoute(noRoute)
 	server.NoMethod(noRoute)
+	go updateVersionsAndDownloads()
+	time.Sleep(time.Second * 3)
 	log.Fatal(server.Run(":81"))
 }
 
+func updateVersionsAndDownloads() {
+	for {
+		Store.Set("versions", utils.Versions(Store), -1)
+		Store.Set("downloads", map[string]string{
+			"dpys":                      utils.GetPythonLibDownloads("dpys", Store),
+			"aiohttp-ratelimiter":       utils.GetPythonLibDownloads("aiohttp-ratelimiter", Store),
+			"precise-memory-rate-limit": utils.GetNPMLibDownloads("precise-memory-rate-limit", Store),
+			"GinRateLimit":              utils.GetGoLibDownloads("GinRateLimit", Store),
+		}, -1)
+		time.Sleep(time.Minute * 10)
+	}
+}
+
+func versions(c *gin.Context) {
+	var data map[string]string
+	Store.Get("versions", &data)
+	c.JSON(200, data)
+}
+
 func downloads(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"dpys":                      utils.GetPythonLibDownloads("dpys", Store),
-		"aiohttp-ratelimiter":       utils.GetPythonLibDownloads("aiohttp-ratelimiter", Store),
-		"precise-memory-rate-limit": utils.GetNPMLibDownloads("precise-memory-rate-limit", Store),
-		"GinRateLimit":              utils.GetGoLibDownloads("GinRateLimit", Store),
-	})
+	var data map[string]string
+	Store.Get("downloads", &data)
+	c.JSON(200, data)
 }
 
 func favicon(c *gin.Context) {
@@ -95,7 +109,23 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
-	c.HTML(200, "home", gin.H{})
+	var downloads map[string]string
+	var versions map[string]string
+
+	Store.Get("downloads", &downloads)
+	Store.Get("versions", &versions)
+
+	c.HTML(200, "home", gin.H{
+		"dpys_downloads":           downloads["dpys"],
+		"aiohttplimiter_downloads": downloads["aiohttp-ratelimiter"],
+		"grl_downloads":            downloads["GinRateLimit"],
+		"pmrl_downloads":           downloads["precise-memory-rate-limit"],
+
+		"dpys_version":           versions["dpys"],
+		"aiohttplimiter_version": versions["aiohttp-ratelimiter"],
+		"grl_version":            versions["GinRateLimit"],
+		"pmrl_version":           versions["precise-memory-rate-limit"],
+	})
 }
 
 func contact(c *gin.Context) {
@@ -104,108 +134,4 @@ func contact(c *gin.Context) {
 
 func noRoute(c *gin.Context) {
 	c.HTML(404, "404", gin.H{})
-}
-
-func versions(c *gin.Context) {
-	var grlValue string
-	var pmrlValue string
-	var dpysValue string
-	var aiohttplimiterValue string
-	data := make(map[string]string)
-	var grl map[string]string
-	var pmrl map[string]string
-	var dpys map[string]map[string]string
-	var aiohttplimiter map[string]map[string]string
-
-	client := http.Client{
-		Timeout: time.Second * 5,
-	}
-
-	header := make(http.Header)
-	header.Set("Authorization", "token "+os.Getenv("gh_token"))
-	request := req.New()
-	request.SetClient(&client)
-
-	if grlErr := Store.Get("grl_version", &grlValue); grlErr != nil {
-		res, resErr := request.Get("https://api.github.com/repos/Nebulizer1213/GinRateLimit/releases/latest", header)
-		if resErr != nil || res.Response().StatusCode != 200 {
-			Store.Set("grl_version", "Not Found", time.Minute*10)
-			data["GinRateLimit"] = "Not Found"
-		} else {
-			err := res.ToJSON(&grl)
-			if err != nil {
-				Store.Set("grl_version", "Not Found", time.Minute*10)
-				data["GinRateLimit"] = "Not Found"
-			}
-			version := grl["name"]
-			data["GinRateLimit"] = version
-			Store.Set("grl_version", version, time.Minute*10)
-		}
-	} else {
-		data["GinRateLimit"] = grlValue
-	}
-
-	if pmrlErr := Store.Get("pmrl_version", &pmrlValue); pmrlErr != nil {
-		res, resErr := request.Get("https://api.github.com/repos/Nebulizer1213/precise-memory-rate-limit/releases/latest", header)
-		if resErr != nil || res.Response().StatusCode != 200 {
-			Store.Set("pmrl_version", "Not Found", time.Minute*10)
-			data["precise-memory-rate-limit"] = "Not Found"
-		} else {
-			err := res.ToJSON(&pmrl)
-			if err != nil {
-				Store.Set("pmrl_version", "Not Found", time.Minute*10)
-				data["precise-memory-rate-limit"] = "Not Found"
-			}
-			version := pmrl["name"]
-			data["precise-memory-rate-limit"] = version
-			Store.Set("pmrl_version", version, time.Minute*10)
-		}
-	} else {
-		data["precise-memory-rate-limit"] = pmrlValue
-	}
-
-	if dpysErr := Store.Get("dpys_version", &dpysValue); dpysErr != nil {
-		res, resErr := client.Get("https://pypi.org/pypi/dpys/json")
-		if resErr != nil || res.StatusCode != 200 {
-			Store.Set("dpys_version", "Not Found", time.Minute*10)
-			data["dpys"] = "Not Found"
-		} else {
-			defer res.Body.Close()
-			bodyBytes, err := ioutil.ReadAll(res.Body)
-			if err != nil {
-				Store.Set("dpys_version", "Not Found", time.Minute*10)
-				data["dpys"] = "Not Found"
-			}
-			json.Unmarshal(bodyBytes, &dpys)
-			version := "v" + dpys["info"]["version"]
-			data["dpys"] = version
-			Store.Set("dpys_version", version, time.Minute*10)
-		}
-	} else {
-		data["dpys"] = dpysValue
-	}
-
-	if aiohttplimiterErr := Store.Get("aiohttplimiter_version", &aiohttplimiterValue); aiohttplimiterErr != nil {
-		res, resErr := client.Get("https://pypi.org/pypi/aiohttp-ratelimiter/json")
-		if resErr != nil || res.StatusCode != 200 {
-			Store.Set("aiohttplimiter_version", "Not Found", time.Minute*10)
-			data["aiohttp-ratelimiter"] = "Not Found"
-		} else {
-			defer res.Body.Close()
-			bodyBytes, err := ioutil.ReadAll(res.Body)
-			if err != nil {
-				Store.Set("aiohttplimiter_version", "Not Found", time.Minute*10)
-				data["aiohttp-ratelimiter"] = "Not Found"
-			}
-			json.Unmarshal(bodyBytes, &aiohttplimiter)
-			version := "v" + aiohttplimiter["info"]["version"]
-			data["aiohttp-ratelimiter"] = version
-			Store.Set("aiohttplimiter_version", version, time.Minute*10)
-		}
-	} else {
-		data["aiohttp-ratelimiter"] = aiohttplimiterValue
-	}
-
-	c.JSON(200, data)
-
 }
