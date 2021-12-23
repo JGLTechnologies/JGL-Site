@@ -60,7 +60,7 @@ func main() {
 		apiMW := utils.GetMW(1, 10)
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
-		apiGroup.GET("/versions", apiMW, versions)
+		apiGroup.GET("/versions", cache.CacheByRequestPath(store, time.Minute*10), versions)
 		apiGroup.GET("/downloads", apiMW, downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
