@@ -2,11 +2,9 @@ package api
 
 import (
 	"JGLSite/utils"
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
+	"github.com/imroc/req"
 	"net/http"
 	"time"
 )
@@ -29,28 +27,31 @@ func Contact(c *gin.Context) {
 	message := formData.Message
 	token := formData.Token
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": utils.GetIP(c)}
-	jsonData, _ := json.Marshal(data)
 	client := http.Client{
 		Timeout: time.Second * 5,
 	}
-	res, err := client.Post("https://jglbotapi.us/contact", "application/json", bytes.NewBuffer(jsonData))
+	r := req.New()
+	r.SetClient(&client)
+	res, err := r.Post("https://jglbotapi.us/contact", req.BodyJSON(&data))
 	if err != nil {
 		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
 	} else {
-		defer res.Body.Close()
 		var resJSON map[string]interface{}
-		resData, _ := ioutil.ReadAll(res.Body)
-		json.Unmarshal(resData, &resJSON)
-		if res.StatusCode == 200 {
-			c.HTML(200, "contact-thank-you", gin.H{})
-		} else if res.StatusCode == 429 {
-			c.HTML(429, "contact-limit", gin.H{"remaining": resJSON["remaining"]})
-		} else if res.StatusCode == 401 {
-			c.HTML(401, "contact-captcha", gin.H{})
-		} else if res.StatusCode == 403 {
-			c.HTML(403, "contact-bl", gin.H{})
+		jsonErr := res.ToJSON(&resJSON)
+		if jsonErr != nil {
+			c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
 		} else {
-			c.HTML(500, "contact-error", gin.H{"error": resJSON["error"]})
+			if res.Response().StatusCode == 200 {
+				c.HTML(200, "contact-thank-you", gin.H{})
+			} else if res.Response().StatusCode == 429 {
+				c.HTML(429, "contact-limit", gin.H{"remaining": resJSON["remaining"]})
+			} else if res.Response().StatusCode == 401 {
+				c.HTML(401, "contact-captcha", gin.H{})
+			} else if res.Response().StatusCode == 403 {
+				c.HTML(403, "contact-bl", gin.H{})
+			} else {
+				c.HTML(500, "contact-error", gin.H{"error": resJSON["error"]})
+			}
 		}
 	}
 
