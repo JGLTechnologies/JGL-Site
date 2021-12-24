@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -59,8 +58,8 @@ func main() {
 	{
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
-		apiGroup.GET("/versions", cache.CacheByRequestPath(store, time.Minute*10), versions)
-		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), downloads)
+		apiGroup.GET("/versions", cache.CacheByRequestPath(store, time.Minute*10), api.Versions)
+		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
@@ -69,19 +68,6 @@ func main() {
 	go updateVersionsAndDownloads()
 	time.Sleep(time.Second * 3)
 	log.Fatal(server.Run(":81"))
-}
-
-func getTotal(list []string) string {
-	total := 0
-	for _, v := range list {
-		if v == "Not Found" {
-			continue
-		} else {
-			num, _ := strconv.Atoi(v)
-			total += num
-		}
-	}
-	return strconv.Itoa(total)
 }
 
 func updateVersionsAndDownloads() {
@@ -102,29 +88,10 @@ func updateVersionsAndDownloads() {
 			"aiohttp-ratelimiter":       aiohttplimiter,
 			"precise-memory-rate-limit": pmrl,
 			"GinRateLimit":              grl,
-			"total":                     getTotal(list),
+			"total":                     api.GetTotal(list),
 		}, -1)
 		time.Sleep(time.Minute * 10)
 	}
-}
-
-func versions(c *gin.Context) {
-	data := utils.Versions()
-	c.JSON(200, data)
-}
-
-func downloads(c *gin.Context) {
-	dpys := utils.GetPythonLibDownloads("dpys")
-	aiohttplimiter := utils.GetPythonLibDownloads("aiohttp-ratelimiter")
-	pmrl := utils.GetNPMLibDownloads("precise-memory-rate-limit")
-	grl := utils.GetGoLibDownloads("GinRateLimit")
-	c.JSON(200, gin.H{
-		"dpys":                      dpys,
-		"aiohttp-ratelimiter":       aiohttplimiter,
-		"precise-memory-rate-limit": pmrl,
-		"GinRateLimit":              grl,
-		"total":                     getTotal([]string{dpys, aiohttplimiter, pmrl, grl}),
-	})
 }
 
 func favicon(c *gin.Context) {
