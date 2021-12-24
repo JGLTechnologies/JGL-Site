@@ -86,8 +86,8 @@
 </head>
 <body>
 <div style="text-align: center;">
-    <p id="head">404</p>
-    <h3><p id="text">The page you requested does not exist.</p></h3>
+    <p id="head">{{ .code }}</p>
+    <h3><p id="text">{{ .message }}</p></h3>
     <button onclick="returnHome()" id="button">Return Home</button>
 </div>
 </body>

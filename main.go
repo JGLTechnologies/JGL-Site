@@ -22,7 +22,7 @@ func main() {
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
-	r.AddFromFiles("404", "go web files/404.html")
+	r.AddFromFiles("status", "go web files/status.html")
 	r.AddFromFiles("bmi-home", "go web files/bmi/index.html")
 	r.AddFromFiles("bmi-calc", "go web files/bmi/bmi.html")
 	r.AddFromFiles("bmi-invalid", "go web files/bmi/invalid.html")
@@ -64,10 +64,12 @@ func main() {
 	}
 
 	server.NoRoute(noRoute)
-	server.NoMethod(noRoute)
+	server.NoMethod(noMethod)
 	go updateVersionsAndDownloads()
 	time.Sleep(time.Second * 3)
-	log.Fatal(server.Run(":81"))
+	if err := server.Run(":81"); err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func updateVersionsAndDownloads() {
@@ -114,11 +116,10 @@ func home(c *gin.Context) {
 		"aiohttplimiter_downloads": downloads["aiohttp-ratelimiter"],
 		"grl_downloads":            downloads["GinRateLimit"],
 		"pmrl_downloads":           downloads["precise-memory-rate-limit"],
-
-		"dpys_version":           versions["dpys"],
-		"aiohttplimiter_version": versions["aiohttp-ratelimiter"],
-		"grl_version":            versions["GinRateLimit"],
-		"pmrl_version":           versions["precise-memory-rate-limit"],
+		"dpys_version":             versions["dpys"],
+		"aiohttplimiter_version":   versions["aiohttp-ratelimiter"],
+		"grl_version":              versions["GinRateLimit"],
+		"pmrl_version":             versions["precise-memory-rate-limit"],
 	})
 }
 
@@ -127,5 +128,15 @@ func contact(c *gin.Context) {
 }
 
 func noRoute(c *gin.Context) {
-	c.HTML(404, "404", gin.H{})
+	c.HTML(404, "status", gin.H{
+		"code":    "404",
+		"message": "The page you requested does not exist.",
+	})
+}
+
+func noMethod(c *gin.Context) {
+	c.HTML(405, "status", gin.H{
+		"code":    "405",
+		"message": "The method you used is not allowed.",
+	})
 }
