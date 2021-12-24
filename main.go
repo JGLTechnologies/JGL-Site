@@ -57,11 +57,10 @@ func main() {
 
 	apiGroup := server.Group("/api")
 	{
-		apiMW := utils.GetMW(1, 10)
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
 		apiGroup.GET("/versions", cache.CacheByRequestPath(store, time.Minute*10), versions)
-		apiGroup.GET("/downloads", apiMW, downloads)
+		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
@@ -72,53 +71,60 @@ func main() {
 	log.Fatal(server.Run(":81"))
 }
 
+func getTotal(list []string) string {
+	total := 0
+	for _, v := range list {
+		if v == "Not Found" {
+			continue
+		} else {
+			num, _ := strconv.Atoi(v)
+			total += num
+		}
+	}
+	return strconv.Itoa(total)
+}
+
 func updateVersionsAndDownloads() {
 	var dpys string
 	var aiohttplimiter string
 	var grl string
 	var pmrl string
-	var getTotal func() string
-	list := []*string{&dpys, &aiohttplimiter, &grl, &pmrl}
 
 	for {
-		dpys = utils.GetPythonLibDownloads("dpys", store)
-		aiohttplimiter = utils.GetPythonLibDownloads("aiohttp-ratelimiter", store)
-		pmrl = utils.GetNPMLibDownloads("precise-memory-rate-limit", store)
-		grl = utils.GetGoLibDownloads("GinRateLimit", store)
-		getTotal = func() string {
-			total := 0
-			for _, v := range list {
-				if *v == "Not Found" {
-					continue
-				} else {
-					num, _ := strconv.Atoi(*v)
-					total += num
-				}
-			}
-			return strconv.Itoa(total)
-		}
-		store.Set("versions", utils.Versions(store), -1)
+		dpys = utils.GetPythonLibDownloads("dpys")
+		aiohttplimiter = utils.GetPythonLibDownloads("aiohttp-ratelimiter")
+		pmrl = utils.GetNPMLibDownloads("precise-memory-rate-limit")
+		grl = utils.GetGoLibDownloads("GinRateLimit")
+		list := []string{dpys, aiohttplimiter, grl, pmrl}
+		store.Set("versions", utils.Versions(), -1)
 		store.Set("downloads", map[string]string{
 			"dpys":                      dpys,
 			"aiohttp-ratelimiter":       aiohttplimiter,
 			"precise-memory-rate-limit": pmrl,
 			"GinRateLimit":              grl,
-			"total":                     getTotal(),
+			"total":                     getTotal(list),
 		}, -1)
 		time.Sleep(time.Minute * 10)
 	}
 }
 
 func versions(c *gin.Context) {
-	var data map[string]string
-	store.Get("versions", &data)
+	data := utils.Versions()
 	c.JSON(200, data)
 }
 
 func downloads(c *gin.Context) {
-	var data map[string]string
-	store.Get("downloads", &data)
-	c.JSON(200, data)
+	dpys := utils.GetPythonLibDownloads("dpys")
+	aiohttplimiter := utils.GetPythonLibDownloads("aiohttp-ratelimiter")
+	pmrl := utils.GetNPMLibDownloads("precise-memory-rate-limit")
+	grl := utils.GetGoLibDownloads("GinRateLimit")
+	c.JSON(200, gin.H{
+		"dpys":                      dpys,
+		"aiohttp-ratelimiter":       aiohttplimiter,
+		"precise-memory-rate-limit": pmrl,
+		"GinRateLimit":              grl,
+		"total":                     getTotal([]string{dpys, aiohttplimiter, pmrl, grl}),
+	})
 }
 
 func favicon(c *gin.Context) {

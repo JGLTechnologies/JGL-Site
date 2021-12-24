@@ -1,14 +1,11 @@
 package utils
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/Nebulizer1213/GinRateLimit"
-	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"github.com/mattn/go-isatty"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -16,101 +13,67 @@ import (
 	"time"
 )
 
-func GetPythonLibDownloads(project string, store *persist.MemoryStore) string {
-	var downloads string
-	if err := store.Get("downloads_"+project, &downloads); err != nil {
-		var data map[string]interface{}
-		client := http.Client{
-			Timeout: time.Second * 5,
-		}
-		res, err := client.Get("https://api.pepy.tech/api/projects/" + project)
-		if err != nil || res.StatusCode != 200 {
-			store.Set("downloads_"+project, "Not Found", time.Minute*10)
-			return "Not Found"
-		}
-		defer res.Body.Close()
-		bodyBytes, readErr := ioutil.ReadAll(res.Body)
-		if readErr != nil {
-			store.Set("downloads_"+project, "Not Found", time.Minute*10)
-			return "Not Found"
-		}
-		jsonErr := json.Unmarshal(bodyBytes, &data)
-		if jsonErr != nil {
-			fmt.Println(fmt.Sprintf("%s", jsonErr))
-			store.Set("downloads_"+project, "Not Found", time.Minute*10)
-			return "Not Found"
-		}
-		store.Set("downloads_"+project, strconv.Itoa(int(data["total_downloads"].(float64))), time.Hour*24)
-		return strconv.Itoa(int(data["total_downloads"].(float64)))
-	} else {
-		return downloads
+func GetPythonLibDownloads(project string) string {
+	var data map[string]interface{}
+	client := http.Client{
+		Timeout: time.Second * 5,
 	}
+	request := req.New()
+	request.SetClient(&client)
+	res, err := request.Get("https://api.pepy.tech/api/projects/" + project)
+	if err != nil || res.Response().StatusCode != 200 {
+		return "Not Found"
+	}
+	jsonErr := res.ToJSON(&data)
+	if jsonErr != nil {
+		return "Not Found"
+	}
+	return strconv.Itoa(int(data["total_downloads"].(float64)))
 }
 
-func GetNPMLibDownloads(project string, store *persist.MemoryStore) string {
+func GetNPMLibDownloads(project string) string {
 	var date string
 	date += strconv.Itoa(time.Now().Year())
 	date += strconv.Itoa(int(time.Now().Month()))
 	date += strconv.Itoa(time.Now().Day())
-	var downloads string
-	if err := store.Get("downloads_"+project, &downloads); err != nil {
-		var data map[string]interface{}
-		client := http.Client{
-			Timeout: time.Second * 5,
-		}
-		res, err := client.Get("https://api.npmjs.org/downloads/point/2020-1-1:" + date + "/" + project)
-		if err != nil || res.StatusCode != 200 {
-			store.Set("downloads_"+project, "Not Found", time.Minute*10)
-			return "Not Found"
-		}
-		defer res.Body.Close()
-		bodyBytes, readErr := ioutil.ReadAll(res.Body)
-		if readErr != nil {
-			store.Set("downloads_"+project, "Not Found", time.Minute*10)
-			return "Not Found"
-		}
-		jsonErr := json.Unmarshal(bodyBytes, &data)
-		if jsonErr != nil {
-			fmt.Println(fmt.Sprintf("%s", jsonErr))
-			store.Set("downloads_"+project, "Not Found", time.Minute*10)
-			return "Not Found"
-		}
-		store.Set("downloads_"+project, strconv.Itoa(int(data["downloads"].(float64))), time.Hour*24)
-		return strconv.Itoa(int(data["downloads"].(float64)))
-	} else {
-		return downloads
+	var data map[string]interface{}
+	client := http.Client{
+		Timeout: time.Second * 5,
 	}
+	request := req.New()
+	request.SetClient(&client)
+	res, err := request.Get("https://api.npmjs.org/downloads/point/2020-1-1:" + date + "/" + project)
+	if err != nil || res.Response().StatusCode != 200 {
+		return "Not Found"
+	}
+	jsonErr := res.ToJSON(&data)
+	if jsonErr != nil {
+		return "Not Found"
+	}
+	return strconv.Itoa(int(data["downloads"].(float64)))
 }
 
-func GetGoLibDownloads(project string, store *persist.MemoryStore) string {
-	var downloads string
-	if err := store.Get("downloads_"+project, &downloads); err != nil {
-		request := req.New()
-		var data map[string]interface{}
-		client := http.Client{
-			Timeout: time.Second * 5,
-		}
-		request.SetClient(&client)
-		header := make(http.Header)
-		header.Set("Authorization", "token "+os.Getenv("gh_token"))
-		res, err := request.Get("https://api.github.com/repos/Nebulizer1213/"+project+"/traffic/clones?per=week", header)
-		if err != nil || res.Response().StatusCode != 200 {
-			store.Set("downloads_"+project, "Not Found", time.Minute*10)
-			return "Not Found"
-		}
-		jsonErr := res.ToJSON(&data)
-		if jsonErr != nil {
-			store.Set("downloads_"+project, "Not Found", time.Minute*10)
-			return "Not Found"
-		}
-		store.Set("downloads_"+project, strconv.Itoa(int(data["uniques"].(float64))), time.Hour*24)
-		return strconv.Itoa(int(data["uniques"].(float64)))
-	} else {
-		return downloads
+func GetGoLibDownloads(project string) string {
+	request := req.New()
+	var data map[string]interface{}
+	client := http.Client{
+		Timeout: time.Second * 5,
 	}
+	request.SetClient(&client)
+	header := make(http.Header)
+	header.Set("Authorization", "token "+os.Getenv("gh_token"))
+	res, err := request.Get("https://api.github.com/repos/Nebulizer1213/"+project+"/traffic/clones?per=week", header)
+	if err != nil || res.Response().StatusCode != 200 {
+		return "Not Found"
+	}
+	jsonErr := res.ToJSON(&data)
+	if jsonErr != nil {
+		return "Not Found"
+	}
+	return strconv.Itoa(int(data["uniques"].(float64)))
 }
 
-func Versions(store *persist.MemoryStore) map[string]string {
+func Versions() map[string]string {
 	data := make(map[string]string)
 	var grl map[string]string
 	var pmrl map[string]string
@@ -160,7 +123,6 @@ func Versions(store *persist.MemoryStore) map[string]string {
 		}
 		version := "v" + dpys["info"]["version"]
 		data["dpys"] = version
-		store.Set("dpys_version", version, time.Minute*10)
 	}
 	res, aiohttplimiterErr := request.Get("https://pypi.org/pypi/aiohttp-ratelimiter/json")
 	if aiohttplimiterErr != nil || res.Response().StatusCode != 200 {
@@ -168,7 +130,6 @@ func Versions(store *persist.MemoryStore) map[string]string {
 	} else {
 		err := res.ToJSON(&aiohttplimiter)
 		if err != nil {
-			store.Set("aiohttplimiter_version", "Not Found", time.Minute*10)
 			data["aiohttp-ratelimiter"] = "Not Found"
 		}
 		version := "v" + aiohttplimiter["info"]["version"]
