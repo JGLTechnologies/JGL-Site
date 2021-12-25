@@ -41,6 +41,7 @@ func main() {
 	}))
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
 	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
+	server.HandleMethodNotAllowed = true
 
 	server.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
 	server.GET("/home", cache.CacheByRequestPath(store, time.Minute*10), home)
@@ -128,15 +129,23 @@ func contact(c *gin.Context) {
 }
 
 func noRoute(c *gin.Context) {
-	c.HTML(404, "status", gin.H{
-		"code":    "404",
-		"message": "The page you requested does not exist.",
-	})
+	if utils.StartsWith(c.Request.URL.String(), "/api") {
+		c.JSON(404, gin.H{"error": "Not Found"})
+	} else {
+		c.HTML(404, "status", gin.H{
+			"code":    "404",
+			"message": "The page you requested does not exist.",
+		})
+	}
 }
 
 func noMethod(c *gin.Context) {
-	c.HTML(405, "status", gin.H{
-		"code":    "405",
-		"message": "The method you used is not allowed.",
-	})
+	if utils.StartsWith(c.Request.URL.String(), "/api") {
+		c.JSON(405, gin.H{"error": "Method Not Allowed"})
+	} else {
+		c.HTML(405, "status", gin.H{
+			"code":    "405",
+			"message": "The page you used is not allowed.",
+		})
+	}
 }

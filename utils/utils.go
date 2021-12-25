@@ -13,6 +13,18 @@ import (
 	"time"
 )
 
+func StartsWith(s string, sw string) bool {
+	swLen := len(sw)
+	sLen := len(s)
+	if swLen > sLen {
+		return false
+	} else if s[:swLen] == sw {
+		return true
+	} else {
+		return false
+	}
+}
+
 func GetPythonLibDownloads(project string) string {
 	var data map[string]interface{}
 	client := http.Client{
