@@ -18,7 +18,7 @@ import (
 var store *persist.MemoryStore
 
 func main() {
-	godotenv.Load("../.env")
+	godotenv.Load("/var/www/.env")
 	gin.SetMode(gin.ReleaseMode)
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
