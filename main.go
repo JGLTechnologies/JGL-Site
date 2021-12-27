@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -68,7 +69,13 @@ func main() {
 	server.NoMethod(noMethod)
 	go updateVersionsAndDownloads()
 	time.Sleep(time.Second * 3)
-	if err := server.Run(":81"); err != nil {
+	srv := &http.Server{
+		Addr:         ":81",
+		Handler:      server,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalln(err)
 	}
 }
