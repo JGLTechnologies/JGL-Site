@@ -83,7 +83,7 @@
         var name = document.getElementById("name");
         var message = document.getElementById("message");
         var email_2 = email.value.split("@")[1];
-        if (name.value == null || email.value == null || message.value == null || message.value == "" || name.value == "" || email.value == "" || !(email.value.includes("@")) || email_2.length < 1) {
+        if (name.value == null || email.value == null || message.value == null || message.value == "" || name.value == "" || email.value == "" || !(email.value.includes("@")) || email_2.length < 1 || email.value > 254) {
             return;
         } else {
             document.getElementById("submitButton").style.display = "none";
