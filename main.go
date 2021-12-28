@@ -120,7 +120,7 @@ func home(c *gin.Context) {
 	store.Get("versions", &versions)
 
 	c.HTML(200, "home", gin.H{
-		"dpys_downloads":           downloads["dpys"],
+		"dpys_downloads":           c.RemoteIP(),
 		"aiohttplimiter_downloads": downloads["aiohttp-ratelimiter"],
 		"grl_downloads":            downloads["GinRateLimit"],
 		"pmrl_downloads":           downloads["precise-memory-rate-limit"],
