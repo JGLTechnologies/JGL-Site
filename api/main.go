@@ -26,6 +26,10 @@ func Contact(c *gin.Context) {
 	email := formData.Email
 	message := formData.Message
 	token := formData.Token
+	if len(name) > 200 || len(email) > 200 || len(message) > 1020 {
+		c.JSON(400, gin.H{"error": "invalid request"})
+		return
+	}
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": utils.GetIP(c)}
 	client := http.Client{
 		Timeout: time.Second * 5,
