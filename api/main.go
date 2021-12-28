@@ -19,7 +19,7 @@ type postForm struct {
 func Contact(c *gin.Context) {
 	formData := postForm{}
 	if bindingErr := c.Bind(&formData); bindingErr != nil {
-		c.JSON(400, gin.H{"error": "invalid request"})
+		c.HTML(400, "error", gin.H{"error": "Missing field"})
 		return
 	}
 	name := formData.Name
@@ -27,7 +27,7 @@ func Contact(c *gin.Context) {
 	message := formData.Message
 	token := formData.Token
 	if len(name) > 200 || len(email) > 200 || len(message) > 1020 {
-		c.JSON(400, gin.H{"error": "invalid request"})
+		c.HTML(400, "error", gin.H{"error": "String has exceeded the limit."})
 		return
 	}
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": utils.GetIP(c)}
@@ -38,12 +38,12 @@ func Contact(c *gin.Context) {
 	r.SetClient(&client)
 	res, err := r.Post("https://jglbotapi.us/contact", req.BodyJSON(&data))
 	if err != nil {
-		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
+		c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", err)})
 	} else {
 		var resJSON map[string]interface{}
 		jsonErr := res.ToJSON(&resJSON)
 		if jsonErr != nil {
-			c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
+			c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", err)})
 		} else {
 			if res.Response().StatusCode == 200 {
 				c.HTML(200, "contact-thank-you", gin.H{})
@@ -54,7 +54,7 @@ func Contact(c *gin.Context) {
 			} else if res.Response().StatusCode == 403 {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
-				c.HTML(500, "contact-error", gin.H{"error": resJSON["error"]})
+				c.HTML(500, "error", gin.H{"error": resJSON["error"]})
 			}
 		}
 	}

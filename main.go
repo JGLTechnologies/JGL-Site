@@ -31,13 +31,13 @@ func main() {
 	r.AddFromFiles("contact-limit", "go web files/limit.html")
 	r.AddFromFiles("contact-captcha", "go web files/captcha.html")
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
-	r.AddFromFiles("contact-error", "go web files/error.html")
+	r.AddFromFiles("error", "go web files/error.html")
 	server := gin.New()
 	server.HTMLRender = r
 	store = persist.NewMemoryStore(time.Hour)
 
 	server.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
-		c.HTML(500, "contact-error", gin.H{"error": fmt.Sprintf("%s", err)})
+		c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", err)})
 		c.AbortWithStatus(500)
 	}))
 	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
