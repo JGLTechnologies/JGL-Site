@@ -19,7 +19,7 @@ type postForm struct {
 func Contact(c *gin.Context) {
 	formData := postForm{}
 	if bindingErr := c.Bind(&formData); bindingErr != nil {
-		c.HTML(400, "error", gin.H{"error": "Missing field"})
+		c.HTML(400, "status", gin.H{"code": "Invalid Request", "message": "Missing field"})
 		return
 	}
 	name := formData.Name
@@ -27,7 +27,7 @@ func Contact(c *gin.Context) {
 	message := formData.Message
 	token := formData.Token
 	if len(name) > 200 || len(email) > 254 || len(message) > 1020 {
-		c.HTML(400, "status", gin.H{"code": "Invalid Request", "message": "String has exceeded the limit."})
+		c.HTML(400, "status", gin.H{"code": "Invalid Request", "message": "String has exceeded the limit"})
 		return
 	}
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": utils.GetIP(c)}
