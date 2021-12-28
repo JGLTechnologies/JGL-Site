@@ -26,7 +26,7 @@ func Contact(c *gin.Context) {
 	email := formData.Email
 	message := formData.Message
 	token := formData.Token
-	if len(name) > 200 || len(email) > 200 || len(message) > 1020 {
+	if len(name) > 200 || len(email) > 254 || len(message) > 1020 {
 		c.HTML(400, "error", gin.H{"error": "String has exceeded the limit."})
 		return
 	}

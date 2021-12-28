@@ -34,19 +34,16 @@
                               enctype="application/x-www-form-urlencoded">
                             <!-- Name input-->
                             <div class="form-floating mb-3">
-                                <input class="form-control" maxlength="200" name="name" id="name" type="text"
+                                <input class="form-control" name="name" id="name" type="text"
                                        placeholder="Enter your name..." data-sb-validations="required" required/>
                                 <label for="name">Full name</label>
                                 <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
                             </div>
                             <!-- Email address input-->
                             <div class="form-floating mb-3">
-                                <input class="form-control" maxlength="200" id="email" name="email" type="email"
-                                       placeholder="name@example.com" data-sb-validations="required,email" required/>
+                                <input class="form-control" maxlength="254" id="email" name="email" type="email"
+                                       placeholder="name@example.com" required/>
                                 <label for="email">Email address</label>
-                                <div class="invalid-feedback" data-sb-feedback="email:required">An email is required.
-                                </div>
-                                <div class="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
                             </div>
                             <!-- Message input-->
                             <div class="form-floating mb-3">
@@ -82,8 +79,7 @@
         var email = document.getElementById("email");
         var name = document.getElementById("name");
         var message = document.getElementById("message");
-        var email_2 = email.value.split("@")[1];
-        if (name.value == null || email.value == null || message.value == null || message.value == "" || name.value == "" || email.value == "" || !(email.value.includes("@")) || email_2.length < 1 || email.value > 254) {
+        if (name.value == null || email.value == null || message.value == null || message.value == "" || name.value == "" || email.value == "" || !email.validity.valid) {
             return;
         } else {
             document.getElementById("submitButton").style.display = "none";
