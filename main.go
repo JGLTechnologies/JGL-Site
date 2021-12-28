@@ -22,6 +22,7 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
+	r.AddFromFiles("client-error", "go web files/client_error.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
 	r.AddFromFiles("status", "go web files/status.html")
 	r.AddFromFiles("bmi-home", "go web files/bmi/index.html")
