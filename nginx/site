@@ -54,7 +54,7 @@ server {
     }
 
     location = /projects {
-        return 301 https://github.com/JGLTechnologies?tab=repositories;
+        return 301 https://github.com/orgs/JGLTechnologies/repositories;
     }
 
     location = /SimpleFiles {
