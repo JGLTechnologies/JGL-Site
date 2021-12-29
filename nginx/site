@@ -50,7 +50,7 @@ server {
     }
 
     location = /src {
-        return 301 https://github.com/JGLTechnologies/jgl-site;
+        return 301 https://github.com/Nebulizer1213/jgl-site;
     }
 
     location = /projects {
