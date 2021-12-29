@@ -22,7 +22,7 @@ server {
     }
 
     location = /dpys/src {
-        return 301 https://github.com/Nebulizer1213/dpys;
+        return 301 https://github.com/JGLTechnologies/dpys;
     }
 
     location = /dpys/pypi {
@@ -30,7 +30,7 @@ server {
     }
 
     location = /aiohttplimiter {
-        return 301 https://github.com/Nebulizer1213/aiohttp-ratelimiter;
+        return 301 https://github.com/JGLTechnologies/aiohttp-ratelimiter;
     }
 
     location = /aiohttplimiter/pypi {
@@ -42,15 +42,27 @@ server {
     }
 
     location = /precise-memory-rate-limit/src {
-        return 301 https://github.com/Nebulizer1213/precise-memory-rate-limit;
+        return 301 https://github.com/JGLTechnologies/precise-memory-rate-limit;
     }
 
     location = /GinRateLimit {
-        return 301 https://github.com/Nebulizer1213/GinRateLimit;
+        return 301 https://github.com/JGLTechnologies/GinRateLimit;
     }
 
+    location = /GinRateLimit {
+            return 301 https://github.com/JGLTechnologies/GinRateLimit;
+        }
+
     location = /src {
-        return 301 https://github.com/Nebulizer1213/jgl-site;
+        return 301 https://github.com/JGLTechnologies/jgl-site;
+    }
+
+    location = /projects {
+        return 301 https://github.com/JGLTechnologies?tab=repositories;
+    }
+
+    location = /SimpleFiles {
+        return 301 https://github.com/JGLTechnologies/SimpleFiles;
     }
 
     location / {

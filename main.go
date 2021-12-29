@@ -46,6 +46,9 @@ func main() {
 	server.HandleMethodNotAllowed = true
 
 	server.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
+	server.GET("/bot", func(c *gin.Context) {
+		c.String(200, "Bot webpage is coming soon.")
+	})
 	server.GET("/home", cache.CacheByRequestPath(store, time.Minute*10), home)
 	server.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
 	server.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
@@ -61,15 +64,12 @@ func main() {
 	{
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
-		apiGroup.GET("/versions", cache.CacheByRequestPath(store, time.Minute*10), api.Versions)
 		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
 	}
 
 	server.NoRoute(noRoute)
 	server.NoMethod(noMethod)
-	go updateVersionsAndDownloads()
-	time.Sleep(time.Second * 3)
 	srv := &http.Server{
 		Addr:         ":81",
 		Handler:      server,
@@ -78,30 +78,6 @@ func main() {
 	}
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalln(err)
-	}
-}
-
-func updateVersionsAndDownloads() {
-	var dpys string
-	var aiohttplimiter string
-	var grl string
-	var pmrl string
-
-	for {
-		dpys = utils.GetPythonLibDownloads("dpys")
-		aiohttplimiter = utils.GetPythonLibDownloads("aiohttp-ratelimiter")
-		pmrl = utils.GetNPMLibDownloads("precise-memory-rate-limit")
-		grl = utils.GetGoLibDownloads("GinRateLimit")
-		list := []string{dpys, aiohttplimiter, grl, pmrl}
-		store.Set("versions", utils.Versions(), -1)
-		store.Set("downloads", map[string]string{
-			"dpys":                      dpys,
-			"aiohttp-ratelimiter":       aiohttplimiter,
-			"precise-memory-rate-limit": pmrl,
-			"GinRateLimit":              grl,
-			"total":                     api.GetTotal(list),
-		}, -1)
-		time.Sleep(time.Minute * 10)
 	}
 }
 
@@ -114,22 +90,7 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
-	var downloads map[string]string
-	var versions map[string]string
-
-	store.Get("downloads", &downloads)
-	store.Get("versions", &versions)
-
-	c.HTML(200, "home", gin.H{
-		"dpys_downloads":           downloads["dpys"],
-		"aiohttplimiter_downloads": downloads["aiohttp-ratelimiter"],
-		"grl_downloads":            downloads["GinRateLimit"],
-		"pmrl_downloads":           downloads["precise-memory-rate-limit"],
-		"dpys_version":             versions["dpys"],
-		"aiohttplimiter_version":   versions["aiohttp-ratelimiter"],
-		"grl_version":              versions["GinRateLimit"],
-		"pmrl_version":             versions["precise-memory-rate-limit"],
-	})
+	c.HTML(200, "home", gin.H{})
 }
 
 func contact(c *gin.Context) {

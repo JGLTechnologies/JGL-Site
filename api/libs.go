@@ -19,14 +19,10 @@ func GetTotal(list []string) string {
 	return strconv.Itoa(total)
 }
 
-func Versions(c *gin.Context) {
-	data := utils.Versions()
-	c.JSON(200, data)
-}
-
 func Downloads(c *gin.Context) {
 	dpys := utils.GetPythonLibDownloads("dpys")
 	aiohttplimiter := utils.GetPythonLibDownloads("aiohttp-ratelimiter")
+	sf := utils.GetGoLibDownloads("SimpleFiles")
 	pmrl := utils.GetNPMLibDownloads("precise-memory-rate-limit")
 	grl := utils.GetGoLibDownloads("GinRateLimit")
 	c.JSON(200, gin.H{
@@ -34,6 +30,7 @@ func Downloads(c *gin.Context) {
 		"aiohttp-ratelimiter":       aiohttplimiter,
 		"precise-memory-rate-limit": pmrl,
 		"GinRateLimit":              grl,
+		"SimpleFiles":               sf,
 		"total":                     GetTotal([]string{dpys, aiohttplimiter, pmrl, grl}),
 	})
 }
