@@ -49,10 +49,6 @@ server {
         return 301 https://github.com/JGLTechnologies/GinRateLimit;
     }
 
-    location = /GinRateLimit {
-            return 301 https://github.com/JGLTechnologies/GinRateLimit;
-        }
-
     location = /src {
         return 301 https://github.com/JGLTechnologies/jgl-site;
     }
