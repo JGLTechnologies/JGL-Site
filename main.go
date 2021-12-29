@@ -49,7 +49,7 @@ func main() {
 	server.GET("/bot", func(c *gin.Context) {
 		c.String(200, "Bot webpage is coming soon.")
 	})
-	server.GET("/home", cache.CacheByRequestPath(store, time.Minute*10), home)
+	server.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
 	server.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
 	server.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	server.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
