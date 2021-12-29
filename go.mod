@@ -3,7 +3,7 @@ module JGLSite
 go 1.17
 
 require (
-	github.com/Nebulizer1213/GinRateLimit v1.0.4
+	github.com/Nebulizer1213/GinRateLimit v1.0.5
 	github.com/chenyahui/gin-cache v1.4.0
 	github.com/gin-contrib/multitemplate v0.0.0-20211002122701-e9e3201b87a0
 	github.com/gin-gonic/gin v1.7.7
