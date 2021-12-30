@@ -5,58 +5,60 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
     <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
     <title>BMI Calculator</title>
-    <style>#form {
-        position: relative;
-        top: 50px;
-        margin: 0
-    }
+    <style>
 
-    #form input {
-        padding: 5px
-    }
-
-    .center {
-        text-align: center
-    }
-
-    #form button {
-        padding: 5px;
-        background-color: #fff;
-        border-color: #fff;
-        color: #000
-    }
-
-    body {
-        background-color: #008b8b;
-        overflow: hidden
-    }
-
-    @media only screen and (max-width: 1000px) {
-        #header {
-            font-size: 30px
-        }
-    }
-
-    @media only screen and (max-width: 800px) {
-        #header {
-            font-size: 25px
-        }
-    }
-
-    @media only screen and (max-width: 600px) {
-        #header {
-            font-size: 20px
+        #form {
+            position: relative;
+            top: 50px;
+            margin: 0
         }
 
         #form input {
-            padding: 2.5px
+            padding: 5px
+        }
+
+        .center {
+            text-align: center
         }
 
         #form button {
-            padding: 2.5px;
-            border-radius: 4px
+            padding: 5px;
+            background-color: #fff;
+            border-color: #fff;
+            color: #000
         }
-    }</style>
+
+        body {
+            min-height: 600px;
+            background-color: dodgerblue;
+        }
+
+        @media only screen and (max-width: 1000px) {
+            #header {
+                font-size: 30px
+            }
+        }
+
+        @media only screen and (max-width: 800px) {
+            #header {
+                font-size: 25px
+            }
+        }
+
+        @media only screen and (max-width: 600px) {
+            #header {
+                font-size: 20px
+            }
+
+            #form input {
+                padding: 2.5px
+            }
+
+            #form button {
+                padding: 2.5px;
+                border-radius: 4px
+            }
+        }</style>
     <script defer="defer" src="/test/bmi/static/main.js"></script>
 </head>
 <body><h1 id="header">BMI Calculator</h1>
