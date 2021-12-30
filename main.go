@@ -2,7 +2,6 @@ package main
 
 import (
 	"JGLSite/api"
-	"JGLSite/test"
 	"JGLSite/utils"
 	"fmt"
 	"github.com/chenyahui/gin-cache"
@@ -25,9 +24,6 @@ func main() {
 	r.AddFromFiles("client-error", "go web files/client_error.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
 	r.AddFromFiles("status", "go web files/status.html")
-	r.AddFromFiles("bmi-home", "go web files/bmi/index.html")
-	r.AddFromFiles("bmi-calc", "go web files/bmi/bmi.html")
-	r.AddFromFiles("bmi-invalid", "go web files/bmi/invalid.html")
 	r.AddFromFiles("contact-thank-you", "go web files/thank-you.html")
 	r.AddFromFiles("contact-limit", "go web files/limit.html")
 	r.AddFromFiles("contact-captcha", "go web files/captcha.html")
@@ -56,8 +52,7 @@ func main() {
 
 	testGroup := server.Group("/test")
 	{
-		testGroup.GET("/bmi", test.BMIHome)
-		testGroup.GET("/bmi/calc", test.BMICalc)
+		testGroup.Static("/bmi", "go web files/bmi/build")
 	}
 
 	apiGroup := server.Group("/api")
