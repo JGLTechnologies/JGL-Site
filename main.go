@@ -2,6 +2,7 @@ package main
 
 import (
 	"JGLSite/api"
+	"JGLSite/test"
 	"JGLSite/utils"
 	"fmt"
 	"github.com/chenyahui/gin-cache"
@@ -29,6 +30,7 @@ func main() {
 	r.AddFromFiles("contact-captcha", "go web files/captcha.html")
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("error", "go web files/error.html")
+	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html")
 	server := gin.New()
 	server.HTMLRender = r
 	store = persist.NewMemoryStore(time.Hour)
@@ -52,7 +54,8 @@ func main() {
 
 	testGroup := server.Group("/test")
 	{
-		testGroup.Static("/bmi", "go web files/bmi/build")
+		testGroup.GET("/bmi", cache.CacheByRequestPath(store, time.Hour*24), test.BMIHome)
+		testGroup.GET("/bmi/static/main.js", cache.CacheByRequestPath(store, time.Hour*24), test.BMIJS)
 	}
 
 	apiGroup := server.Group("/api")
