@@ -1,4 +1,4 @@
-/*! For license information please see projects.js.LICENSE.txt */
+/*! For license information please see main.a303ee7c.js.LICENSE.txt */
 !function () {
     var e = {
         757: function (e, t, n) {
@@ -5784,10 +5784,16 @@
                     case 0:
                         return e.next = 2, fetch("/api/projects");
                     case 2:
-                        return t = e.sent, e.next = 5, t.json();
-                    case 5:
+                        if (200 === (t = e.sent).status) {
+                            e.next = 6;
+                            break
+                        }
+                        return o.render((0, i.jsx)(a.StrictMode, {children: (0, i.jsx)("p", {children: "Projects could not be loaded."})}), document.getElementById("projects_render")), e.abrupt("return");
+                    case 6:
+                        return e.next = 8, t.json();
+                    case 8:
                         n = e.sent, o.render((0, i.jsx)(a.StrictMode, {children: (0, i.jsx)(u, {projects: n})}), document.getElementById("projects_render"));
-                    case 7:
+                    case 10:
                     case"end":
                         return e.stop()
                 }
@@ -5795,4 +5801,4 @@
         })))
     }()
 }();
-//# sourceMappingURL=projects.js.map
+//# sourceMappingURL=main.a303ee7c.js.map
