@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -34,9 +33,6 @@ func main() {
 	r.AddFromFiles("error", "go web files/error.html")
 	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html")
 	router := gin.New()
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"}
-	router.Use(cors.New(config))
 	router.HTMLRender = r
 	store = persist.NewMemoryStore(time.Hour)
 
