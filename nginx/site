@@ -1,5 +1,4 @@
 limit_conn_zone $http_x_forwarded_for zone=conn:10m;
-limit_req_zone $http_x_forwarded_for zone=limit:10m rate=50r/s;
 
 
 server {
@@ -63,7 +62,6 @@ server {
 
     location / {
         limit_conn conn 5;
-        limit_req zone=limit burst=5 nodelay;
         proxy_connect_timeout 10s;
         proxy_read_timeout 10s;
         proxy_send_timeout 10s;
