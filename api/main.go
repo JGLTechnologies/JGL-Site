@@ -81,7 +81,7 @@ func Projects(c *gin.Context) {
 			c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
 		} else {
 			for i, v := range data {
-				if v.Name == "jgl-site" {
+				if v.Name == "JGL-Site" {
 					data = removeIndex(data, i)
 					break
 				}
