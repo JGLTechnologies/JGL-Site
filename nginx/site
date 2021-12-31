@@ -1,7 +1,6 @@
 upstream jgl {
     keepalive 100;
     server localhost:81;
-    server localhost:85;
 }
 
 
