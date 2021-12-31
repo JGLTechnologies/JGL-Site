@@ -1,4 +1,4 @@
-limit_conn_zone $binary_remote_addr zone=addr:10m;
+limit_conn_zone $http_x_forwarded_for zone=addr:10m;
 
 
 server {
