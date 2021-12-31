@@ -61,7 +61,7 @@ server {
     }
 
     location / {
-        limit_conn addr 1;
+        limit_conn addr 10;
         proxy_connect_timeout 10s;
         proxy_read_timeout 10s;
         proxy_send_timeout 10s;
