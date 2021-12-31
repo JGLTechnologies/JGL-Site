@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -14,6 +15,11 @@ type postForm struct {
 	Email   string `form:"email" binding:"required"`
 	Message string `form:"message" binding:"required"`
 	Token   string `form:"token" binding:"required"`
+}
+
+type project struct {
+	Name        string      `json:"name"`
+	Description interface{} `json:"description"`
 }
 
 func Contact(c *gin.Context) {
@@ -58,5 +64,33 @@ func Contact(c *gin.Context) {
 			}
 		}
 	}
+}
 
+func Projects(c *gin.Context) {
+	r := req.New()
+	r.SetTimeout(time.Second * 5)
+	header := make(http.Header)
+	header.Set("Authorization", "token "+os.Getenv("gh_token"))
+	res, err := r.Get("https://api.github.com/orgs/JGLTechnologies/repos", header)
+	if err != nil || res.Response().StatusCode != 200 {
+		c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
+	} else {
+		var data []project
+		jsonErr := res.ToJSON(&data)
+		if jsonErr != nil {
+			c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
+		} else {
+			for i, v := range data {
+				if v.Name == "jgl-site" {
+					data = removeIndex(data, i)
+					break
+				}
+			}
+			c.JSON(200, data)
+		}
+	}
+}
+
+func removeIndex(s []project, index int) []project {
+	return append(s[:index], s[index+1:]...)
 }

@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/JGLTechnologies/GinRateLimit v1.0.6
 	github.com/chenyahui/gin-cache v1.4.0
+	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/multitemplate v0.0.0-20211002122701-e9e3201b87a0
 	github.com/gin-gonic/gin v1.7.7
 	github.com/imroc/req v0.3.2

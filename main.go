@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -22,6 +23,7 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
+	r.AddFromFiles("projects", "go web files/projects.html", "go web files/base.html")
 	r.AddFromFiles("client-error", "go web files/client_error.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
 	r.AddFromFiles("status", "go web files/status.html")
@@ -31,46 +33,56 @@ func main() {
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("error", "go web files/error.html")
 	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html")
-	server := gin.New()
-	server.HTMLRender = r
+	router := gin.New()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"}
+	router.Use(cors.New(config))
+	router.HTMLRender = r
 	store = persist.NewMemoryStore(time.Hour)
 
-	server.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
+	router.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
 		c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", err)})
 		c.AbortWithStatus(500)
 	}))
-	server.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
-	server.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
-	server.HandleMethodNotAllowed = true
+	router.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
+	router.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
+	router.HandleMethodNotAllowed = true
 
-	server.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
-	server.GET("/bot", func(c *gin.Context) {
+	router.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
+	router.GET("/bot", func(c *gin.Context) {
 		c.String(200, "Bot webpage is coming soon.")
 	})
-	server.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
-	server.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
-	server.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
-	server.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
+	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
+	router.GET("/projects", cache.CacheByRequestPath(store, time.Hour*24), projects)
+	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
+	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
+	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
 
-	testGroup := server.Group("/test")
+	static := router.Group("/static")
+	{
+		static.GET("/projects.js", cache.CacheByRequestPath(store, time.Hour*24), projectsJS)
+	}
+
+	testGroup := router.Group("/test")
 	{
 		testGroup.GET("/bmi", cache.CacheByRequestPath(store, time.Hour*24), test.BMIHome)
 		testGroup.GET("/bmi/static/main.js", cache.CacheByRequestPath(store, time.Hour*24), test.BMIJS)
 	}
 
-	apiGroup := server.Group("/api")
+	apiGroup := router.Group("/api")
 	{
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
 		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
+		apiGroup.GET("/projects", cache.CacheByRequestPath(store, time.Minute*10), api.Projects)
 	}
 
-	server.NoRoute(noRoute)
-	server.NoMethod(noMethod)
+	router.NoRoute(noRoute)
+	router.NoMethod(noMethod)
 	srv := &http.Server{
 		Addr:         ":81",
-		Handler:      server,
+		Handler:      router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
@@ -93,6 +105,14 @@ func home(c *gin.Context) {
 
 func contact(c *gin.Context) {
 	c.HTML(200, "contact", gin.H{})
+}
+
+func projects(c *gin.Context) {
+	c.HTML(200, "projects", gin.H{})
+}
+
+func projectsJS(c *gin.Context) {
+	c.File("static/projects.js")
 }
 
 func noRoute(c *gin.Context) {
