@@ -5763,6 +5763,9 @@
                         style: {position: "relative", left: "10px"},
                         children: ["Description: ", e.description]
                     }), (0, i.jsx)("br", {}), (0, i.jsxs)("span", {
+                        style: {position: "relative", left: "10px"},
+                        children: ["Downloads: ", e.downloads]
+                    }), (0, i.jsx)("br", {}), (0, i.jsxs)("span", {
                         style: {
                             position: "relative",
                             left: "10px",

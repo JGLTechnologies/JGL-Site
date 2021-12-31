@@ -26,7 +26,7 @@ func Downloads(c *gin.Context) {
 	pmrl := utils.GetNPMLibDownloads("precise-memory-rate-limit")
 	grl := utils.GetGoLibDownloads("GinRateLimit")
 	c.JSON(200, gin.H{
-		"dpys":                      dpys,
+		"DPYS":                      dpys,
 		"aiohttp-ratelimiter":       aiohttplimiter,
 		"precise-memory-rate-limit": pmrl,
 		"GinRateLimit":              grl,

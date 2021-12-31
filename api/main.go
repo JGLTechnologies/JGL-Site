@@ -20,6 +20,7 @@ type postForm struct {
 type project struct {
 	Name        string      `json:"name"`
 	Description interface{} `json:"description"`
+	Downloads   string      `json:"downloads"`
 }
 
 func Contact(c *gin.Context) {
@@ -49,7 +50,7 @@ func Contact(c *gin.Context) {
 		var resJSON map[string]interface{}
 		jsonErr := res.ToJSON(&resJSON)
 		if jsonErr != nil {
-			c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", err)})
+			c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", jsonErr)})
 		} else {
 			if res.Response().StatusCode == 200 {
 				c.HTML(200, "contact-thank-you", gin.H{})
@@ -71,14 +72,27 @@ func Projects(c *gin.Context) {
 	r.SetTimeout(time.Second * 5)
 	header := make(http.Header)
 	header.Set("Authorization", "token "+os.Getenv("gh_token"))
+
+	res, downloadsErr := r.Get("https://jgltechnologies.com/api/downloads")
+	if downloadsErr != nil || res.Response().StatusCode != 200 {
+		c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", downloadsErr)})
+		return
+	}
+	var downloads map[string]string
+	downloadsJSONErr := res.ToJSON(&downloads)
+	if downloadsJSONErr != nil {
+		c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", downloadsJSONErr)})
+		return
+	}
+
 	res, err := r.Get("https://api.github.com/orgs/JGLTechnologies/repos", header)
 	if err != nil || res.Response().StatusCode != 200 {
 		c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
 	} else {
-		var data []project
+		var data []*project
 		jsonErr := res.ToJSON(&data)
 		if jsonErr != nil {
-			c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
+			c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", jsonErr)})
 		} else {
 			for i, v := range data {
 				if v.Name == "JGL-Site" {
@@ -86,11 +100,19 @@ func Projects(c *gin.Context) {
 					break
 				}
 			}
+			for _, v := range data {
+				d, ok := downloads[v.Name]
+				if ok {
+					v.Downloads = d
+				} else {
+					v.Downloads = "Not Found"
+				}
+			}
 			c.JSON(200, data)
 		}
 	}
 }
 
-func removeIndex(s []project, index int) []project {
+func removeIndex(s []*project, index int) []*project {
 	return append(s[:index], s[index+1:]...)
 }
