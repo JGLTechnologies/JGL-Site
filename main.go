@@ -106,6 +106,7 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
+	fmt.Println(c.RemoteIP())
 	c.HTML(200, "home", gin.H{})
 }
 
