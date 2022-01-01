@@ -6,15 +6,17 @@
     <title>Projects</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
     {{ template "css" . }}
-    <script defer="defer" src="/static/projects.js"></script>
+<!--    <script defer="defer" src="/static/projects.js"></script>-->
 </head>
 <body class="d-flex flex-column">
-<main class="flex-shrink-0">{{ template "navbar" . }}
+<main class="flex-shrink-0">
+    {{ template "navbar" . }}
     <section class="py-5 bg-light" id="projects">
         <div class="container px-5 my-5">
             <div class="row gx-5 align-items-center">
                 <div class="col-lg-6"><h2 class="fw-bolder">JGL Technologies Projects</h2>
-                    <div id="projects_render"></div>
+<!--                    <div id="projects_render"></div>-->
+                    {{ .projects }}
                 </div>
             </div>
         </div>

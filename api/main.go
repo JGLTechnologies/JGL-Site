@@ -17,10 +17,10 @@ type postForm struct {
 	Token   string `form:"token" binding:"required"`
 }
 
-type project struct {
-	Name        string      `json:"name"`
-	Description interface{} `json:"description"`
-	Downloads   string      `json:"downloads"`
+type Project struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Downloads   string `json:"downloads"`
 }
 
 func Contact(c *gin.Context) {
@@ -67,7 +67,7 @@ func Contact(c *gin.Context) {
 	}
 }
 
-func Projects(c *gin.Context) {
+func Projects() ([]*Project, error) {
 	r := req.New()
 	r.SetTimeout(time.Second * 5)
 	header := make(http.Header)
@@ -75,24 +75,22 @@ func Projects(c *gin.Context) {
 
 	res, downloadsErr := r.Get("https://jgltechnologies.com/api/downloads")
 	if downloadsErr != nil || res.Response().StatusCode != 200 {
-		c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", downloadsErr)})
-		return
+		return []*Project{}, downloadsErr
 	}
 	var downloads map[string]string
 	downloadsJSONErr := res.ToJSON(&downloads)
 	if downloadsJSONErr != nil {
-		c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", downloadsJSONErr)})
-		return
+		return []*Project{}, downloadsJSONErr
 	}
 
 	res, err := r.Get("https://api.github.com/orgs/JGLTechnologies/repos", header)
 	if err != nil || res.Response().StatusCode != 200 {
-		c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
+		return []*Project{}, err
 	} else {
-		var data []*project
+		var data []*Project
 		jsonErr := res.ToJSON(&data)
 		if jsonErr != nil {
-			c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", jsonErr)})
+			return []*Project{}, jsonErr
 		} else {
 			for i, v := range data {
 				if v.Name == "JGL-Site" {
@@ -108,11 +106,11 @@ func Projects(c *gin.Context) {
 					v.Downloads = "Not Found"
 				}
 			}
-			c.JSON(200, data)
+			return data, nil
 		}
 	}
 }
 
-func removeIndex(s []*project, index int) []*project {
+func removeIndex(s []*Project, index int) []*Project {
 	return append(s[:index], s[index+1:]...)
 }

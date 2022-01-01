@@ -10,12 +10,16 @@ import (
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"html/template"
 	"log"
 	"net/http"
 	"time"
 )
 
 var store *persist.MemoryStore
+var Projects []*api.Project
+
+const port string = "81"
 
 func main() {
 	godotenv.Load("/var/www/.env")
@@ -49,15 +53,10 @@ func main() {
 		c.String(200, "Bot webpage is coming soon.")
 	})
 	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
-	router.GET("/projects", cache.CacheByRequestPath(store, time.Hour*24), projects)
+	router.GET("/projects", cache.CacheByRequestPath(store, time.Hour), projects)
 	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
-
-	static := router.Group("/static")
-	{
-		static.GET("/projects.js", cache.CacheByRequestPath(store, time.Hour*24), projectsJS)
-	}
 
 	testGroup := router.Group("/test")
 	{
@@ -71,17 +70,28 @@ func main() {
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
 		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
 		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
-		apiGroup.GET("/projects", cache.CacheByRequestPath(store, time.Minute*10), api.Projects)
 	}
 
 	router.NoRoute(noRoute)
 	router.NoMethod(noMethod)
 	srv := &http.Server{
-		Addr:         ":81",
+		Addr:         ":" + port,
 		Handler:      router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
+	go func() {
+		for {
+			p, err := api.Projects()
+			if err != nil {
+				Projects = []*api.Project{}
+			} else {
+				Projects = p
+			}
+			time.Sleep(time.Minute * 30)
+		}
+	}()
+	time.Sleep(time.Second * 3)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalln(err)
 	}
@@ -104,11 +114,17 @@ func contact(c *gin.Context) {
 }
 
 func projects(c *gin.Context) {
-	c.HTML(200, "projects", gin.H{})
-}
-
-func projectsJS(c *gin.Context) {
-	c.File("static/projects.js")
+	data := gin.H{}
+	var html template.HTML
+	if len(Projects) < 1 {
+		data["projects"] = "<p>Projects could not be loaded.</p>"
+	} else {
+		for _, v := range Projects {
+			html += template.HTML("<p class=\"lead fw-normal text-muted mb-0\">\n<br/>\n<span style='color: var(--bs-dark);'>" + v.Name + ":</span>\n<br/><span style=\"position: relative; left: 10px;\">Description: " + v.Description + "</span>\n<br/><span style='position: relative; left: 10px;'>Downloads: " + v.Downloads + " </span>\n<br/><span style='position: relative; left: 10px; top: 7px;'>Github URL: <a\nhref=https://github.com/JGLTechnologies/" + v.Name + " >click</a></span>\n</p>")
+		}
+		data["projects"] = html
+	}
+	c.HTML(200, "projects", data)
 }
 
 func noRoute(c *gin.Context) {
