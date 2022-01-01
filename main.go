@@ -5,6 +5,7 @@ import (
 	"JGLSite/test"
 	"JGLSite/utils"
 	"fmt"
+	"github.com/Nebulizer1213/SimpleFiles"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
@@ -13,6 +14,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -46,7 +48,11 @@ func main() {
 	}))
 	router.Use(gin.Logger())
 	router.HandleMethodNotAllowed = true
-	router.SetTrustedProxies([]string{"127.0.0.1"})
+	f, _ := SimpleFiles.New("cloudflare_ips.txt")
+	s, _ := f.ReadString()
+	ips := strings.Split(s, "\n")
+	ips = append(ips, "127.0.0.1")
+	router.SetTrustedProxies(ips)
 	router.ForwardedByClientIP = true
 	router.RemoteIPHeaders = []string{"X-Forwarded-For"}
 
@@ -108,6 +114,7 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
+	fmt.Println(c.ClientIP())
 	c.HTML(200, "home", gin.H{})
 }
 
