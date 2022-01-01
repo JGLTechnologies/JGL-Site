@@ -57,7 +57,7 @@ func main() {
 	router.GET("/bot", func(c *gin.Context) {
 		c.String(200, "Bot webpage is coming soon.")
 	})
-	router.GET("/home", utils.GetMW(10, 1), cache.CacheByRequestPath(store, time.Hour*24), home)
+	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
 	router.GET("/projects", cache.CacheByRequestPath(store, time.Hour), projects)
 	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
