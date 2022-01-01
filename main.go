@@ -114,7 +114,6 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
-	fmt.Println(c.ClientIP())
 	c.HTML(200, "home", gin.H{})
 }
 
