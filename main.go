@@ -45,7 +45,7 @@ func main() {
 		c.AbortWithStatus(500)
 	}))
 	router.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
-	router.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
+	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.HandleMethodNotAllowed = true
 
 	router.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
@@ -106,7 +106,7 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
-	fmt.Println(c.RemoteIP())
+	fmt.Println(c.ClientIP())
 	c.HTML(200, "home", gin.H{})
 }
 
