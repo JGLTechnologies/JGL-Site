@@ -33,7 +33,7 @@ func BotInfo(c *gin.Context) {
 		defer res.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			c.JSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
+			c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
 		}
 		json.Unmarshal(bodyBytes, &data)
 		c.JSON(200, data)
