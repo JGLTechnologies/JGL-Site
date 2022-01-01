@@ -73,14 +73,18 @@ func Projects() ([]*Project, error) {
 	header := make(http.Header)
 	header.Set("Authorization", "token "+os.Getenv("gh_token"))
 
-	res, downloadsErr := r.Get("https://jgltechnologies.com/api/downloads")
-	if downloadsErr != nil || res.Response().StatusCode != 200 {
-		return []*Project{}, downloadsErr
-	}
-	var downloads map[string]string
-	downloadsJSONErr := res.ToJSON(&downloads)
-	if downloadsJSONErr != nil {
-		return []*Project{}, downloadsJSONErr
+	dpys := utils.GetPythonLibDownloads("dpys")
+	aiohttplimiter := utils.GetPythonLibDownloads("aiohttp-ratelimiter")
+	sf := utils.GetGoLibDownloads("SimpleFiles")
+	pmrl := utils.GetNPMLibDownloads("precise-memory-rate-limit")
+	grl := utils.GetGoLibDownloads("GinRateLimit")
+	downloads := map[string]string{
+		"DPYS":                      dpys,
+		"aiohttp-ratelimiter":       aiohttplimiter,
+		"precise-memory-rate-limit": pmrl,
+		"GinRateLimit":              grl,
+		"SimpleFiles":               sf,
+		"total":                     GetTotal([]string{dpys, aiohttplimiter, pmrl, grl}),
 	}
 
 	res, err := r.Get("https://api.github.com/orgs/JGLTechnologies/repos", header)

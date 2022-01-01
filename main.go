@@ -117,7 +117,7 @@ func projects(c *gin.Context) {
 	data := gin.H{}
 	var html template.HTML
 	if len(Projects) < 1 {
-		data["projects"] = "<p>Projects could not be loaded.</p>"
+		data["projects"] = template.HTML("<p>Projects could not be loaded.</p>")
 	} else {
 		for _, v := range Projects {
 			html += template.HTML("<p class=\"lead fw-normal text-muted mb-0\">\n<br/>\n<span style='color: var(--bs-dark);'>" + v.Name + ":</span>\n<br/><span style=\"position: relative; left: 10px;\">Description: " + v.Description + "</span>\n<br/><span style='position: relative; left: 10px;'>Downloads: " + v.Downloads + " </span>\n<br/><span style='position: relative; left: 10px; top: 7px;'>Github URL: <a\nhref=https://github.com/JGLTechnologies/" + v.Name + " >click</a></span>\n</p>")
