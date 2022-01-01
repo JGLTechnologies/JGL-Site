@@ -37,7 +37,7 @@ func Contact(c *gin.Context) {
 		c.HTML(400, "client-error", gin.H{"message": "The request body you provided is invalid.", "title": "Invalid request body"})
 		return
 	}
-	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": utils.GetIP(c)}
+	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": c.ClientIP()}
 	client := http.Client{
 		Timeout: time.Second * 5,
 	}

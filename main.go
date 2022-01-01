@@ -5,6 +5,7 @@ import (
 	"JGLSite/test"
 	"JGLSite/utils"
 	"fmt"
+	"github.com/Nebulizer1213/SimpleFiles"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
@@ -13,6 +14,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -44,15 +46,18 @@ func main() {
 		c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", err)})
 		c.AbortWithStatus(500)
 	}))
-	router.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
-	router.SetTrustedProxies([]string{"192.168.1.252", "127.0.0.1", "192.168.1.1"})
+	router.Use(gin.Logger())
+	f, _ := SimpleFiles.New("cloudflare_ips.txt")
+	s, _ := f.ReadString()
+	ips := strings.Split(s, "\n")
+	router.SetTrustedProxies(ips)
 	router.HandleMethodNotAllowed = true
 
 	router.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
 	router.GET("/bot", func(c *gin.Context) {
 		c.String(200, "Bot webpage is coming soon.")
 	})
-	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
+	router.GET("/home", utils.GetMW(10, 1), cache.CacheByRequestPath(store, time.Hour*24), home)
 	router.GET("/projects", cache.CacheByRequestPath(store, time.Hour), projects)
 	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
