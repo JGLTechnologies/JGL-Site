@@ -45,8 +45,8 @@ func main() {
 		c.AbortWithStatus(500)
 	}))
 	router.Use(gin.Logger())
-	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.HandleMethodNotAllowed = true
+	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.ForwardedByClientIP = true
 	router.RemoteIPHeaders = []string{"X-Forwarded-For"}
 
@@ -108,7 +108,7 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
-	fmt.Println(c.ClientIP())
+	fmt.Println(c.Request.RemoteAddr)
 	c.HTML(200, "home", gin.H{})
 }
 

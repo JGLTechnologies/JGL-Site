@@ -1,7 +1,5 @@
 github.com/JGLTechnologies/GinRateLimit v1.0.6 h1:4H2YtK/tDsiuh4c1aAhog+4Cd4I/0lz9rVz6i1LgxaI=
 github.com/JGLTechnologies/GinRateLimit v1.0.6/go.mod h1:ttfiK+mcmAyskV+wOZFJmt1Sxy2tYU0iEkQwuTD7fuc=
-github.com/Nebulizer1213/SimpleFiles v1.0.0 h1:1dHBcq3G9XGK7ihMqlyRfJvi1QfOgYy3d2FqtBWY2gY=
-github.com/Nebulizer1213/SimpleFiles v1.0.0/go.mod h1:tzMVmDhVubWHSE8cj3S3pYdcN0iW5Vb0BKixLDEf/cY=
 github.com/ReneKroon/ttlcache/v2 v2.9.0 h1:NzwfErbifoNA3djEGwQJXKp/386imbyrc6Qmns5IX7c=
 github.com/ReneKroon/ttlcache/v2 v2.9.0/go.mod h1:mBxvsNY+BT8qLLd6CuAJubbKo6r0jh3nb5et22bbfGY=
 github.com/cespare/xxhash/v2 v2.1.1 h1:6MnRN8NT7+YBpUIWxHtefFZOKTAPgGjpQSxqLNn0+qY=
