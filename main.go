@@ -48,6 +48,7 @@ func main() {
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.HandleMethodNotAllowed = true
 	router.ForwardedByClientIP = true
+	router.RemoteIPHeaders = []string{"X-Forwarded-For"}
 
 	router.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
 	router.GET("/bot", func(c *gin.Context) {
