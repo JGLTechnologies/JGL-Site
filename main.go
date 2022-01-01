@@ -44,9 +44,10 @@ func main() {
 		c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", err)})
 		c.AbortWithStatus(500)
 	}))
-	router.Use(utils.LoggerWithConfig(gin.LoggerConfig{}))
+	router.Use(gin.Logger())
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.HandleMethodNotAllowed = true
+	router.ForwardedByClientIP = true
 
 	router.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
 	router.GET("/bot", func(c *gin.Context) {
@@ -106,7 +107,6 @@ func logo(c *gin.Context) {
 }
 
 func home(c *gin.Context) {
-	fmt.Println(c.ClientIP())
 	c.HTML(200, "home", gin.H{})
 }
 
