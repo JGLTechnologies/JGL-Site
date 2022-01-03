@@ -107,7 +107,7 @@ func Projects() ([]*Project, error) {
 				if ok {
 					v.Downloads = d
 				} else {
-					v.Downloads = "Not Found"
+					v.Downloads = ""
 				}
 			}
 			return data, nil
