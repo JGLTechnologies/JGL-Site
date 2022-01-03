@@ -88,6 +88,7 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
+	done := make(chan bool)
 	go func() {
 		for {
 			p, err := api.Projects()
@@ -96,10 +97,11 @@ func main() {
 			} else {
 				Projects = p
 			}
+			done <- true
 			time.Sleep(time.Minute * 30)
 		}
 	}()
-	time.Sleep(time.Second * 3)
+	<-done
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalln(err)
 	}
