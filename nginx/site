@@ -23,7 +23,7 @@ server {
     }
 
     location = /dpys {
-        return 301 https://sites.google.com/view/dpys;
+        return 301 https://github.com/JGLTechnologies/DPYS/blob/main/README.md;
     }
 
     location = /dpys/src {
