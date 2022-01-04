@@ -43,8 +43,8 @@ func GetPythonLibDownloads(project string) string {
 func GetNPMLibDownloads(project string) string {
 	var date string
 	date += strconv.Itoa(time.Now().Year())
-	date += strconv.Itoa(int(time.Now().Month()))
-	date += strconv.Itoa(time.Now().Day())
+	date += "-" + strconv.Itoa(int(time.Now().Month()))
+	date += "-" + strconv.Itoa(time.Now().Day())
 	var data map[string]interface{}
 	client := http.Client{
 		Timeout: time.Second * 5,
