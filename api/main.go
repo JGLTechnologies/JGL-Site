@@ -21,6 +21,7 @@ type Project struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Downloads   string `json:"downloads"`
+	Private     bool   `json:"private"`
 }
 
 func Contact(c *gin.Context) {
@@ -96,12 +97,6 @@ func Projects() ([]*Project, error) {
 		if jsonErr != nil {
 			return []*Project{}, jsonErr
 		} else {
-			for i, v := range data {
-				if v.Name == "JGL-Site" {
-					data = removeIndex(data, i)
-					break
-				}
-			}
 			for _, v := range data {
 				d, ok := downloads[v.Name]
 				if ok {
@@ -113,8 +108,4 @@ func Projects() ([]*Project, error) {
 			return data, nil
 		}
 	}
-}
-
-func removeIndex(s []*Project, index int) []*Project {
-	return append(s[:index], s[index+1:]...)
 }
