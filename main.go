@@ -77,7 +77,7 @@ func main() {
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
 		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
-		apiGroup.POST("/contact", utils.GetMW(1, 1), api.Contact)
+		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), api.Contact)
 	}
 
 	router.NoRoute(noRoute)

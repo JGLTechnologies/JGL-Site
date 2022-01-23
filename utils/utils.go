@@ -79,10 +79,10 @@ func GetGoLibDownloads(project string) string {
 	if jsonErr != nil {
 		return "Not Found"
 	}
-	return strconv.Itoa(int(data["uniques"].(float64)))
+	return strconv.Itoa(int(data["count"].(float64)))
 }
 
-func GetMW(rate int, limit int) func(c *gin.Context) {
+func GetMW(rate time.Duration, limit int) func(c *gin.Context) {
 	return GinRateLimit.RateLimiter(func(c *gin.Context) string {
 		return c.ClientIP() + c.FullPath()
 	}, func(c *gin.Context) {

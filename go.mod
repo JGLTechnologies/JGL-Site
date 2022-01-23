@@ -3,7 +3,7 @@ module JGLSite
 go 1.17
 
 require (
-	github.com/JGLTechnologies/GinRateLimit v1.0.6
+	github.com/JGLTechnologies/GinRateLimit v1.1.0
 	github.com/Nebulizer1213/SimpleFiles v1.0.0
 	github.com/chenyahui/gin-cache v1.4.0
 	github.com/gin-contrib/multitemplate v0.0.0-20211002122701-e9e3201b87a0
@@ -14,13 +14,13 @@ require (
 
 require (
 	github.com/ReneKroon/ttlcache/v2 v2.9.0 // indirect
-	github.com/cespare/xxhash/v2 v2.1.1 // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
-	github.com/go-redis/redis/v8 v8.11.3 // indirect
+	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect

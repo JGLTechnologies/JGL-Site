@@ -13,7 +13,7 @@
             e.exports = function () {
                 try {
                     if (!Object.assign) return !1;
-                    var e = new String("abc");
+                    var e = String("abc");
                     if (e[5] = "de", "5" === Object.getOwnPropertyNames(e)[0]) return !1;
                     for (var t = {}, n = 0; n < 10; n++) t["_" + String.fromCharCode(n)] = n;
                     if ("0123456789" !== Object.getOwnPropertyNames(t).map((function (e) {
@@ -638,7 +638,7 @@
                     case"onMouseUpCapture":
                     case"onMouseEnter":
                         (r = !r.disabled) || (r = !("button" === (e = e.type) || "input" === e || "select" === e || "textarea" === e)), e = !r;
-                        break e;
+                        break;
                     default:
                         e = !1
                 }
@@ -3126,7 +3126,7 @@
                             e.child.return = e, e = e.child;
                             continue
                         }
-                        if (e === t) break e;
+                        if (e === t) break;
                         for (; null === e.sibling;) {
                             if (null === e.return || e.return === t) break e;
                             e = e.return
@@ -3733,7 +3733,7 @@
                     }
                     if (5 === l.tag || 6 === l.tag) {
                         e:for (var u = e, i = l, s = i; ;) if (bu(u, s), null !== s.child && 4 !== s.tag) s.child.return = s, s = s.child; else {
-                            if (s === i) break e;
+                            if (s === i) break;
                             for (; null === s.sibling;) {
                                 if (null === s.return || s.return === i) break e;
                                 s = s.return
@@ -5253,7 +5253,7 @@
                 e.push(t);
                 e:for (; ;) {
                     var r = n - 1 >>> 1, l = e[r];
-                    if (!(void 0 !== l && 0 < _(l, t))) break e;
+                    if (!(void 0 !== l && 0 < _(l, t))) break;
                     e[r] = t, e[n] = l, n = r
                 }
             }
@@ -5271,7 +5271,7 @@
                         e:for (var r = 0, l = e.length; r < l;) {
                             var a = 2 * (r + 1) - 1, o = e[a], u = a + 1, i = e[u];
                             if (void 0 !== o && 0 > _(o, n)) void 0 !== i && 0 > _(i, o) ? (e[r] = i, e[u] = n, r = u) : (e[r] = o, e[a] = n, r = a); else {
-                                if (!(void 0 !== i && 0 > _(i, n))) break e;
+                                if (!(void 0 !== i && 0 > _(i, n))) break;
                                 e[r] = i, e[u] = n, r = u
                             }
                         }
