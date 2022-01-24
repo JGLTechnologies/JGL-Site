@@ -165,7 +165,7 @@ func noMethod(c *gin.Context) {
 	} else {
 		c.HTML(405, "status", gin.H{
 			"code":    "405",
-			"message": "The page you used is not allowed.",
+			"message": "The method you used is not allowed.",
 		})
 	}
 }
