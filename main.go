@@ -4,7 +4,6 @@ import (
 	"JGLSite/api"
 	"JGLSite/test"
 	"JGLSite/utils"
-	"fmt"
 	"github.com/Nebulizer1213/SimpleFiles"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
@@ -41,10 +40,14 @@ func main() {
 	router := gin.New()
 	router.HTMLRender = r
 	store = persist.NewMemoryStore(time.Hour)
-
 	router.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
-		c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", err)})
-		c.AbortWithStatus(500)
+		err = strings.Split(err.(error).Error(), "runtime/debug.Stack()")[0]
+		if utils.StartsWith(c.Request.URL.String(), "/api") {
+			c.AbortWithStatusJSON(500, gin.H{"error": err})
+		} else {
+			c.HTML(500, "error", gin.H{"error": err})
+			c.AbortWithStatus(500)
+		}
 	}))
 	router.Use(gin.Logger())
 	router.HandleMethodNotAllowed = true

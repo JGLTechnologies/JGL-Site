@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -33,7 +32,8 @@ func BotInfo(c *gin.Context) {
 		defer res.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			c.AbortWithStatusJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
+			c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
+			return
 		}
 		json.Unmarshal(bodyBytes, &data)
 		c.JSON(200, data)

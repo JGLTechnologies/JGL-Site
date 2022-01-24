@@ -2,7 +2,6 @@ package api
 
 import (
 	"JGLSite/utils"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"net/http"
@@ -46,12 +45,14 @@ func Contact(c *gin.Context) {
 	r.SetClient(&client)
 	res, err := r.Post("https://jglbotapi.us/contact", req.BodyJSON(&data))
 	if err != nil {
-		c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", err)})
+		c.HTML(500, "error", gin.H{"error": err.Error()})
+		c.AbortWithStatus(500)
 	} else {
 		var resJSON map[string]interface{}
 		jsonErr := res.ToJSON(&resJSON)
 		if jsonErr != nil {
-			c.HTML(500, "error", gin.H{"error": fmt.Sprintf("%s", jsonErr)})
+			c.HTML(500, "error", gin.H{"error": jsonErr.Error()})
+			c.AbortWithStatus(500)
 		} else {
 			if res.Response().StatusCode == 200 {
 				c.HTML(200, "contact-thank-you", gin.H{})
