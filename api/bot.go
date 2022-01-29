@@ -1,18 +1,15 @@
 package api
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
-	"net/http"
+	"github.com/imroc/req"
 	"time"
 )
 
 func BotStatus(c *gin.Context) {
-	client := http.Client{
-		Timeout: time.Second,
-	}
-	_, err := client.Get("https://jglbotapi.us/status")
+	r := req.New()
+	r.SetTimeout(time.Second)
+	_, err := r.Get("https://jglbotapi.us/status")
 	if err != nil {
 		c.AbortWithStatusJSON(200, gin.H{"online": false})
 	} else {
@@ -21,21 +18,18 @@ func BotStatus(c *gin.Context) {
 }
 
 func BotInfo(c *gin.Context) {
-	client := http.Client{
-		Timeout: time.Second,
-	}
+	r := req.New()
+	r.SetTimeout(time.Second)
 	var data map[string]interface{}
-	res, err := client.Get("https://jglbotapi.us/info")
+	res, err := r.Get("https://jglbotapi.us/info")
 	if err != nil {
 		c.AbortWithStatusJSON(200, gin.H{"guilds": "Not Found", "cogs": "Not Found", "shards": "Not Found", "size": gin.H{"gb": "Not Found", "mb": "Not Found", "kb": "Not Found"}, "ping": "Not Found"})
 	} else {
-		defer res.Body.Close()
-		bodyBytes, err := ioutil.ReadAll(res.Body)
+		err := res.ToJSON(&data)
 		if err != nil {
 			c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
 			return
 		}
-		json.Unmarshal(bodyBytes, &data)
 		c.JSON(200, data)
 	}
 }
