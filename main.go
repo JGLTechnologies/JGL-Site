@@ -14,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -91,7 +92,8 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	done := make(chan bool)
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
 		for {
 			p, err := api.Projects()
@@ -100,11 +102,11 @@ func main() {
 			} else {
 				Projects = p
 			}
-			done <- true
+			wg.Done()
 			time.Sleep(time.Minute * 30)
 		}
 	}()
-	<-done
+	wg.Wait()
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalln(err)
 	}
