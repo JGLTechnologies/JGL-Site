@@ -64,7 +64,7 @@ func main() {
 		c.String(200, "Bot webpage is coming soon.")
 	})
 	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
-	router.GET("/projects", cache.CacheByRequestPath(store, time.Hour), projects)
+	router.GET("/projects", cache.CacheByRequestPath(store, time.Minute), projects)
 	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
@@ -93,15 +93,15 @@ func main() {
 	}
 	done := make(chan bool)
 	go func() {
+		p, _ := api.Projects()
+		Projects = p
+		done <- true
+		close(done)
+		time.Sleep(time.Minute * 10)
 		for {
-			p, err := api.Projects()
-			if err != nil {
-				Projects = []*api.Project{}
-			} else {
-				Projects = p
-			}
-			done <- true
-			time.Sleep(time.Minute * 30)
+			p, _ := api.Projects()
+			Projects = p
+			time.Sleep(time.Minute * 10)
 		}
 	}()
 	<-done
