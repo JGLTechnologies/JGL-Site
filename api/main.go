@@ -63,7 +63,7 @@ func Contact(c *gin.Context) {
 			} else if res.Response().StatusCode == 403 {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
-				c.HTML(500, "error", gin.H{"error": resJSON})
+				c.HTML(500, "error", gin.H{"error": resJSON.(map[string]interface{})["error"]})
 			}
 		}
 	}
