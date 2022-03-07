@@ -2,6 +2,7 @@ package api
 
 import (
 	"JGLSite/utils"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"net/http"
@@ -54,6 +55,7 @@ func Contact(c *gin.Context) {
 			c.HTML(500, "error", gin.H{"error": jsonErr.Error()})
 			c.AbortWithStatus(500)
 		} else {
+			fmt.Println(resJSON)
 			if res.Response().StatusCode == 200 {
 				c.HTML(200, "contact-thank-you", gin.H{})
 			} else if res.Response().StatusCode == 429 {
