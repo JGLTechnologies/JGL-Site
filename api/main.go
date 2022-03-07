@@ -2,6 +2,7 @@ package api
 
 import (
 	"JGLSite/utils"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"net/http"
@@ -48,6 +49,7 @@ func Contact(c *gin.Context) {
 		c.HTML(500, "error", gin.H{"error": err.Error()})
 		c.AbortWithStatus(500)
 	} else {
+		fmt.Println(res.Response().StatusCode)
 		var resJSON interface{}
 		jsonErr := res.ToJSON(&resJSON)
 		if jsonErr != nil {
