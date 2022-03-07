@@ -48,7 +48,7 @@ func Contact(c *gin.Context) {
 		c.HTML(500, "error", gin.H{"error": err.Error()})
 		c.AbortWithStatus(500)
 	} else {
-		var resJSON map[string]interface{}
+		var resJSON interface{}
 		jsonErr := res.ToJSON(&resJSON)
 		if jsonErr != nil {
 			c.HTML(500, "error", gin.H{"error": jsonErr.Error()})
@@ -57,13 +57,13 @@ func Contact(c *gin.Context) {
 			if res.Response().StatusCode == 200 {
 				c.HTML(200, "contact-thank-you", gin.H{})
 			} else if res.Response().StatusCode == 429 {
-				c.HTML(429, "contact-limit", gin.H{"remaining": resJSON["remaining"]})
+				c.HTML(429, "contact-limit", gin.H{"remaining": resJSON.(map[string]interface{})["remaining"]})
 			} else if res.Response().StatusCode == 401 {
 				c.HTML(401, "contact-captcha", gin.H{})
 			} else if res.Response().StatusCode == 403 {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
-				c.HTML(500, "error", gin.H{"error": resJSON["error"]})
+				c.HTML(500, "error", gin.H{"error": resJSON})
 			}
 		}
 	}
