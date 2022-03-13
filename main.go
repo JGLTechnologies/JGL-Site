@@ -4,7 +4,7 @@ import (
 	"JGLSite/api"
 	"JGLSite/test"
 	"JGLSite/utils"
-	"github.com/Nebulizer1213/SimpleFiles"
+	"github.com/JGLTechnologies/SimpleFiles"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
