@@ -43,7 +43,7 @@ func Contact(c *gin.Context) {
 	}
 	r := req.New()
 	r.SetClient(&client)
-	res, err := r.Post("https://jglbotapi.us/contact", req.BodyJSON(&data))
+	res, err := r.Post("http://localhost:85", req.BodyJSON(&data))
 	if err != nil {
 		c.HTML(500, "error", gin.H{"error": err.Error()})
 		c.AbortWithStatus(500)
@@ -74,7 +74,6 @@ func Projects() ([]*Project, error) {
 	r.SetTimeout(time.Second * 5)
 	header := make(http.Header)
 	header.Set("Authorization", "token "+os.Getenv("gh_token"))
-
 	dpys := utils.GetPythonLibDownloads("dpys")
 	aiohttplimiter := utils.GetPythonLibDownloads("aiohttp-ratelimiter")
 	sf := utils.GetGoLibDownloads("SimpleFiles")
