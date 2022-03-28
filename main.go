@@ -68,9 +68,6 @@ func main() {
 	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
-	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, time.Hour*24), func(c *gin.Context) {
-		c.Redirect(301, "https://github.com/JGLTechnologies/KeyboardSoundPlayer")
-	})
 
 	testGroup := router.Group("/test")
 	{
