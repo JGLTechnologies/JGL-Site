@@ -79,7 +79,7 @@
         var name = document.getElementById("name");
         var message = document.getElementById("message");
         if (name.value == null || email.value == null || message.value == null || message.value == "" || name.value == "" || email.value == "" || !email.validity.valid) {
-            return;
+
         } else {
             document.getElementById("submitButton").style.display = "none";
             grecaptcha.ready(function () {

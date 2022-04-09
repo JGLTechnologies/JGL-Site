@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/JGLTechnologies/GinRateLimit"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/imroc/req"
 	"net/http"
 	"os"
@@ -88,4 +89,15 @@ func GetMW(rate time.Duration, limit int) func(c *gin.Context) {
 	}, func(c *gin.Context) {
 		c.String(429, "Too many requests")
 	}, GinRateLimit.InMemoryStore(rate, limit))
+}
+
+func GetWS(c *gin.Context, upGrader websocket.Upgrader) *websocket.Conn {
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		panic(err)
+	} else {
+		c.Set("ws", ws)
+		c.Next()
+	}
+	return ws
 }

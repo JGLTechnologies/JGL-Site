@@ -625,7 +625,7 @@
                 var r = al(n);
                 if (null === r) return null;
                 n = r[t];
-                e:switch (t) {
+                switch (t) {
                     case"onClick":
                     case"onClickCapture":
                     case"onDoubleClick":
@@ -5251,7 +5251,7 @@
             function S(e, t) {
                 var n = e.length;
                 e.push(t);
-                e:for (; ;) {
+                for (; ;) {
                     var r = n - 1 >>> 1, l = e[r];
                     if (!(void 0 !== l && 0 < _(l, t))) break;
                     e[r] = t, e[n] = l, n = r
@@ -5268,7 +5268,7 @@
                     var n = e.pop();
                     if (n !== t) {
                         e[0] = n;
-                        e:for (var r = 0, l = e.length; r < l;) {
+                        for (var r = 0, l = e.length; r < l;) {
                             var a = 2 * (r + 1) - 1, o = e[a], u = a + 1, i = e[u];
                             if (void 0 !== o && 0 > _(o, n)) void 0 !== i && 0 > _(i, o) ? (e[r] = i, e[u] = n, r = u) : (e[r] = o, e[a] = n, r = a); else {
                                 if (!(void 0 !== i && 0 > _(i, n))) break;

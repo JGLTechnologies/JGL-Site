@@ -8,6 +8,7 @@ require (
 	github.com/chenyahui/gin-cache v1.5.0
 	github.com/gin-contrib/multitemplate v0.0.0-20220323084503-710510e67c20
 	github.com/gin-gonic/gin v1.7.7
+	github.com/gorilla/websocket v1.5.0
 	github.com/imroc/req v0.3.2
 	github.com/joho/godotenv v1.4.0
 )
