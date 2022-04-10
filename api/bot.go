@@ -9,7 +9,7 @@ import (
 func BotStatus(c *gin.Context) {
 	r := req.New()
 	r.SetTimeout(time.Second)
-	_, err := r.Get("https://jglbotapi.us/status")
+	_, err := r.Get("http://localhost:85/status")
 	if err != nil {
 		c.AbortWithStatusJSON(200, gin.H{"online": false})
 	} else {
@@ -21,7 +21,7 @@ func BotInfo(c *gin.Context) {
 	r := req.New()
 	r.SetTimeout(time.Second)
 	var data map[string]interface{}
-	res, err := r.Get("https://jglbotapi.us/info")
+	res, err := r.Get("http://localhost:85/info")
 	if err != nil {
 		c.AbortWithStatusJSON(200, gin.H{"guilds": "Not Found", "cogs": "Not Found", "shards": "Not Found", "size": gin.H{"gb": "Not Found", "mb": "Not Found", "kb": "Not Found"}, "ping": "Not Found"})
 	} else {
