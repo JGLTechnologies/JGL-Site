@@ -25,7 +25,7 @@ type Project struct {
 
 func Contact(c *gin.Context) {
 	formData := postForm{}
-	if bindingErr := c.Bind(&formData); bindingErr != nil {
+	if bindingErr := c.ShouldBind(&formData); bindingErr != nil {
 		c.HTML(400, "client-error", gin.H{"message": "The request body you provided is invalid.", "title": "Invalid request body"})
 		return
 	}
