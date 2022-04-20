@@ -14,63 +14,63 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
-    location ~* /shop {
+    location ~* ^/shop {
         return 301 https://jgltechnologies.myshopify.com;
     }
 
-    location ~* /discord {
+    location ~* ^/discord {
         return 301 https://discord.gg/TUUbzTa3B7;
     }
 
-    location ~* /dpys {
+    location ~* ^/dpys {
         return 301 https://github.com/JGLTechnologies/DPYS/blob/main/README.md;
     }
 
-    location ~* /dpys/src {
+    location ~* ^/dpys/src {
         return 301 https://github.com/JGLTechnologies/dpys;
     }
 
-    location ~* /dpys/pypi {
+    location ~* ^/dpys/pypi {
         return 301 https://pypi.org/project/dpys;
     }
 
-    location ~* /aiohttplimiter {
+    location ~* ^/aiohttplimiter {
         return 301 https://github.com/JGLTechnologies/aiohttp-ratelimiter;
     }
 
-    location ~* /aiohttplimiter/pypi {
+    location ~* ^/aiohttplimiter/pypi {
         return 301 https://pypi.org/project/aiohttp-ratelimiter;
     }
 
-    location ~* /precise-memory-rate-limit {
+    location ~* ^/precise-memory-rate-limit {
         return 301 https://www.npmjs.com/package/precise-memory-rate-limit;
     }
 
-    location ~* /precise-memory-rate-limit/src {
+    location ~* ^/precise-memory-rate-limit/src {
         return 301 https://github.com/JGLTechnologies/precise-memory-rate-limit;
     }
 
-    location ~* /GinRateLimit {
+    location ~* ^/GinRateLimit {
         return 301 https://github.com/JGLTechnologies/GinRateLimit;
     }
 
-    location ~* /src {
+    location ~* ^/src {
         return 301 https://github.com/JGLTechnologies/jgl-site;
     }
 
-    location ~* /SimpleFiles {
+    location ~* ^/SimpleFiles {
         return 301 https://github.com/JGLTechnologies/SimpleFiles;
     }
 
-    location ~* /KeyboardSoundPlayer {
+    location ~* ^/KeyboardSoundPlayer {
         return 301 https://github.com/JGLTechnologies/KeyboardSoundPlayer;
     }
 
-    location ~* /GambleBot {
+    location ~* ^/GambleBot {
             return 301 https://github.com/JGLTechnologies/GambleBot;
     }
 
-    location ~* /KeyboardSoundPlayer/download {
+    location ~* ^/KeyboardSoundPlayer/download {
         return 301 https://github.com/JGLTechnologies/KeyboardSoundPlayer/blob/master/KeyboardSoundPlayer%20Setup.exe?raw=true;
     }
 
