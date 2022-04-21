@@ -37,6 +37,7 @@ func main() {
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("error", "go web files/error.html")
 	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html")
+	r.AddFromFiles("go-module", "go web files/go_module.html")
 	router := gin.New()
 	router.HTMLRender = r
 	store = persist.NewMemoryStore(time.Hour)
@@ -68,6 +69,13 @@ func main() {
 	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
+
+	goGroup := router.Group("/go")
+	{
+		goGroup.GET("/:module", func(c *gin.Context) {
+			c.HTML(200, "go-module", gin.H{"module": c.Param("module")})
+		})
+	}
 
 	testGroup := router.Group("/test")
 	{
