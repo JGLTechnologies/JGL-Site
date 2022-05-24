@@ -71,7 +71,7 @@ server {
     }
 
     location ~* ^/KeyboardSoundPlayer/download {
-        return 301 https://github.com/JGLTechnologies/KeyboardSoundPlayer/blob/master/KeyboardSoundPlayer%20Setup.exe;
+        return 301 https://github.com/JGLTechnologies/KeyboardSoundPlayer/blob/master/KeyboardSoundPlayer%20Setup.exe?raw=true;
     }
 
     location / {
