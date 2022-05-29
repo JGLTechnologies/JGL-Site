@@ -43,7 +43,7 @@ func Contact(c *gin.Context) {
 	}
 	r := req.New()
 	r.SetClient(&client)
-	res, err := r.Post("http://192.168.1.155:85/contact", req.BodyJSON(&data))
+	res, err := r.Post("http://localhost:85/contact", req.BodyJSON(&data))
 	if err != nil {
 		c.HTML(500, "error", gin.H{"error": err.Error()})
 		c.AbortWithStatus(500)
