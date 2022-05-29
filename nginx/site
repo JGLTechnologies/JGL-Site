@@ -74,6 +74,10 @@ server {
         return 301 https://github.com/JGLTechnologies/KeyboardSoundPlayer/blob/master/KeyboardSoundPlayer%20Setup.exe?raw=true;
     }
 
+    location ~* ^/bot {
+            return 301 https://github.com/JGLTechnologies/JGL-Bot#readme;
+        }
+
     location / {
         proxy_pass http://jgl;
         proxy_connect_timeout 300;
