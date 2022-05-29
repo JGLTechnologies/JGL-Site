@@ -4,9 +4,9 @@ go 1.17
 
 require (
 	github.com/JGLTechnologies/GinRateLimit v1.1.0
-	github.com/JGLTechnologies/SimpleFiles v1.0.0
-	github.com/chenyahui/gin-cache v1.5.0
-	github.com/gin-contrib/multitemplate v0.0.0-20220323084503-710510e67c20
+	github.com/JGLTechnologies/SimpleFiles v1.0.2
+	github.com/chenyahui/gin-cache v1.7.0
+	github.com/gin-contrib/multitemplate v0.0.0-20220524002413-658d6de061b5
 	github.com/gin-gonic/gin v1.7.7
 	github.com/gorilla/websocket v1.5.0
 	github.com/imroc/req v0.3.2
