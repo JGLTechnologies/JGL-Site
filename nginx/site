@@ -70,12 +70,20 @@ server {
             return 301 https://github.com/JGLTechnologies/GambleBot;
     }
 
+    location ~* ^/GambleBot/invite {
+        return 301 https://discord.com/api/oauth2/authorize?client_id=929595364821074020&permissions=8&scope=bot%20applications.commands;
+    }
+
     location ~* ^/KeyboardSoundPlayer/download {
         return 301 https://github.com/JGLTechnologies/KeyboardSoundPlayer/blob/master/KeyboardSoundPlayer%20Setup.exe?raw=true;
     }
 
     location ~* ^/bot {
             return 301 https://github.com/JGLTechnologies/JGL-Bot#readme;
+    }
+
+    location ~* ^/bot/invite {
+                return 301 https://discord.com/api/oauth2/authorize?client_id=844976951692361800&permissions=8&scope=bot%20applications.commands;
         }
 
     location / {
