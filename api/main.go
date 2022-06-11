@@ -16,6 +16,13 @@ type postForm struct {
 	Token   string `form:"token" binding:"required"`
 }
 
+type botForm struct {
+	Name        string `form:"name" binding:"required"`
+	Email       string `form:"email" binding:"required"`
+	Description string `form:"desc" binding:"required"`
+	Token       string `form:"token" binding:"required"`
+}
+
 type Project struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -44,6 +51,52 @@ func Contact(c *gin.Context) {
 	r := req.New()
 	r.SetClient(&client)
 	res, err := r.Post("http://localhost:85/contact", req.BodyJSON(&data))
+	if err != nil {
+		c.HTML(500, "error", gin.H{"error": err.Error()})
+		c.AbortWithStatus(500)
+	} else {
+		var resJSON interface{}
+		jsonErr := res.ToJSON(&resJSON)
+		if jsonErr != nil {
+			c.HTML(500, "error", gin.H{"error": jsonErr.Error()})
+			c.AbortWithStatus(500)
+		} else {
+			if res.Response().StatusCode == 200 {
+				c.HTML(200, "contact-thank-you", gin.H{})
+			} else if res.Response().StatusCode == 429 {
+				c.HTML(429, "contact-limit", gin.H{"remaining": resJSON.(map[string]interface{})["remaining"]})
+			} else if res.Response().StatusCode == 401 {
+				c.HTML(401, "contact-captcha", gin.H{})
+			} else if res.Response().StatusCode == 403 {
+				c.HTML(403, "contact-bl", gin.H{})
+			} else {
+				c.HTML(500, "error", gin.H{"error": resJSON.(map[string]interface{})["error"]})
+			}
+		}
+	}
+}
+
+func CustomBot(c *gin.Context) {
+	formData := botForm{}
+	if bindingErr := c.ShouldBind(&formData); bindingErr != nil {
+		c.HTML(400, "client-error", gin.H{"message": "The request body you provided is invalid.", "title": "Invalid request body"})
+		return
+	}
+	name := formData.Name
+	email := formData.Email
+	desc := formData.Description
+	token := formData.Token
+	if len(name) > 200 || len(email) > 254 || len(desc) > 1020 {
+		c.HTML(400, "client-error", gin.H{"message": "The form body you provided is invalid.", "title": "Invalid form body"})
+		return
+	}
+	data := map[string]string{"name": name, "email": email, "desc": desc, "token": token, "ip": c.ClientIP()}
+	client := http.Client{
+		Timeout: time.Second * 5,
+	}
+	r := req.New()
+	r.SetClient(&client)
+	res, err := r.Post("http://localhost:85/custom-bot", req.BodyJSON(&data))
 	if err != nil {
 		c.HTML(500, "error", gin.H{"error": err.Error()})
 		c.AbortWithStatus(500)

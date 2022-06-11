@@ -30,6 +30,7 @@ func main() {
 	r.AddFromFiles("projects", "go web files/projects.html", "go web files/base.html")
 	r.AddFromFiles("client-error", "go web files/client_error.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
+	r.AddFromFiles("custom-bot", "go web files/bot.html", "go web files/base.html")
 	r.AddFromFiles("status", "go web files/status.html")
 	r.AddFromFiles("contact-thank-you", "go web files/thank-you.html")
 	r.AddFromFiles("contact-limit", "go web files/limit.html")
@@ -63,6 +64,7 @@ func main() {
 	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
 	router.GET("/projects", cache.CacheByRequestPath(store, time.Minute), projects)
 	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
+	router.GET("/custom-bot", cache.CacheByRequestPath(store, time.Hour*24), customBot)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
 
@@ -78,6 +80,7 @@ func main() {
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
 		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
 		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), api.Contact)
+		apiGroup.POST("/custom-bot", utils.GetMW(time.Second, 1), api.CustomBot)
 	}
 
 	router.NoRoute(noRoute)
@@ -121,6 +124,10 @@ func home(c *gin.Context) {
 
 func contact(c *gin.Context) {
 	c.HTML(200, "contact", gin.H{})
+}
+
+func customBot(c *gin.Context) {
+	c.HTML(200, "custom-bot", gin.H{})
 }
 
 func projects(c *gin.Context) {
