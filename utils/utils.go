@@ -86,8 +86,8 @@ func GetGoLibDownloads(project string) string {
 func GetMW(rate time.Duration, limit int) func(c *gin.Context) {
 	return GinRateLimit.RateLimiter(func(c *gin.Context) string {
 		return c.ClientIP() + c.FullPath()
-	}, func(c *gin.Context) {
-		c.String(429, "Too many requests")
+	}, func(c *gin.Context, remaining time.Duration) {
+		c.String(429, "Too many requests. Try again in "+remaining.String())
 	}, GinRateLimit.InMemoryStore(rate, limit))
 }
 
