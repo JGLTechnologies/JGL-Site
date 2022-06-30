@@ -137,7 +137,7 @@ func projects(c *gin.Context) {
 		data["projects"] = template.HTML("<p>Projects could not be loaded.</p>")
 	} else {
 		for _, v := range Projects {
-			if v.Name == "JGL-Site" || v.Private {
+			if v.Name == "JGL-Site" || v.Private || v.Description == "" {
 				continue
 			} else {
 				if v.Downloads != "" {
