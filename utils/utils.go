@@ -4,12 +4,13 @@ import (
 	"github.com/JGLTechnologies/GinRateLimit"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/imroc/req"
-	"net/http"
+	"github.com/imroc/req/v3"
 	"os"
 	"strconv"
 	"time"
 )
+
+var client = req.C().SetTimeout(time.Second * 5)
 
 func StartsWith(s string, sw string) bool {
 	swLen := len(sw)
@@ -25,16 +26,11 @@ func StartsWith(s string, sw string) bool {
 
 func GetPythonLibDownloads(project string) string {
 	var data map[string]interface{}
-	client := http.Client{
-		Timeout: time.Second * 5,
-	}
-	request := req.New()
-	request.SetClient(&client)
-	res, err := request.Get("https://api.pepy.tech/api/projects/" + project)
-	if err != nil || res.Response().StatusCode != 200 {
+	res, err := client.R().Get("https://api.pepy.tech/api/projects/" + project)
+	if err != nil || res.IsError() {
 		return "Not Found"
 	}
-	jsonErr := res.ToJSON(&data)
+	jsonErr := res.UnmarshalJson(&data)
 	if jsonErr != nil {
 		return "Not Found"
 	}
@@ -47,16 +43,11 @@ func GetNPMLibDownloads(project string) string {
 	date += "-" + strconv.Itoa(int(time.Now().Month()))
 	date += "-" + strconv.Itoa(time.Now().Day())
 	var data map[string]interface{}
-	client := http.Client{
-		Timeout: time.Second * 5,
-	}
-	request := req.New()
-	request.SetClient(&client)
-	res, err := request.Get("https://api.npmjs.org/downloads/point/2020-1-1:" + date + "/" + project)
-	if err != nil || res.Response().StatusCode != 200 {
+	res, err := client.R().Get("https://api.npmjs.org/downloads/point/2020-1-1:" + date + "/" + project)
+	if err != nil || res.IsError() {
 		return "Not Found"
 	}
-	jsonErr := res.ToJSON(&data)
+	jsonErr := res.UnmarshalJson(&data)
 	if jsonErr != nil {
 		return "Not Found"
 	}
@@ -64,19 +55,12 @@ func GetNPMLibDownloads(project string) string {
 }
 
 func GetGoLibDownloads(project string) string {
-	request := req.New()
 	var data map[string]interface{}
-	client := http.Client{
-		Timeout: time.Second * 5,
-	}
-	request.SetClient(&client)
-	header := make(http.Header)
-	header.Set("Authorization", "token "+os.Getenv("gh_token"))
-	res, err := request.Get("https://api.github.com/repos/JGLTechnologies/"+project+"/traffic/clones?per=week", header)
-	if err != nil || res.Response().StatusCode != 200 {
+	res, err := client.R().SetHeader("Authorization", "token "+os.Getenv("gh_token")).Get("https://api.github.com/repos/JGLTechnologies/" + project + "/traffic/clones?per=week")
+	if err != nil || res.IsError() {
 		return "Not Found"
 	}
-	jsonErr := res.ToJSON(&data)
+	jsonErr := res.UnmarshalJson(&data)
 	if jsonErr != nil {
 		return "Not Found"
 	}

@@ -3,11 +3,12 @@ package api
 import (
 	"JGLSite/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/imroc/req"
-	"net/http"
+	"github.com/imroc/req/v3"
 	"os"
 	"time"
 )
+
+var client = req.C().SetTimeout(time.Second * 5)
 
 type postForm struct {
 	Name    string `form:"name" binding:"required"`
@@ -45,29 +46,24 @@ func Contact(c *gin.Context) {
 		return
 	}
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": c.ClientIP()}
-	client := http.Client{
-		Timeout: time.Second * 5,
-	}
-	r := req.New()
-	r.SetClient(&client)
-	res, err := r.Post("http://localhost:85/contact", req.BodyJSON(&data))
+	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/contact")
 	if err != nil {
 		c.HTML(500, "error", gin.H{"error": err.Error()})
 		c.AbortWithStatus(500)
 	} else {
 		var resJSON interface{}
-		jsonErr := res.ToJSON(&resJSON)
+		jsonErr := res.UnmarshalJson(&resJSON)
 		if jsonErr != nil {
 			c.HTML(500, "error", gin.H{"error": jsonErr.Error()})
 			c.AbortWithStatus(500)
 		} else {
-			if res.Response().StatusCode == 200 {
+			if res.IsSuccess() {
 				c.HTML(200, "contact-thank-you", gin.H{})
-			} else if res.Response().StatusCode == 429 {
+			} else if res.StatusCode == 429 {
 				c.HTML(429, "contact-limit", gin.H{"remaining": resJSON.(map[string]interface{})["remaining"]})
-			} else if res.Response().StatusCode == 401 {
+			} else if res.StatusCode == 401 {
 				c.HTML(401, "contact-captcha", gin.H{})
-			} else if res.Response().StatusCode == 403 {
+			} else if res.StatusCode == 403 {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
 				c.HTML(500, "error", gin.H{"error": resJSON.(map[string]interface{})["error"]})
@@ -91,29 +87,24 @@ func CustomBot(c *gin.Context) {
 		return
 	}
 	data := map[string]string{"name": name, "email": email, "desc": desc, "token": token, "ip": c.ClientIP()}
-	client := http.Client{
-		Timeout: time.Second * 5,
-	}
-	r := req.New()
-	r.SetClient(&client)
-	res, err := r.Post("http://localhost:85/custom-bot", req.BodyJSON(&data))
+	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/custom-bot")
 	if err != nil {
 		c.HTML(500, "error", gin.H{"error": err.Error()})
 		c.AbortWithStatus(500)
 	} else {
 		var resJSON interface{}
-		jsonErr := res.ToJSON(&resJSON)
+		jsonErr := res.UnmarshalJson(&resJSON)
 		if jsonErr != nil {
 			c.HTML(500, "error", gin.H{"error": jsonErr.Error()})
 			c.AbortWithStatus(500)
 		} else {
-			if res.Response().StatusCode == 200 {
+			if res.IsSuccess() {
 				c.HTML(200, "contact-thank-you", gin.H{})
-			} else if res.Response().StatusCode == 429 {
+			} else if res.StatusCode == 429 {
 				c.HTML(429, "contact-limit", gin.H{"remaining": resJSON.(map[string]interface{})["remaining"]})
-			} else if res.Response().StatusCode == 401 {
+			} else if res.StatusCode == 401 {
 				c.HTML(401, "contact-captcha", gin.H{})
-			} else if res.Response().StatusCode == 403 {
+			} else if res.StatusCode == 403 {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
 				c.HTML(500, "error", gin.H{"error": resJSON.(map[string]interface{})["error"]})
@@ -123,10 +114,6 @@ func CustomBot(c *gin.Context) {
 }
 
 func Projects() ([]*Project, error) {
-	r := req.New()
-	r.SetTimeout(time.Second * 5)
-	header := make(http.Header)
-	header.Set("Authorization", "token "+os.Getenv("gh_token"))
 	dpys := utils.GetPythonLibDownloads("dpys")
 	aiohttplimiter := utils.GetPythonLibDownloads("aiohttp-ratelimiter")
 	sf := utils.GetGoLibDownloads("SimpleFiles")
@@ -141,12 +128,12 @@ func Projects() ([]*Project, error) {
 		"total":                     GetTotal([]string{dpys, aiohttplimiter, pmrl, grl}),
 	}
 
-	res, err := r.Get("https://api.github.com/orgs/JGLTechnologies/repos", header)
-	if err != nil || res.Response().StatusCode != 200 {
+	res, err := client.R().SetHeader("Authorization", "token "+os.Getenv("gh_token")).Get("https://api.github.com/orgs/JGLTechnologies/repos")
+	if err != nil || res.IsError() {
 		return []*Project{}, err
 	} else {
 		var data []*Project
-		jsonErr := res.ToJSON(&data)
+		jsonErr := res.UnmarshalJson(&data)
 		if jsonErr != nil {
 			return []*Project{}, jsonErr
 		} else {
