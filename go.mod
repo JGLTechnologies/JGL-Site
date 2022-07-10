@@ -6,6 +6,7 @@ require (
 	github.com/JGLTechnologies/GinRateLimit v1.2.0
 	github.com/JGLTechnologies/SimpleFiles v1.0.2
 	github.com/chenyahui/gin-cache v1.7.0
+	github.com/gammazero/workerpool v1.1.2
 	github.com/gin-contrib/multitemplate v0.0.0-20220606235416-8e12065b5cb8
 	github.com/gin-gonic/gin v1.8.1
 	github.com/glebarez/sqlite v1.4.5
@@ -19,6 +20,7 @@ require (
 	github.com/ReneKroon/ttlcache/v2 v2.11.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/gammazero/deque v0.1.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/glebarez/go-sqlite v1.17.2 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect

@@ -9,6 +9,7 @@ import (
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"html/template"
 	"log"
@@ -49,8 +50,11 @@ func main() {
 		if utils.StartsWith(c.Request.URL.String(), "/api") {
 			c.AbortWithStatusJSON(500, gin.H{"error": err})
 		} else {
-			errStruct := &utils.Err{Message: err.(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm")}
-			utils.DB.Create(errStruct)
+			id, _ := uuid.NewRandom()
+			errStruct := &utils.Err{Message: err.(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String()}
+			utils.Pool.Submit(func() {
+				utils.DB.Create(errStruct)
+			})
 			c.HTML(500, "error", gin.H{"id": errStruct.ID})
 			c.AbortWithStatus(500)
 		}

@@ -3,6 +3,7 @@ package utils
 import (
 	"database/sql"
 	"github.com/JGLTechnologies/GinRateLimit"
+	"github.com/gammazero/workerpool"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/gorilla/websocket"
@@ -16,9 +17,10 @@ import (
 
 var client = req.C().SetTimeout(time.Second * 5)
 var DB *gorm.DB
+var Pool = workerpool.New(20)
 
 type Err struct {
-	ID      int    `gorm:"primaryKey;autoIncrement" json:"id"`
+	ID      string `gorm:"primaryKey" json:"id"`
 	Message string `json:"message"`
 	Date    string `json:"date"`
 }
