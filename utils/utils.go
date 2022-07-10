@@ -18,9 +18,9 @@ var client = req.C().SetTimeout(time.Second * 5)
 var DB *gorm.DB
 
 type Err struct {
-	ID      int `gorm:"primaryKey;autoIncrement"`
-	Message string
-	Date    string
+	ID      int    `gorm:"primaryKey;autoIncrement" json:"id"`
+	Message string `json:"message"`
+	Date    string `json:"date"`
 }
 
 func GetDB() *sql.DB {
