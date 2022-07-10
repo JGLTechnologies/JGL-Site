@@ -51,7 +51,7 @@ func main() {
 			c.AbortWithStatusJSON(500, gin.H{"error": err})
 		} else {
 			id, _ := uuid.NewRandom()
-			errStruct := &utils.Err{Message: err.(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String()}
+			errStruct := &utils.Err{Message: err.(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
 			utils.Pool.Submit(func() {
 				utils.DB.Create(errStruct)
 			})

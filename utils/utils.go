@@ -23,6 +23,8 @@ type Err struct {
 	ID      string `gorm:"primaryKey" json:"id"`
 	Message string `json:"message"`
 	Date    string `json:"date"`
+	Path    string `json:"path"`
+	IP      string `json:"ip"`
 }
 
 func GetDB() *sql.DB {

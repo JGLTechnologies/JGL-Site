@@ -50,7 +50,7 @@ func Contact(c *gin.Context) {
 	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/contact")
 	if err != nil {
 		id, _ := uuid.NewRandom()
-		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String()}
+		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
 		utils.Pool.Submit(func() {
 			utils.DB.Create(errStruct)
 		})
@@ -61,7 +61,7 @@ func Contact(c *gin.Context) {
 		jsonErr := res.UnmarshalJson(&resJSON)
 		if jsonErr != nil {
 			id, _ := uuid.NewRandom()
-			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String()}
+			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
 			utils.Pool.Submit(func() {
 				utils.DB.Create(errStruct)
 			})
@@ -78,7 +78,7 @@ func Contact(c *gin.Context) {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
 				id, _ := uuid.NewRandom()
-				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String()}
+				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
 				utils.Pool.Submit(func() {
 					utils.DB.Create(errStruct)
 				})
@@ -107,7 +107,7 @@ func CustomBot(c *gin.Context) {
 	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/custom-bot")
 	if err != nil {
 		id, _ := uuid.NewRandom()
-		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String()}
+		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
 		utils.Pool.Submit(func() {
 			utils.DB.Create(errStruct)
 		})
@@ -118,7 +118,7 @@ func CustomBot(c *gin.Context) {
 		jsonErr := res.UnmarshalJson(&resJSON)
 		if jsonErr != nil {
 			id, _ := uuid.NewRandom()
-			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String()}
+			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
 			utils.Pool.Submit(func() {
 				utils.DB.Create(errStruct)
 			})
@@ -135,7 +135,7 @@ func CustomBot(c *gin.Context) {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
 				id, _ := uuid.NewRandom()
-				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String()}
+				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
 				utils.Pool.Submit(func() {
 					utils.DB.Create(errStruct)
 				})
