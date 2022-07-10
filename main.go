@@ -24,6 +24,9 @@ const port string = "81"
 
 func main() {
 	godotenv.Load("/var/www/.env")
+
+	defer utils.GetDB().Close()
+
 	gin.SetMode(gin.ReleaseMode)
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
@@ -46,7 +49,9 @@ func main() {
 		if utils.StartsWith(c.Request.URL.String(), "/api") {
 			c.AbortWithStatusJSON(500, gin.H{"error": err})
 		} else {
-			c.HTML(500, "error", gin.H{"error": err})
+			errStruct := &utils.Err{Message: err.(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm")}
+			utils.DB.Create(errStruct)
+			c.HTML(500, "error", gin.H{"id": errStruct.ID})
 			c.AbortWithStatus(500)
 		}
 	}))
@@ -81,6 +86,7 @@ func main() {
 		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
 		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), api.Contact)
 		apiGroup.POST("/custom-bot", utils.GetMW(time.Second, 1), api.CustomBot)
+		apiGroup.GET("/error", cache.CacheByRequestURI(store, time.Hour*24), api.GetErr)
 	}
 
 	router.NoRoute(noRoute)

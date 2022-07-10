@@ -1,16 +1,36 @@
 package utils
 
 import (
+	"database/sql"
 	"github.com/JGLTechnologies/GinRateLimit"
 	"github.com/gin-gonic/gin"
+	"github.com/glebarez/sqlite"
 	"github.com/gorilla/websocket"
 	"github.com/imroc/req/v3"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"os"
 	"strconv"
 	"time"
 )
 
 var client = req.C().SetTimeout(time.Second * 5)
+var DB *gorm.DB
+
+type Err struct {
+	ID      int `gorm:"primaryKey;autoIncrement"`
+	Message string
+	Date    string
+}
+
+func GetDB() *sql.DB {
+	DB, _ = gorm.Open(sqlite.Open("errors.db"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
+	DB.AutoMigrate(&Err{})
+	sqlDB, _ := DB.DB()
+	return sqlDB
+}
 
 func StartsWith(s string, sw string) bool {
 	swLen := len(sw)

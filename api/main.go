@@ -48,13 +48,17 @@ func Contact(c *gin.Context) {
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": c.ClientIP()}
 	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/contact")
 	if err != nil {
-		c.HTML(500, "error", gin.H{"error": err.Error()})
+		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm")}
+		utils.DB.Create(errStruct)
+		c.HTML(500, "error", gin.H{"id": errStruct.ID})
 		c.AbortWithStatus(500)
 	} else {
 		var resJSON interface{}
 		jsonErr := res.UnmarshalJson(&resJSON)
 		if jsonErr != nil {
-			c.HTML(500, "error", gin.H{"error": jsonErr.Error()})
+			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm")}
+			utils.DB.Create(errStruct)
+			c.HTML(500, "error", gin.H{"id": errStruct.ID})
 			c.AbortWithStatus(500)
 		} else {
 			if res.IsSuccess() {
@@ -66,7 +70,10 @@ func Contact(c *gin.Context) {
 			} else if res.StatusCode == 403 {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
-				c.HTML(500, "error", gin.H{"error": resJSON.(map[string]interface{})["error"]})
+				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm")}
+				utils.DB.Create(errStruct)
+				c.HTML(500, "error", gin.H{"id": errStruct.ID})
+				c.AbortWithStatus(500)
 			}
 		}
 	}
@@ -89,13 +96,17 @@ func CustomBot(c *gin.Context) {
 	data := map[string]string{"name": name, "email": email, "desc": desc, "token": token, "ip": c.ClientIP()}
 	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/custom-bot")
 	if err != nil {
-		c.HTML(500, "error", gin.H{"error": err.Error()})
+		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm")}
+		utils.DB.Create(errStruct)
+		c.HTML(500, "error", gin.H{"id": errStruct.ID})
 		c.AbortWithStatus(500)
 	} else {
 		var resJSON interface{}
 		jsonErr := res.UnmarshalJson(&resJSON)
 		if jsonErr != nil {
-			c.HTML(500, "error", gin.H{"error": jsonErr.Error()})
+			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm")}
+			utils.DB.Create(errStruct)
+			c.HTML(500, "error", gin.H{"id": errStruct.ID})
 			c.AbortWithStatus(500)
 		} else {
 			if res.IsSuccess() {
@@ -107,7 +118,10 @@ func CustomBot(c *gin.Context) {
 			} else if res.StatusCode == 403 {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
-				c.HTML(500, "error", gin.H{"error": resJSON.(map[string]interface{})["error"]})
+				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm")}
+				utils.DB.Create(errStruct)
+				c.HTML(500, "error", gin.H{"id": errStruct.ID})
+				c.AbortWithStatus(500)
 			}
 		}
 	}
@@ -147,5 +161,22 @@ func Projects() ([]*Project, error) {
 			}
 			return data, nil
 		}
+	}
+}
+
+func GetErr(c *gin.Context) {
+	query := struct {
+		ID uint `form:"id" binding:"required"`
+	}{}
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.AbortWithStatusJSON(400, gin.H{"error": "invalid id"})
+		return
+	}
+	err := &utils.Err{}
+	res := utils.DB.First(err, "id=?", query.ID)
+	if res.RowsAffected < 1 {
+		c.AbortWithStatusJSON(400, gin.H{"error": "there is no error with that id"})
+	} else {
+		c.JSON(200, err)
 	}
 }
