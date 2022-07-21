@@ -7,6 +7,7 @@ import (
 	"github.com/JGLTechnologies/SimpleFiles"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
+	helmet "github.com/danielkov/gin-helmet"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -45,6 +46,7 @@ func main() {
 	router := gin.New()
 	router.HTMLRender = r
 	store = persist.NewMemoryStore(time.Hour)
+	router.Use(helmet.Default())
 	router.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
 		err = strings.Split(err.(error).Error(), "runtime/debug.Stack()")[0]
 		if utils.StartsWith(c.Request.URL.String(), "/api") {
