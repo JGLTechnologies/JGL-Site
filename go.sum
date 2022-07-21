@@ -8,10 +8,10 @@ dmitri.shuralyov.com/service/change v0.0.0-20181023043359-a85b471d5412/go.mod h1
 dmitri.shuralyov.com/state v0.0.0-20180228185332-28bcc343414c/go.mod h1:0PRwlb0D6DFvNNtx+9ybjezNCa8XF0xaYcETyp6rHWU=
 git.apache.org/thrift.git v0.0.0-20180902110319-2566ecd5d999/go.mod h1:fPE2ZNJGynbRyZ4dJvy6G277gSllfV2HJqblrnkyeyg=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/JGLTechnologies/GinRateLimit v1.3.1 h1:aVeZ3U2f84rzOWtkBej3IVhs3bH8yORPq22Y+J4PP3Q=
-github.com/JGLTechnologies/GinRateLimit v1.3.1/go.mod h1:T7pSmHdglQrEbjH6P+7OVcfzdsrn2ECD9/51JQ7pZa4=
 github.com/JGLTechnologies/SimpleFiles v1.0.2 h1:KYb8Urhyo89dunQz9IedsI410ZXGz9lj89fDtpNAw2o=
 github.com/JGLTechnologies/SimpleFiles v1.0.2/go.mod h1:x08mva0vnlIm1L5HlFaVVx5i0uaqSavQPbsQSq0J9EY=
+github.com/JGLTechnologies/gin-rate-limit v1.3.5 h1:Ar5+0NWfgsjTtw9nvPQe0o5tHFiUUWmzaQH/vjei/tQ=
+github.com/JGLTechnologies/gin-rate-limit v1.3.5/go.mod h1:FOAzSvebtdzKlhcZ2UV/01Ex6vruoANDn/3wDGqKPN0=
 github.com/ReneKroon/ttlcache/v2 v2.11.0 h1:OvlcYFYi941SBN3v9dsDcC2N8vRxyHcCmJb3Vl4QMoM=
 github.com/ReneKroon/ttlcache/v2 v2.11.0/go.mod h1:mBxvsNY+BT8qLLd6CuAJubbKo6r0jh3nb5et22bbfGY=
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239/go.mod h1:2FmKhYUyUczH0OGQWaF5ceTx0UBShxjsH6f8oGKYe2c=

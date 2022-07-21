@@ -50,8 +50,8 @@ server {
         return 301 https://github.com/JGLTechnologies/precise-memory-rate-limit;
     }
 
-    location = /GinRateLimit {
-        return 301 https://github.com/JGLTechnologies/GinRateLimit;
+    location = /gin-rate-limit {
+        return 301 https://github.com/JGLTechnologies/gin-rate-limit;
     }
 
     location = /src {

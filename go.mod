@@ -3,8 +3,8 @@ module JGLSite
 go 1.17
 
 require (
-	github.com/JGLTechnologies/GinRateLimit v1.3.1
 	github.com/JGLTechnologies/SimpleFiles v1.0.2
+	github.com/JGLTechnologies/gin-rate-limit v1.3.5
 	github.com/chenyahui/gin-cache v1.7.0
 	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e
 	github.com/gammazero/workerpool v1.1.2

@@ -2,7 +2,7 @@ package utils
 
 import (
 	"database/sql"
-	"github.com/JGLTechnologies/GinRateLimit"
+	"github.com/JGLTechnologies/gin-rate-limit"
 	"github.com/gammazero/workerpool"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
@@ -92,11 +92,11 @@ func GetGoLibDownloads(project string) string {
 }
 
 func GetMW(rate time.Duration, limit int) func(c *gin.Context) {
-	return GinRateLimit.RateLimiter(func(c *gin.Context) string {
+	return ratelimit.RateLimiter(func(c *gin.Context) string {
 		return c.ClientIP() + c.FullPath()
 	}, func(c *gin.Context, remaining time.Duration) {
 		c.String(429, "Too many requests. Try again in "+remaining.String())
-	}, GinRateLimit.InMemoryStore(rate, limit))
+	}, ratelimit.InMemoryStore(rate, limit))
 }
 
 func GetWS(c *gin.Context, upGrader websocket.Upgrader) *websocket.Conn {

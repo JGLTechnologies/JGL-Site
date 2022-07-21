@@ -24,12 +24,12 @@ func Downloads(c *gin.Context) {
 	aiohttplimiter := utils.GetPythonLibDownloads("aiohttp-ratelimiter")
 	sf := utils.GetGoLibDownloads("SimpleFiles")
 	pmrl := utils.GetNPMLibDownloads("precise-memory-rate-limit")
-	grl := utils.GetGoLibDownloads("GinRateLimit")
+	grl := utils.GetGoLibDownloads("gin-rate-limit")
 	c.JSON(200, gin.H{
 		"DPYS":                      dpys,
 		"aiohttp-ratelimiter":       aiohttplimiter,
 		"precise-memory-rate-limit": pmrl,
-		"GinRateLimit":              grl,
+		"gin-rate-limit":            grl,
 		"SimpleFiles":               sf,
 		"total":                     GetTotal([]string{dpys, aiohttplimiter, pmrl, grl}),
 	})
