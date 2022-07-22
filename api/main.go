@@ -51,8 +51,7 @@ func Contact(c *gin.Context) {
 		return
 	}
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": c.ClientIP()}
-	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/contact")
-	fmt.Println(res.ToString())
+	res, err := req.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/contact")
 	if err != nil {
 		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
 		utils.Pool.Submit(func() {
