@@ -194,6 +194,7 @@ func GetErr(c *gin.Context) {
 	_, uuidErr := uuid.Parse(query.ID)
 	if uuidErr != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "invalid id"})
+		return
 	}
 	err := &utils.Err{}
 	res := utils.DB.First(err, "id=?", query.ID)
