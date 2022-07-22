@@ -2,10 +2,12 @@ package api
 
 import (
 	"JGLSite/utils"
+	"fmt"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/imroc/req/v3"
+	"math"
 	"os"
 	"time"
 )
@@ -71,7 +73,15 @@ func Contact(c *gin.Context) {
 			if res.IsSuccess() {
 				c.HTML(200, "contact-thank-you", gin.H{})
 			} else if res.StatusCode == 429 {
-				c.HTML(429, "contact-limit", gin.H{"remaining": resJSON.(map[string]interface{})["remaining"]})
+				minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(int64) * time.Second.Nanoseconds()).Minutes())
+				seconds := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(int64) * time.Second.Nanoseconds()).Seconds())
+				var remaining string
+				if minutes < 1 {
+					remaining = fmt.Sprintf("%v seconds", seconds)
+				} else {
+					remaining = fmt.Sprintf("%v minutes", minutes)
+				}
+				c.HTML(429, "contact-limit", gin.H{"remaining": remaining})
 			} else if res.StatusCode == 401 {
 				c.HTML(401, "contact-captcha", gin.H{})
 			} else if res.StatusCode == 403 {
@@ -126,7 +136,15 @@ func CustomBot(c *gin.Context) {
 			if res.IsSuccess() {
 				c.HTML(200, "contact-thank-you", gin.H{})
 			} else if res.StatusCode == 429 {
-				c.HTML(429, "contact-limit", gin.H{"remaining": resJSON.(map[string]interface{})["remaining"]})
+				minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(int64) * time.Second.Nanoseconds()).Minutes())
+				seconds := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(int64) * time.Second.Nanoseconds()).Seconds())
+				var remaining string
+				if minutes < 1 {
+					remaining = fmt.Sprintf("%v seconds", seconds)
+				} else {
+					remaining = fmt.Sprintf("%v minutes", minutes)
+				}
+				c.HTML(429, "contact-limit", gin.H{"remaining": remaining})
 			} else if res.StatusCode == 401 {
 				c.HTML(401, "contact-captcha", gin.H{})
 			} else if res.StatusCode == 403 {
