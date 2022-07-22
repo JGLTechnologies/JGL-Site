@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var client = req.C().SetTimeout(time.Second * 5)
+var client = req.C().SetTimeout(time.Second * 10)
 
 type postForm struct {
 	Name    string `form:"name" binding:"required"`
