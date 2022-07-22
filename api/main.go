@@ -2,6 +2,7 @@ package api
 
 import (
 	"JGLSite/utils"
+	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/imroc/req/v3"
@@ -33,6 +34,7 @@ type Project struct {
 }
 
 func Contact(c *gin.Context) {
+	id := requestid.Get(c)
 	formData := postForm{}
 	if bindingErr := c.ShouldBind(&formData); bindingErr != nil {
 		c.HTML(400, "client-error", gin.H{"message": "The request body you provided is invalid.", "title": "Invalid request body"})
@@ -49,23 +51,21 @@ func Contact(c *gin.Context) {
 	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": c.ClientIP()}
 	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/contact")
 	if err != nil {
-		id, _ := uuid.NewRandom()
-		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
+		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
 		utils.Pool.Submit(func() {
 			utils.DB.Create(errStruct)
 		})
-		c.HTML(500, "error", gin.H{"id": id.String()})
+		c.HTML(500, "error", gin.H{"id": id})
 		c.AbortWithStatus(500)
 	} else {
 		var resJSON interface{}
 		jsonErr := res.UnmarshalJson(&resJSON)
 		if jsonErr != nil {
-			id, _ := uuid.NewRandom()
-			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
+			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
 			utils.Pool.Submit(func() {
 				utils.DB.Create(errStruct)
 			})
-			c.HTML(500, "error", gin.H{"id": id.String()})
+			c.HTML(500, "error", gin.H{"id": id})
 			c.AbortWithStatus(500)
 		} else {
 			if res.IsSuccess() {
@@ -77,12 +77,11 @@ func Contact(c *gin.Context) {
 			} else if res.StatusCode == 403 {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
-				id, _ := uuid.NewRandom()
-				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
+				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
 				utils.Pool.Submit(func() {
 					utils.DB.Create(errStruct)
 				})
-				c.HTML(500, "error", gin.H{"id": id.String()})
+				c.HTML(500, "error", gin.H{"id": id})
 				c.AbortWithStatus(500)
 			}
 		}
@@ -90,6 +89,7 @@ func Contact(c *gin.Context) {
 }
 
 func CustomBot(c *gin.Context) {
+	id := requestid.Get(c)
 	formData := botForm{}
 	if bindingErr := c.ShouldBind(&formData); bindingErr != nil {
 		c.HTML(400, "client-error", gin.H{"message": "The request body you provided is invalid.", "title": "Invalid request body"})
@@ -106,23 +106,21 @@ func CustomBot(c *gin.Context) {
 	data := map[string]string{"name": name, "email": email, "desc": desc, "token": token, "ip": c.ClientIP()}
 	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/custom-bot")
 	if err != nil {
-		id, _ := uuid.NewRandom()
-		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
+		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
 		utils.Pool.Submit(func() {
 			utils.DB.Create(errStruct)
 		})
-		c.HTML(500, "error", gin.H{"id": id.String()})
+		c.HTML(500, "error", gin.H{"id": id})
 		c.AbortWithStatus(500)
 	} else {
 		var resJSON interface{}
 		jsonErr := res.UnmarshalJson(&resJSON)
 		if jsonErr != nil {
-			id, _ := uuid.NewRandom()
-			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
+			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
 			utils.Pool.Submit(func() {
 				utils.DB.Create(errStruct)
 			})
-			c.HTML(500, "error", gin.H{"id": id.String()})
+			c.HTML(500, "error", gin.H{"id": id})
 			c.AbortWithStatus(500)
 		} else {
 			if res.IsSuccess() {
@@ -134,12 +132,11 @@ func CustomBot(c *gin.Context) {
 			} else if res.StatusCode == 403 {
 				c.HTML(403, "contact-bl", gin.H{})
 			} else {
-				id, _ := uuid.NewRandom()
-				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id.String(), IP: c.ClientIP(), Path: c.Request.URL.String()}
+				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
 				utils.Pool.Submit(func() {
 					utils.DB.Create(errStruct)
 				})
-				c.HTML(500, "error", gin.H{"id": id.String()})
+				c.HTML(500, "error", gin.H{"id": id})
 				c.AbortWithStatus(500)
 			}
 		}

@@ -9,6 +9,7 @@ import (
 	"github.com/chenyahui/gin-cache/persist"
 	helmet "github.com/danielkov/gin-helmet"
 	"github.com/gin-contrib/multitemplate"
+	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
@@ -71,6 +72,11 @@ func main() {
 	router.ForwardedByClientIP = true
 	router.RemoteIPHeaders = []string{"X-Forwarded-For"}
 
+	reqIDMiddleware := requestid.New(requestid.WithGenerator(func() string {
+		id, _ := uuid.NewRandom()
+		return id.String()
+	}))
+
 	router.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
 	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
 	router.GET("/projects", cache.CacheByRequestPath(store, time.Minute), projects)
@@ -90,8 +96,8 @@ func main() {
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
 		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
-		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), api.Contact)
-		apiGroup.POST("/custom-bot", utils.GetMW(time.Second, 1), api.CustomBot)
+		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), reqIDMiddleware, api.Contact)
+		apiGroup.POST("/custom-bot", utils.GetMW(time.Second, 1), reqIDMiddleware, api.CustomBot)
 		apiGroup.GET("/error", cache.CacheByRequestURI(store, time.Hour*24), api.GetErr)
 	}
 

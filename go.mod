@@ -9,6 +9,7 @@ require (
 	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e
 	github.com/gammazero/workerpool v1.1.2
 	github.com/gin-contrib/multitemplate v0.0.0-20220705015713-e21a0ba39de3
+	github.com/gin-contrib/requestid v0.0.5
 	github.com/gin-gonic/gin v1.8.1
 	github.com/glebarez/sqlite v1.4.6
 	github.com/google/uuid v1.3.0
