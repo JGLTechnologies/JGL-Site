@@ -73,8 +73,8 @@ func Contact(c *gin.Context) {
 			if res.IsSuccess() {
 				c.HTML(200, "contact-thank-you", gin.H{})
 			} else if res.StatusCode == 429 {
-				minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(int64) * time.Second.Nanoseconds()).Minutes())
-				seconds := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(int64) * time.Second.Nanoseconds()).Seconds())
+				minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Second.Nanoseconds())).Minutes())
+				seconds := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Second.Nanoseconds())).Seconds())
 				var remaining string
 				if minutes < 1 {
 					remaining = fmt.Sprintf("%v seconds", seconds)
@@ -136,8 +136,8 @@ func CustomBot(c *gin.Context) {
 			if res.IsSuccess() {
 				c.HTML(200, "contact-thank-you", gin.H{})
 			} else if res.StatusCode == 429 {
-				minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(int64) * time.Second.Nanoseconds()).Minutes())
-				seconds := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(int64) * time.Second.Nanoseconds()).Seconds())
+				minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Second.Nanoseconds())).Minutes())
+				seconds := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Second.Nanoseconds())).Seconds())
 				var remaining string
 				if minutes < 1 {
 					remaining = fmt.Sprintf("%v seconds", seconds)
