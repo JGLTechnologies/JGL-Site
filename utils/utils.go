@@ -6,7 +6,6 @@ import (
 	"github.com/gammazero/workerpool"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
-	"github.com/gorilla/websocket"
 	"github.com/imroc/req/v3"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -91,21 +90,13 @@ func GetGoLibDownloads(project string) string {
 	return strconv.Itoa(int(data["count"].(float64)))
 }
 
-func GetMW(rate time.Duration, limit int) func(c *gin.Context) {
+func GetMW(rate time.Duration, limit uint) func(c *gin.Context) {
 	return ratelimit.RateLimiter(func(c *gin.Context) string {
 		return c.ClientIP() + c.FullPath()
 	}, func(c *gin.Context, remaining time.Duration) {
 		c.String(429, "Too many requests. Try again in "+remaining.String())
-	}, ratelimit.InMemoryStore(rate, limit))
-}
-
-func GetWS(c *gin.Context, upGrader websocket.Upgrader) *websocket.Conn {
-	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		panic(err)
-	} else {
-		c.Set("ws", ws)
-		c.Next()
-	}
-	return ws
+	}, ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
+		Rate:  rate,
+		Limit: limit,
+	}))
 }

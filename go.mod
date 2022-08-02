@@ -1,10 +1,10 @@
 module JGLSite
 
-go 1.17
+go 1.18
 
 require (
 	github.com/JGLTechnologies/SimpleFiles v1.0.2
-	github.com/JGLTechnologies/gin-rate-limit v1.3.5
+	github.com/JGLTechnologies/gin-rate-limit v1.4.0
 	github.com/chenyahui/gin-cache v1.7.0
 	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e
 	github.com/gammazero/workerpool v1.1.2
@@ -13,7 +13,6 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/glebarez/sqlite v1.4.6
 	github.com/google/uuid v1.3.0
-	github.com/gorilla/websocket v1.5.0
 	github.com/imroc/req/v3 v3.14.0
 	github.com/joho/godotenv v1.4.0
 	gorm.io/gorm v1.23.8
