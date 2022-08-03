@@ -4,6 +4,7 @@ import (
 	"JGLSite/api"
 	"JGLSite/test"
 	"JGLSite/utils"
+	"bytes"
 	"github.com/JGLTechnologies/SimpleFiles"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
@@ -36,7 +37,7 @@ func main() {
 	r.AddFromFiles("projects", "go web files/projects.html", "go web files/base.html")
 	r.AddFromFiles("client-error", "go web files/client_error.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
-	r.AddFromFiles("custom-bot", "go web files/bot.html", "go web files/base.html")
+	//r.AddFromFiles("custom-bot", "go web files/bot.html", "go web files/base.html")
 	r.AddFromFiles("status", "go web files/status.html")
 	r.AddFromFiles("contact-thank-you", "go web files/thank-you.html")
 	r.AddFromFiles("contact-limit", "go web files/limit.html")
@@ -81,7 +82,7 @@ func main() {
 	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
 	router.GET("/projects", cache.CacheByRequestPath(store, time.Minute), projects)
 	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
-	router.GET("/custom-bot", cache.CacheByRequestPath(store, time.Hour*24), customBot)
+	//router.GET("/custom-bot", cache.CacheByRequestPath(store, time.Hour*24), customBot)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
 
@@ -97,7 +98,7 @@ func main() {
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
 		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
 		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), reqIDMiddleware, api.Contact)
-		apiGroup.POST("/custom-bot", utils.GetMW(time.Second, 1), reqIDMiddleware, api.CustomBot)
+		//apiGroup.POST("/custom-bot", utils.GetMW(time.Second, 1), reqIDMiddleware, api.CustomBot)
 		apiGroup.GET("/error", cache.CacheByRequestURI(store, time.Hour*24), api.GetErr)
 	}
 
@@ -144,9 +145,9 @@ func contact(c *gin.Context) {
 	c.HTML(200, "contact", gin.H{})
 }
 
-func customBot(c *gin.Context) {
-	c.HTML(200, "custom-bot", gin.H{})
-}
+//func customBot(c *gin.Context) {
+//	c.HTML(200, "custom-bot", gin.H{})
+//}
 
 func projects(c *gin.Context) {
 	data := gin.H{}
@@ -155,9 +156,10 @@ func projects(c *gin.Context) {
 		data["projects"] = template.HTML("<p>Projects could not be loaded.</p>")
 	} else {
 		for _, v := range Projects {
-			if v.Name == "JGL-Site" || v.Private || v.Description == "" {
+			if v.Name == "JGL-Site" || v.Private || v.Description == "" || !bytes.HasSuffix([]byte(v.Description), []byte("[project]")) {
 				continue
 			} else {
+				v.Description = strings.ReplaceAll(v.Description, "[project]", "")
 				if v.Downloads != "" {
 					if strings.ToLower(v.Name) == "gin-rate-limit" || strings.ToLower(v.Name) == "simplefiles" {
 						html += template.HTML("<p class=\"lead fw-normal text-muted mb-0\">\n<br/>\n<span style='color: var(--bs-dark);'>" + v.Name + ":</span>\n<br/><span style=\"position: relative; left: 10px;\">Description: " + v.Description + "</span>\n<br/><span style='position: relative; left: 10px;'>Downloads (Last 2 Weeks): " + v.Downloads + " </span>\n<br/><span style='position: relative; left: 10px; top: 7px;'>Github URL: <a\nhref=https://github.com/JGLTechnologies/" + v.Name + " >click</a></span>\n</p>")
