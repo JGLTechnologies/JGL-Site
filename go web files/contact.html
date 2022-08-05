@@ -69,22 +69,23 @@
     </section>
 </main>
 <script>
+    "use strict";
     var form = document.getElementById("contactForm");
     form.addEventListener('submit', function (e) {
         e.preventDefault();
     });
-
     function onClick() {
         var email = document.getElementById("email");
         var name = document.getElementById("name");
         var message = document.getElementById("message");
         if (name.value == null || email.value == null || message.value == null || message.value == "" || name.value == "" || email.value == "" || !email.validity.valid) {
-
-        } else {
-            document.getElementById("submitButton").style.display = "none";
+        }
+        else {
+            var button = document.getElementById("submitButton");
+            button.style.display = "none";
             grecaptcha.ready(function () {
-                grecaptcha.execute('6LecNN0bAAAAAJ_jSdE2k6-7ydrxKbSMNMwNjAul', {action: 'submit'}).then(function (token) {
-                    const form = document.getElementById("contactForm");
+                grecaptcha.execute('6LecNN0bAAAAAJ_jSdE2k6-7ydrxKbSMNMwNjAul', { action: 'submit' }).then(function (token) {
+                    var form = document.getElementById("contactForm");
                     document.getElementById("hiddentoken").value = token;
                     form.action = "/api/contact";
                     form.submit();
