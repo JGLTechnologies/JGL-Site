@@ -8,7 +8,6 @@ import (
 	"github.com/JGLTechnologies/SimpleFiles"
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
-	helmet "github.com/danielkov/gin-helmet"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
@@ -28,9 +27,7 @@ const port string = "81"
 
 func main() {
 	godotenv.Load("/var/www/.env")
-
 	defer utils.GetDB().Close()
-
 	gin.SetMode(gin.ReleaseMode)
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
@@ -48,7 +45,6 @@ func main() {
 	router := gin.New()
 	router.HTMLRender = r
 	store = persist.NewMemoryStore(time.Hour)
-	router.Use(helmet.Default())
 	router.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
 		err = strings.Split(err.(error).Error(), "runtime/debug.Stack()")[0]
 		if utils.StartsWith(c.Request.URL.String(), "/api") {
@@ -116,11 +112,10 @@ func main() {
 		Projects = p
 		done <- true
 		close(done)
-		time.Sleep(time.Minute * 10)
 		for {
+			time.Sleep(time.Minute * 10)
 			p, _ := api.Projects()
 			Projects = p
-			time.Sleep(time.Minute * 10)
 		}
 	}()
 	<-done
