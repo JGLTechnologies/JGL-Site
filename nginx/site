@@ -91,7 +91,7 @@ server {
     }
 
     location /lss/ {
-        proxy_pass http://localhost:26/;
+        proxy_pass http://192.168.1.155:26/;
         proxy_connect_timeout 300;
         proxy_read_timeout 300;
         proxy_send_timeout 300;
