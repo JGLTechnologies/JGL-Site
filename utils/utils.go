@@ -50,7 +50,7 @@ func StartsWith(s string, sw string) bool {
 func GetPythonLibDownloads(project string) string {
 	var data map[string]interface{}
 	res, err := client.R().Get("https://api.pepy.tech/api/projects/" + project)
-	if err != nil || res.IsError() {
+	if err != nil || res.IsErrorState() {
 		return "Not Found"
 	}
 	jsonErr := res.UnmarshalJson(&data)

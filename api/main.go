@@ -31,7 +31,6 @@ type postForm struct {
 type Project struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Downloads   string `json:"downloads"`
 	Private     bool   `json:"private"`
 }
 
@@ -70,7 +69,7 @@ func Contact(c *gin.Context) {
 			c.HTML(500, "error", gin.H{"id": id})
 			c.AbortWithStatus(500)
 		} else {
-			if res.IsSuccess() {
+			if res.IsSuccessState() {
 				c.HTML(200, "contact-thank-you", gin.H{})
 			} else if res.StatusCode == 429 {
 				minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Minute.Nanoseconds())).Minutes())
@@ -133,7 +132,7 @@ func Contact(c *gin.Context) {
 //			c.HTML(500, "error", gin.H{"id": id})
 //			c.AbortWithStatus(500)
 //		} else {
-//			if res.IsSuccess() {
+//			if res.IsSuccessState() {
 //				c.HTML(200, "contact-thank-you", gin.H{})
 //			} else if res.StatusCode == 429 {
 //				minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Minute.Nanoseconds())).Minutes())
@@ -162,22 +161,8 @@ func Contact(c *gin.Context) {
 //}
 
 func Projects() ([]*Project, error) {
-	dpys := utils.GetPythonLibDownloads("dpys")
-	aiohttplimiter := utils.GetPythonLibDownloads("aiohttp-ratelimiter")
-	sf := utils.GetGoLibDownloads("SimpleFiles")
-	pmrl := utils.GetNPMLibDownloads("precise-memory-rate-limit")
-	grl := utils.GetGoLibDownloads("gin-rate-limit")
-	downloads := map[string]string{
-		"DPYS":                      dpys,
-		"aiohttp-ratelimiter":       aiohttplimiter,
-		"precise-memory-rate-limit": pmrl,
-		"gin-rate-limit":            grl,
-		"SimpleFiles":               sf,
-		"total":                     GetTotal([]string{dpys, aiohttplimiter, pmrl, grl}),
-	}
-
 	res, err := client.R().SetHeader("Authorization", "token "+os.Getenv("gh_token")).Get("https://api.github.com/orgs/JGLTechnologies/repos")
-	if err != nil || res.IsError() {
+	if err != nil || res.IsErrorState() {
 		return []*Project{}, err
 	} else {
 		var data []*Project
@@ -185,14 +170,6 @@ func Projects() ([]*Project, error) {
 		if jsonErr != nil {
 			return []*Project{}, jsonErr
 		} else {
-			for _, v := range data {
-				d, ok := downloads[v.Name]
-				if ok {
-					v.Downloads = d
-				} else {
-					v.Downloads = ""
-				}
-			}
 			return data, nil
 		}
 	}

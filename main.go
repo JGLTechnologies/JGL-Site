@@ -4,18 +4,21 @@ import (
 	"JGLSite/api"
 	"JGLSite/test"
 	"JGLSite/utils"
-	"bytes"
+	"context"
 	"github.com/JGLTechnologies/SimpleFiles"
-	"github.com/chenyahui/gin-cache"
+	cache "github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
+	"github.com/jucardi/go-streams/v2/streams"
+	"github.com/lesismal/nbio/nbhttp"
 	"html/template"
 	"log"
-	"net/http"
+	"os"
+	"os/signal"
 	"strings"
 	"time"
 )
@@ -28,7 +31,9 @@ const port string = "81"
 func main() {
 	godotenv.Load("/var/www/.env")
 	defer utils.GetDB().Close()
-	gin.SetMode(gin.ReleaseMode)
+	store = persist.NewMemoryStore(time.Hour)
+
+	// Create HTML templates
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
 	r.AddFromFiles("projects", "go web files/projects.html", "go web files/base.html")
@@ -42,9 +47,22 @@ func main() {
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("error", "go web files/error.html")
 	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html")
+
+	// Router config
 	router := gin.New()
+	gin.SetMode(gin.ReleaseMode)
 	router.HTMLRender = r
-	store = persist.NewMemoryStore(time.Hour)
+	router.Use(gin.Logger())
+	router.HandleMethodNotAllowed = true
+	f, _ := SimpleFiles.New("cloudflare_ips.txt")
+	s, _ := f.ReadString()
+	ips := strings.Split(s, "\n")
+	ips = append(ips, "127.0.0.1")
+	router.SetTrustedProxies(ips)
+	router.ForwardedByClientIP = true
+	router.RemoteIPHeaders = []string{"X-Forwarded-For"}
+
+	// Error handler
 	router.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
 		err = strings.Split(err.(error).Error(), "runtime/debug.Stack()")[0]
 		if utils.StartsWith(c.Request.URL.String(), "/api") {
@@ -59,21 +77,13 @@ func main() {
 			c.AbortWithStatus(500)
 		}
 	}))
-	router.Use(gin.Logger())
-	router.HandleMethodNotAllowed = true
-	f, _ := SimpleFiles.New("cloudflare_ips.txt")
-	s, _ := f.ReadString()
-	ips := strings.Split(s, "\n")
-	ips = append(ips, "127.0.0.1")
-	router.SetTrustedProxies(ips)
-	router.ForwardedByClientIP = true
-	router.RemoteIPHeaders = []string{"X-Forwarded-For"}
 
 	reqIDMiddleware := requestid.New(requestid.WithGenerator(func() string {
 		id, _ := uuid.NewRandom()
 		return id.String()
 	}))
 
+	// Routes
 	router.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
 	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
 	router.GET("/projects", cache.CacheByRequestPath(store, time.Minute), projects)
@@ -100,12 +110,12 @@ func main() {
 
 	router.NoRoute(noRoute)
 	router.NoMethod(noMethod)
-	srv := &http.Server{
-		Addr:         ":" + port,
-		Handler:      router,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-	}
+	srv := nbhttp.NewServer(nbhttp.Config{
+		Network: "tcp",
+		Addrs:   []string{":" + port},
+	}, router, nil)
+
+	// Load projects
 	done := make(chan bool)
 	go func() {
 		p, _ := api.Projects()
@@ -119,9 +129,17 @@ func main() {
 		}
 	}()
 	<-done
-	if err := srv.ListenAndServe(); err != nil {
+	if err := srv.Start(); err != nil {
 		log.Fatalln(err)
 	}
+
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+	<-interrupt
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
+	srv.Shutdown(ctx)
 }
 
 func favicon(c *gin.Context) {
@@ -150,23 +168,20 @@ func projects(c *gin.Context) {
 	if len(Projects) < 1 {
 		data["projects"] = template.HTML("<p>Projects could not be loaded.</p>")
 	} else {
-		for _, v := range Projects {
-			if v.Name == "JGL-Site" || v.Private || v.Description == "" || !bytes.HasSuffix([]byte(v.Description), []byte("[project]")) {
-				continue
-			} else {
-				v.Description = strings.ReplaceAll(v.Description, "[project]", "")
-				if v.Downloads != "" {
-					if strings.ToLower(v.Name) == "gin-rate-limit" || strings.ToLower(v.Name) == "simplefiles" {
-						html += template.HTML("<p class=\"lead fw-normal text-muted mb-0\">\n<br/>\n<span style='color: var(--bs-dark);'>" + v.Name + ":</span>\n<br/><span style=\"position: relative; left: 10px;\">Description: " + v.Description + "</span>\n<br/><span style='position: relative; left: 10px;'>Downloads (Last 2 Weeks): " + v.Downloads + " </span>\n<br/><span style='position: relative; left: 10px; top: 7px;'>Github URL: <a\nhref=https://github.com/JGLTechnologies/" + v.Name + " >click</a></span>\n</p>")
-					} else {
-						html += template.HTML("<p class=\"lead fw-normal text-muted mb-0\">\n<br/>\n<span style='color: var(--bs-dark);'>" + v.Name + ":</span>\n<br/><span style=\"position: relative; left: 10px;\">Description: " + v.Description + "</span>\n<br/><span style='position: relative; left: 10px;'>Downloads: " + v.Downloads + " </span>\n<br/><span style='position: relative; left: 10px; top: 7px;'>Github URL: <a\nhref=https://github.com/JGLTechnologies/" + v.Name + " >click</a></span>\n</p>")
-					}
-				} else {
-					html += template.HTML("<p class=\"lead fw-normal text-muted mb-0\">\n<br/>\n<span style='color: var(--bs-dark);'>" + v.Name + ":</span>\n<br/><span style=\"position: relative; left: 10px;\">Description: " + v.Description + "</span>\n<br/><span style='position: relative; left: 10px; top: 7px;'>Github URL: <a\nhref=https://github.com/JGLTechnologies/" + v.Name + " >click</a></span>\n</p>")
-				}
-			}
+		f := func(project api.Project) {
+			project.Description = strings.ReplaceAll(project.Description, "[project]", "")
+			html += template.HTML("<p class=\"lead fw-normal text-muted mb-0\">\n<br/>\n<span style='color: var(--bs-dark);'>" + project.Name + ":</span>\n<br/><span style=\"position: relative; left: 10px;\">Description: " + project.Description + "</span>\n<br/><span style='position: relative; left: 10px; top: 7px;'>Github URL: <a\nhref=https://github.com/JGLTechnologies/" + project.Name + " >click</a></span>\n</p>")
 		}
-		data["projects"] = html
+		stream := streams.From[api.Project](Projects).Filter(
+			func(p api.Project) bool {
+				return strings.HasSuffix(p.Description, "[project].") && !p.Private && p.Name != "JGL-Site"
+			})
+		if stream.Count() < 1 {
+			data["projects"] = template.HTML("<p>There are no current projects.</p>")
+		} else {
+			stream.ForEach(f)
+			data["projects"] = html
+		}
 	}
 	c.HTML(200, "projects", data)
 }
