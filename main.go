@@ -116,19 +116,15 @@ func main() {
 	}, router, nil)
 
 	// Load projects
-	done := make(chan bool)
+	p, _ := api.Projects()
+	Projects = p
 	go func() {
-		p, _ := api.Projects()
-		Projects = p
-		done <- true
-		close(done)
 		for {
 			time.Sleep(time.Minute * 10)
 			p, _ := api.Projects()
 			Projects = p
 		}
 	}()
-	<-done
 	if err := srv.Start(); err != nil {
 		log.Fatalln(err)
 	}
