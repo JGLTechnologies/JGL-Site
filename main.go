@@ -168,12 +168,12 @@ func projects(c *gin.Context) {
 	if len(Projects) < 1 {
 		data["projects"] = template.HTML("<p>Projects could not be loaded.</p>")
 	} else {
-		f := func(project api.Project) {
+		f := func(project *api.Project) {
 			project.Description = strings.ReplaceAll(project.Description, "[project]", "")
 			html += template.HTML("<p class=\"lead fw-normal text-muted mb-0\">\n<br/>\n<span style='color: var(--bs-dark);'>" + project.Name + ":</span>\n<br/><span style=\"position: relative; left: 10px;\">Description: " + project.Description + "</span>\n<br/><span style='position: relative; left: 10px; top: 7px;'>Github URL: <a\nhref=https://github.com/JGLTechnologies/" + project.Name + " >click</a></span>\n</p>")
 		}
-		stream := streams.From[api.Project](Projects).Filter(
-			func(p api.Project) bool {
+		stream := streams.From[*api.Project](Projects).Filter(
+			func(p *api.Project) bool {
 				return strings.HasSuffix(p.Description, "[project].") && !p.Private && p.Name != "JGL-Site"
 			})
 		if stream.Count() < 1 {
