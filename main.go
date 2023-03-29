@@ -174,7 +174,7 @@ func projects(c *gin.Context) {
 		}
 		stream := streams.From[*api.Project](Projects).Filter(
 			func(p *api.Project) bool {
-				return strings.HasSuffix(p.Description, "[project].") && !p.Private && p.Name != "JGL-Site"
+				return strings.Contains(p.Description, "[project]") && !p.Private && p.Name != "JGL-Site"
 			})
 		if stream.Count() < 1 {
 			data["projects"] = template.HTML("<p>There are no current projects.</p>")
