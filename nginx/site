@@ -58,6 +58,10 @@ server {
         return 301 https://github.com/JGLTechnologies/jgl-site;
     }
 
+    location = /gh {
+            return 301 https://github.com/JGLTechnologies;
+        }
+
     location = /SimpleFiles {
         return 301 https://github.com/JGLTechnologies/SimpleFiles;
     }
