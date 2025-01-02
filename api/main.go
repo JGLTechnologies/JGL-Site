@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/imroc/req/v3"
 	"math"
-	"os"
 	"time"
 )
 
@@ -161,7 +160,7 @@ func Contact(c *gin.Context) {
 //}
 
 func Projects() ([]*Project, error) {
-	res, err := client.R().SetHeader("Authorization", "token "+os.Getenv("gh_token")).Get("https://api.github.com/orgs/JGLTechnologies/repos")
+	res, err := client.R().Get("https://api.github.com/orgs/JGLTechnologies/repos")
 	if err != nil || res.IsErrorState() {
 		return []*Project{}, err
 	} else {
