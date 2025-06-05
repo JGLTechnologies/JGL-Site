@@ -5,6 +5,7 @@ import (
 	"JGLSite/test"
 	"JGLSite/utils"
 	"context"
+	"errors"
 	"github.com/JGLTechnologies/SimpleFiles"
 	cache "github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
@@ -14,9 +15,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/jucardi/go-streams/v2/streams"
-	"github.com/lesismal/nbio/nbhttp"
 	"html/template"
-	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"strings"
@@ -26,7 +26,7 @@ import (
 var store *persist.MemoryStore
 var Projects []*api.Project
 
-const port string = "81"
+const port string = ":81"
 
 func main() {
 	godotenv.Load("/var/www/.env")
@@ -39,7 +39,6 @@ func main() {
 	r.AddFromFiles("projects", "go web files/projects.html", "go web files/base.html")
 	r.AddFromFiles("client-error", "go web files/client_error.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
-	//r.AddFromFiles("custom-bot", "go web files/bot.html", "go web files/base.html")
 	r.AddFromFiles("status", "go web files/status.html")
 	r.AddFromFiles("contact-thank-you", "go web files/thank-you.html")
 	r.AddFromFiles("contact-limit", "go web files/limit.html")
@@ -110,11 +109,10 @@ func main() {
 
 	router.NoRoute(noRoute)
 	router.NoMethod(noMethod)
-	srv := nbhttp.NewServer(nbhttp.Config{
-		Network: "tcp",
-		Addrs:   []string{":" + port},
-	}, router, nil)
-
+	srv := &http.Server{
+		Addr:    port,
+		Handler: router,
+	}
 	// Load projects
 	p, _ := api.Projects()
 	Projects = p
@@ -125,17 +123,21 @@ func main() {
 			Projects = p
 		}
 	}()
-	if err := srv.Start(); err != nil {
-		log.Fatalln(err)
-	}
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			panic(err)
+		}
+	}()
 
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt)
-	<-interrupt
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	srv.Shutdown(ctx)
+	if err := srv.Shutdown(ctx); err != nil {
+		panic(err)
+	}
 }
 
 func favicon(c *gin.Context) {
@@ -153,10 +155,6 @@ func home(c *gin.Context) {
 func contact(c *gin.Context) {
 	c.HTML(200, "contact", gin.H{})
 }
-
-//func customBot(c *gin.Context) {
-//	c.HTML(200, "custom-bot", gin.H{})
-//}
 
 func projects(c *gin.Context) {
 	data := gin.H{}
