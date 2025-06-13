@@ -46,6 +46,7 @@ func main() {
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("error", "go web files/error.html")
 	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html")
+	r.AddFromFiles("kbs", "go web files/kbs.html")
 
 	// Router config
 	router := gin.New()
@@ -87,7 +88,7 @@ func main() {
 	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
 	router.GET("/projects", cache.CacheByRequestPath(store, time.Minute), projects)
 	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
-	//router.GET("/custom-bot", cache.CacheByRequestPath(store, time.Hour*24), customBot)
+	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, time.Hour*24), kbs)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
 
@@ -138,6 +139,10 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		panic(err)
 	}
+}
+
+func kbs(c *gin.Context) {
+	c.HTML(200, "kbs", gin.H{})
 }
 
 func favicon(c *gin.Context) {
