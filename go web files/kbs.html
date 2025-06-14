@@ -46,8 +46,16 @@
         .section {
             margin-bottom: 40px;
         }
+
+        .header {
+            width: 100vw;
+            margin: 0 auto;
+            padding: 0;
+        }
     </style>
-    {{ template "navbar" . }}
+    <div class="header">
+        {{ template "navbar" . }}
+    </div>
 </head>
 <body>
 <h1>KeyboardSoundPlayer</h1>
