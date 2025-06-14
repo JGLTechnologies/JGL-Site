@@ -46,7 +46,7 @@ func main() {
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
 	r.AddFromFiles("error", "go web files/error.html")
 	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html")
-	r.AddFromFiles("kbs", "go web files/kbs.html")
+	r.AddFromFiles("kbs", "go web files/kbs.html", "go web files/base.html")
 
 	// Router config
 	router := gin.New()

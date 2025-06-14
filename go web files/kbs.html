@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    {{ template "noscript" . }}
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+    <!-- styles -->
+    {{ template "css" . }}
     <title>KeyboardSoundPlayer Documentation</title>
     <style>
         body {
@@ -45,7 +50,7 @@
     </style>
 </head>
 <body>
-
+{{ template "navbar" . }}
 <h1>KeyboardSoundPlayer</h1>
 <p>
     <strong>KeyboardSoundPlayer</strong> is a program that allows you to link an audio file to any key on your keyboard.
