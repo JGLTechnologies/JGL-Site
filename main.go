@@ -91,6 +91,7 @@ func main() {
 	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, time.Hour*24), kbs)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
+	router.GET("/ksp_logo.ico", cache.CacheByRequestPath(store, time.Hour*24), kspLogo)
 
 	testGroup := router.Group("/test")
 	{
@@ -151,6 +152,10 @@ func favicon(c *gin.Context) {
 
 func logo(c *gin.Context) {
 	c.File("static/logo.png")
+}
+
+func kspLogo(c *gin.Context) {
+	c.File("static/ksp_logo.png")
 }
 
 func home(c *gin.Context) {
