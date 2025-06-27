@@ -27,11 +27,12 @@ var store *persist.MemoryStore
 var Projects []*api.Project
 
 const port string = ":81"
+const cacheTime = time.Minute * 5
 
 func main() {
 	godotenv.Load("/var/www/.env")
 	defer utils.GetDB().Close()
-	store = persist.NewMemoryStore(time.Hour)
+	store = persist.NewMemoryStore(time.Minute)
 
 	// Create HTML templates
 	r := multitemplate.NewRenderer()
@@ -84,29 +85,28 @@ func main() {
 	}))
 
 	// Routes
-	router.GET("/", cache.CacheByRequestPath(store, time.Minute*10), home)
-	router.GET("/home", cache.CacheByRequestPath(store, time.Hour*24), home)
-	router.GET("/projects", cache.CacheByRequestPath(store, time.Minute), projects)
-	router.GET("/contact", cache.CacheByRequestPath(store, time.Hour*24), contact)
-	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, time.Hour*24), kbs)
-	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
-	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
-	router.GET("/ksp_logo.png", cache.CacheByRequestPath(store, time.Hour*24), kspLogo)
+	router.GET("/", cache.CacheByRequestPath(store, cacheTime), home)
+	router.GET("/home", cache.CacheByRequestPath(store, cacheTime), home)
+	router.GET("/projects", cache.CacheByRequestPath(store, cacheTime), projects)
+	router.GET("/contact", cache.CacheByRequestPath(store, cacheTime), contact)
+	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, cacheTime), kbs)
+	router.GET("/logo.png", cache.CacheByRequestPath(store, cacheTime), logo)
+	router.GET("/favicon.ico", cache.CacheByRequestPath(store, cacheTime), favicon)
+	router.GET("/ksp_logo.png", cache.CacheByRequestPath(store, cacheTime), kspLogo)
 
 	testGroup := router.Group("/test")
 	{
-		testGroup.GET("/bmi", cache.CacheByRequestPath(store, time.Hour*24), test.BMIHome)
-		testGroup.GET("/bmi/static/main.js", cache.CacheByRequestPath(store, time.Hour*24), test.BMIJS)
+		testGroup.GET("/bmi", cache.CacheByRequestPath(store, cacheTime), test.BMIHome)
+		testGroup.GET("/bmi/static/main.js", cache.CacheByRequestPath(store, cacheTime), test.BMIJS)
 	}
 
 	apiGroup := router.Group("/api")
 	{
-		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Minute), api.BotStatus)
-		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Hour), api.BotInfo)
-		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, time.Minute*10), api.Downloads)
+		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, cacheTime), api.BotStatus)
+		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, cacheTime), api.BotInfo)
+		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, cacheTime), api.Downloads)
 		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), reqIDMiddleware, api.Contact)
-		//apiGroup.POST("/custom-bot", utils.GetMW(time.Second, 1), reqIDMiddleware, api.CustomBot)
-		apiGroup.GET("/error", cache.CacheByRequestURI(store, time.Hour*24), api.GetErr)
+		apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
 	}
 
 	router.NoRoute(noRoute)
