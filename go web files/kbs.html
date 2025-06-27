@@ -1,13 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     {{ template "noscript" . }}
     {{ template "css" . }}
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
     <title>KeyboardSoundPlayer Documentation</title>
-    <link rel="icon" type="image/png" href="/ksp_logo.png"/>
-
+    <link href="/ksp_logo.png" rel="icon" type="image/png"/>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -100,25 +100,42 @@
         .section {
             margin-bottom: 40px;
         }
+
+        .top-logo {
+            background-color: transparent !important;
+            color: var(--accent-color) !important;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .top-logo img {
+            width: 160px !important;
+            height: auto;
+            display: block;
+            margin: 1rem auto 0;
+        }
+
+        .top-logo h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: var(--accent-color) !important;
+        }
     </style>
 </head>
 <body>
-
 <div class="header">
     {{ template "navbar" . }}
 </div>
-
 <div class="top-logo">
-    <img src="/ksp_logo.png" alt="Keyboard SoundPlayer Logo"/>
-    <h1>KeyboardSoundPlayer</h1>
-</div>
 
+    <h1>KeyboardSoundPlayer</h1><img alt="Keyboard SoundPlayer Logo" src="/ksp_logo.png"/>
+</div>
 <div class="container_doc">
     <p>
         <strong>KeyboardSoundPlayer</strong> is a program that allows you to link an audio file to any key on your keyboard.
         It supports audio input from YouTube links, MP3 files, or generated from text. Additionally, functions can be bound to keys for enhanced interactivity.
+        With a little extra setup you can also have sounds play through your mic so you can have some fun while steaming, gaming, or just on a call with a friend.
     </p>
-
     <div class="section">
         <h2>Configuration Options</h2>
         <p>This section documents the configuration options available in the config window.</p>
@@ -140,7 +157,6 @@
             </tbody>
         </table>
     </div>
-
     <div class="section">
         <h2>Keys</h2>
         <p>
@@ -155,7 +171,6 @@
             See below for how to map a function to a key.
         </p>
     </div>
-
     <div class="section">
         <h2>Functions</h2>
         <p>Functions can be bound to specific keys. Available functions include:</p>
@@ -165,11 +180,10 @@ pause():      Pause all sounds
 unpause():    Unpause all sounds
 </code></pre>
     </div>
-
     <div class="section">
         <h2>Enabling Mic Output</h2>
         <p>
-            To enable microphone output you need to download 2 external programs, <a target="_blank" href="https://vb-audio.com/Cable/">VB-Audio Cable</a> and <a target="_blank" href="https://vb-audio.com/Voicemeeter/">Voicemeeter</a>.
+            To enable microphone output you need to download 2 external programs, <a href="https://vb-audio.com/Cable/" target="_blank">VB-Audio Cable</a> and <a href="https://vb-audio.com/Voicemeeter/" target="_blank">Voicemeeter</a>.
             Both programs are free and well trusted. Once you run the installers for both programs you will need to do the following steps:
         <ul>
             <li>Go in KeyboardSoundPlayer settings and enable Mic Output</li>
@@ -183,7 +197,6 @@ unpause():    Unpause all sounds
         </ul>
         </p>
     </div>
-
     <div class="section">
         <h2>Extra Information</h2>
         <p>
@@ -193,6 +206,5 @@ unpause():    Unpause all sounds
         </p>
     </div>
 </div>
-
 </body>
 </html>
