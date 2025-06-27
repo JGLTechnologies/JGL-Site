@@ -91,7 +91,7 @@ func main() {
 	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, time.Hour*24), kbs)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, time.Hour*24), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, time.Hour*24), favicon)
-	router.GET("/ksp_logo.ico", cache.CacheByRequestPath(store, time.Hour*24), kspLogo)
+	router.GET("/ksp_logo.png", cache.CacheByRequestPath(store, time.Hour*24), kspLogo)
 
 	testGroup := router.Group("/test")
 	{
