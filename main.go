@@ -14,8 +14,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
-	"github.com/jucardi/go-streams/v2/streams"
-	"html/template"
 	"net/http"
 	"os"
 	"os/signal"
@@ -37,7 +35,6 @@ func main() {
 	// Create HTML templates
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
-	r.AddFromFiles("projects", "go web files/projects.html", "go web files/base.html")
 	r.AddFromFiles("client-error", "go web files/client_error.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
 	r.AddFromFiles("status", "go web files/status.html")
@@ -87,7 +84,6 @@ func main() {
 	// Routes
 	router.GET("/", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/home", cache.CacheByRequestPath(store, cacheTime), home)
-	router.GET("/projects", cache.CacheByRequestPath(store, cacheTime), projects)
 	router.GET("/contact", cache.CacheByRequestPath(store, cacheTime), contact)
 	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, cacheTime), kbs)
 	router.GET("/logo.png", cache.CacheByRequestPath(store, cacheTime), logo)
@@ -154,30 +150,6 @@ func home(c *gin.Context) {
 
 func contact(c *gin.Context) {
 	c.HTML(200, "contact", gin.H{})
-}
-
-func projects(c *gin.Context) {
-	data := gin.H{}
-	var html template.HTML
-	if len(Projects) < 1 {
-		data["projects"] = template.HTML("<p>Projects could not be loaded.</p>")
-	} else {
-		f := func(project *api.Project) {
-			project.Description = strings.ReplaceAll(project.Description, "[project]", "")
-			html += template.HTML("<p class=\"lead fw-normal text-muted mb-0\">\n<br/>\n<span style='color: var(--bs-dark);'>" + project.Name + ":</span>\n<br/><span style=\"position: relative; left: 10px;\">Description: " + project.Description + "</span>\n<br/><span style='position: relative; left: 10px; top: 7px;'>Github URL: <a\nhref=https://github.com/JGLTechnologies/" + project.Name + " >click</a></span>\n</p>")
-		}
-		stream := streams.From[*api.Project](Projects).Filter(
-			func(p *api.Project) bool {
-				return strings.Contains(p.Description, "[project]") && !p.Private && p.Name != "JGL-Site"
-			})
-		if stream.Count() < 1 {
-			data["projects"] = template.HTML("<p>There are no current projects.</p>")
-		} else {
-			stream.ForEach(f)
-			data["projects"] = html
-		}
-	}
-	c.HTML(200, "projects", data)
 }
 
 func noRoute(c *gin.Context) {
