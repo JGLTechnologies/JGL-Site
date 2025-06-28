@@ -115,16 +115,6 @@ func main() {
 		Addr:    port,
 		Handler: router,
 	}
-	// Load projects
-	p, _ := api.Projects()
-	Projects = p
-	go func() {
-		for {
-			time.Sleep(time.Minute * 10)
-			p, _ := api.Projects()
-			Projects = p
-		}
-	}()
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			panic(err)

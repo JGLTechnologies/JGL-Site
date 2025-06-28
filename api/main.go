@@ -89,21 +89,6 @@ func Contact(c *gin.Context) {
 	}
 }
 
-func Projects() ([]*Project, error) {
-	res, err := client.R().Get("https://api.github.com/orgs/JGLTechnologies/repos")
-	if err != nil || res.IsErrorState() {
-		return []*Project{}, err
-	} else {
-		var data []*Project
-		jsonErr := res.UnmarshalJson(&data)
-		if jsonErr != nil {
-			return []*Project{}, jsonErr
-		} else {
-			return data, nil
-		}
-	}
-}
-
 func GetErr(c *gin.Context) {
 	query := struct {
 		ID string `form:"id" binding:"required"`
