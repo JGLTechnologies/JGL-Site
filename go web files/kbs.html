@@ -232,6 +232,167 @@
         </p>
     </div>
     <div class="section">
+        <h2>Key Finder Tool</h2>
+        <p>Press a key, and we will tell you what to type into KeyboardSoundPlayer. We do not support key combinations like ctrl+a. KeyboardSoundPlayer will just see it as two separate
+        key presses.</p>
+        <div id="key-display" style="
+        background-color: #ddd;
+        color: #2c3e50;
+        font-size: 2rem;
+        font-family: monospace;
+        text-align: center;
+        border-radius: 8px;
+        margin: 1rem auto;
+        width: 300px;
+        height: 3rem;
+        line-height: 3rem;
+        overflow: hidden;
+        padding: 0;
+        "></div>
+
+        <div style="text-align: center;">
+            <button id="toggle-tool" style="
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        ">Start Tool</button>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggle-tool');
+        const keyDisplay = document.getElementById('key-display');
+        let toolActive = false;
+
+        // Basic user agent check for mobile devices
+        const isProbablyMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        if (isProbablyMobile && toggleBtn) {
+            toggleBtn.disabled = true;
+            toggleBtn.textContent = "Unavailable on Mobile";
+            toggleBtn.style.backgroundColor = "#888";
+            toggleBtn.style.cursor = "not-allowed";
+        }
+
+        const keyMap = {
+            ' ': 'space',
+            'Enter': 'enter',
+            'Backspace': 'backspace',
+            'Tab': 'tab',
+            'Escape': 'esc',
+            'Esc': 'esc',
+            'ArrowLeft': 'left',
+            'ArrowRight': 'right',
+            'ArrowUp': 'up',
+            'ArrowDown': 'down',
+            'Control': 'ctrl', // generic fallback
+            'Alt': 'alt',      // generic fallback
+            'Shift': 'shift',  // generic fallback
+            'Meta': 'cmd',     // generic fallback
+            'Delete': 'delete',
+            'CapsLock': 'caps_lock',
+            'ContextMenu': 'menu',
+            'Insert': 'insert',
+            'PageUp': 'page_up',
+            'PageDown': 'page_down',
+            'Home': 'home',
+            'End': 'end',
+            'PrintScreen': 'print_screen',
+            'ScrollLock': 'scroll_lock',
+            'Pause': 'pause',
+            'NumLock': 'num_lock',
+            'AltLeft': 'alt_l',
+            'AltRight': 'alt_gr',
+            'ControlLeft': 'ctrl_l',
+            'ControlRight': 'ctrl_r',
+            'ShiftLeft': 'shift_l',
+            'ShiftRight': 'shift_r',
+            'MetaLeft': 'cmd_l',
+            'MetaRight': 'cmd_r',
+            'Numpad0': 'num0',
+            'Numpad1': 'num1',
+            'Numpad2': 'num2',
+            'Numpad3': 'num3',
+            'Numpad4': 'num4',
+            'Numpad5': 'num5',
+            'Numpad6': 'num6',
+            'Numpad7': 'num7',
+            'Numpad8': 'num8',
+            'Numpad9': 'num9',
+            'NumpadAdd': 'add',
+            'NumpadSubtract': 'subtract',
+            'NumpadMultiply': 'multiply',
+            'NumpadDivide': 'divide',
+            'NumpadDecimal': 'decimal',
+            'NumpadEnter': 'enter',
+            'NumpadEqual': 'equal',
+            'F1': 'f1',
+            'F2': 'f2',
+            'F3': 'f3',
+            'F4': 'f4',
+            'F5': 'f5',
+            'F6': 'f6',
+            'F7': 'f7',
+            'F8': 'f8',
+            'F9': 'f9',
+            'F10': 'f10',
+            'F11': 'f11',
+            'F12': 'f12',
+            'F13': 'f13',
+            'F14': 'f14',
+            'F15': 'f15',
+            'F16': 'f16',
+            'F17': 'f17',
+            'F18': 'f18',
+            'F19': 'f19',
+            'F20': 'f20',
+            'F21': 'f21',
+            'F22': 'f22',
+            'F23': 'f23',
+            'F24': 'f24'
+        };
+
+        function getPynputKeyName(e) {
+            const code = e.code;
+            const key = e.key;
+
+            // Prioritize event.code for left/right distinction
+            if (keyMap[code]) return keyMap[code];
+
+            // Fallback to event.key for printable characters and generic names
+            if (keyMap[key]) return keyMap[key];
+            if (key.length === 1) return key.toLowerCase();
+            return key.toLowerCase();
+        }
+
+        function handleKeydown(event) {
+            event.preventDefault();
+            keyDisplay.textContent = getPynputKeyName(event);
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            toolActive = !toolActive;
+
+            if (toolActive) {
+                document.addEventListener('keydown', handleKeydown);
+                toggleBtn.textContent = 'Stop Tool';
+                toggleBtn.style.backgroundColor = '#e74c3c';
+            } else {
+                document.removeEventListener('keydown', handleKeydown);
+                toggleBtn.textContent = 'Start Tool';
+                toggleBtn.style.backgroundColor = 'var(--accent-color)';
+                keyDisplay.textContent = ""
+            }
+        });
+    </script>
+    <div class="section">
         <h2>Extra Information</h2>
         <p>
             To play a sound when any key is pressed, name the key <code>"all"</code>.

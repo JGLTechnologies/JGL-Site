@@ -52,7 +52,7 @@ func main() {
 	router.HTMLRender = r
 	router.Use(gin.Logger())
 	router.HandleMethodNotAllowed = true
-	f, _ := SimpleFiles.New("cloudflare_ips.txt")
+	f, _ := SimpleFiles.New("cloudflare_ips.txt", nil)
 	s, _ := f.ReadString()
 	ips := strings.Split(s, "\n")
 	ips = append(ips, "127.0.0.1")
