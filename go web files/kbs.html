@@ -185,6 +185,9 @@
             <tr><td>Exit Key</td><td>text</td><td>esc</td><td>Press this key 5 times in 2 seconds to close the program</td></tr>
             <tr><td>Port</td><td>number</td><td>6238</td><td>Port for GUI and sound player communication (Only change if needed)</td></tr>
             <tr><td>Mic Output</td><td>yes/no</td><td>no</td><td>Have KeyboardSoundPlayer output sound through a virtual microphone that other people can hear (See more details under <a href="#enabling-mic-output">Enabling Mic Output</a>)</td></tr>
+            <tr><td>Audio Capture</td><td>yes/no</td><td>no</td><td>Have KeyboardSoundPlayer record audio in the background and let you quickly bind an audio clip to a key (See more details under <a href="#audio-capture">Audio Capture</a>)</td></tr>
+            <tr><td>Capture Key</td><td>text</td><td>scroll_lock</td><td>The key you need to press to clip audio</td></tr>
+            <tr><td>Capture Duration</td><td>number</td><td>5</td><td>Duration of audio clips</td></tr>
             </tbody>
         </table>
     </div>
@@ -215,21 +218,43 @@
 </div>
 </div>
     <div class="section">
-        <h2 id="enabling-mic-output">Enabling Mic Output</h2>
+        <h2 id="enabling-mic-output">Enabling Mic Output / Audio Capture</h2>
         <p>
-            To enable microphone output you need to download 2 external programs, <a href="https://vb-audio.com/Cable/" target="_blank">VB-Audio Cable</a> and <a href="https://vb-audio.com/Voicemeeter/" target="_blank">Voicemeeter</a>.
-            Both programs are free and well trusted. Once you run the installers for both programs you will need to do the following steps:
+            To enable microphone output and audio capture you need to download an external program, <a href="https://vb-audio.com/Voicemeeter/banana.htm" target="_blank">Voicemeeter</a>.
+            This is a well trusted and free program. Once you run the installer and restart your computer, follow these steps:
+        </p>
         <ul>
             <li>Go in KeyboardSoundPlayer settings and enable Mic Output</li>
-            <li>Open Voicemeeter</li>
-            <li>Under Stereo Input 1 select your default mic and make sure the A button is gray</li>
-            <li>Under Stereo Input 2 select Cable Output (VB-Audio Virtual Cable)</li>
-            <li>Under HARDWARE OUT go to A1 and then go to MME then select your default speakers</li>
+            <li>Open Voicemeeter Banana</li>
+            <li>Under Stereo Input 1 select your default mic and make sure the B1 is the only green button</li>
+            <li>On the left side of Virtual Inputs (Voicemeeter Input) make sure A1 and B2 are green</li>
+            <li>On the left riht of Virtual Inputs (Voicemeeter AUX 1) make sure A1 and B1 are green</li>
+            <li>Under HARDWARE OUT go to A1 and then go to WDM then select your default speakers</li>
             <li>Now you can minimize Voicemeeter (It must remain running for the mic output to work)</li>
-            <li>Now set your audio input device on your game or wherever to Voicemeeter Out B1</li>
+            <li>Now go in the Windows Control Panel and find Manage Audio Devices</li>
+            <li>Go to the playback tab and make Voicemeeter Input the Default Device</li>
+            <li>Go to the recording tab and make Voicemeeter Out B1 the Default Device</li>
             <li>You are now finished!!!</li>
+            <li>When you are done you can close Voicemeeter and reset your default devices, or you can just always let Voicemeeter run in the background and even make it run on Windows startup.</li>
         </ul>
+    </div>
+    <div class="section">
+        <h2 id="audio-capture">Audio Capture</h2>
+        <p>
+            Once you have followed the steps above on how to set up audio capture, you can follow these steps to start using the feature.
         </p>
+        <ul>
+            <li style="font-weight: bold">Set a capture key (The default is scroll lock)</li>
+                When you press this key, KeyboardSoundPlayer clips the audio and automatically bind it to a key.
+            <li style="font-weight: bold">Set a duration (The default is 5 seconds)</li>
+                This is the length of the audio clips.
+            <li style="font-weight: bold">Type a key in and press Capture</li>
+            This adds the key to the audio capture queue. Let's say you type <code>a</code> and hit Capture. This means that when you press your capture key (usually scroll lock),
+            the audio will get bound to the <code>a</code> key. Now let's say you type <code>a</code> and hit Capture then you type <code>b</code> and hit Capture.
+            This means that the first audio clip will go to <code>a</code> and the second will go to <code>b</code>.
+            <li style="font-weight: bold">Have fun!</li>
+            Now that you understand how the feature works, go have some fun. You can use it to mess with people in game chat, or use it to clip something funny one of your friends said on a call.
+        </ul>
     </div>
     <div class="section">
         <h2>Key Finder Tool</h2>
