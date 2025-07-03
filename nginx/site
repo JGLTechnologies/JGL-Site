@@ -59,19 +59,23 @@ server {
     }
 
     location = /gh {
-            return 301 https://github.com/JGLTechnologies;
-        }
+        return 301 https://github.com/JGLTechnologies;
+    }
 
     location = /SimpleFiles {
         return 301 https://github.com/JGLTechnologies/SimpleFiles;
     }
 
     location = /KeyboardSoundPlayerYoutube {
-            return 301 https://www.youtube.com/watch?v=lfmrdzgli94;
+        return 301 https://www.youtube.com/watch?v=b4HMkgHzrIk;
+    }
+
+    location = /KeyboardSoundPlayerYoutube/store {
+        return 301 https://apps.microsoft.com/detail/9pfsjgvshm0l?hl=en-US&gl=US;
     }
 
     location = /GambleBot {
-            return 301 https://github.com/JGLTechnologies/GambleBot;
+        return 301 https://github.com/JGLTechnologies/GambleBot;
     }
 
     location = /GambleBot/invite {
@@ -79,7 +83,7 @@ server {
     }
 
     location = /bot {
-            return 301 https://github.com/JGLTechnologies/JGL-Bot#readme;
+        return 301 https://github.com/JGLTechnologies/JGL-Bot#readme;
     }
 
     location = /bot/invite {
