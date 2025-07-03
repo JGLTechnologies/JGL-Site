@@ -74,7 +74,7 @@ server {
         return 301 https://www.youtube.com/watch?v=b4HMkgHzrIk;
     }
 
-    location = /KeyboardSoundPlayerYoutube/store {
+    location = /KeyboardSoundPlayerYoutubeStore {
         return 301 https://apps.microsoft.com/detail/9pfsjgvshm0l?hl=en-US&gl=US;
     }
 
