@@ -299,10 +299,10 @@
     <h2>Functions</h2>
     <p>Functions can be bound to specific keys. Available functions include:</p>
     <pre><code>reset(): Clear all of the audio channels</code>
-<code>toggle(): Toggle the sound player (disables all commands if toggled off)</code>
-<code>pause(): Pause all sounds</code>
-<code>unpause(): Unpause all sounds</code></pre>
-</div>
+        <code>toggle(): Toggle the sound player (disables all commands if toggled off)</code>
+        <code>pause(): Pause all sounds</code>
+        <code>unpause(): Unpause all sounds</code></pre>
+  </div>
     <div class="section">
         <h2 id="enabling-mic-output">Enabling Mic Output / Audio Capture</h2>
         <p>
@@ -314,7 +314,7 @@
             <li>Open Voicemeeter Banana</li>
             <li>Under Stereo Input 1 select your default mic and make sure the B1 is the only green button</li>
             <li>On the left side of Virtual Inputs (Voicemeeter Input) make sure A1 and B2 are green</li>
-            <li>On the left riht of Virtual Inputs (Voicemeeter AUX 1) make sure A1 and B1 are green</li>
+            <li>On the left right of Virtual Inputs (Voicemeeter AUX 1) make sure A1 and B1 are green</li>
             <li>Under HARDWARE OUT go to A1 and then go to WDM then select your default speakers</li>
             <li>Now you can minimize Voicemeeter (It must remain running for the mic output to work)</li>
             <li>Now go in the Windows Control Panel and find Manage Audio Devices</li>
@@ -323,6 +323,10 @@
             <li>You are now finished!!!</li>
             <li>When you are done you can close Voicemeeter and reset your default devices, or you can just always let Voicemeeter run in the background and even make it run on Windows startup.</li>
         </ul>
+        <p>
+            <span style="font-weight: bold;">Note:</span> Mic Output must be enabled for Audio Capture. This is because of how keyboardSoundPlayer works with Voicemeeter.
+            If you really don't want microphone output but do want audio capture, then you need to unselect B1 under Voicemeeter AUX 1.
+        </p>
     </div>
     <div class="section">
         <h2 id="audio-capture">Audio Capture</h2>
@@ -347,7 +351,7 @@
     <div class="section">
         <h2>Key Finder Tool</h2>
         <p>Press a key, and we will tell you what to type into KeyboardSoundPlayer. We do not support key combinations like ctrl+a. KeyboardSoundPlayer will just see it as two separate
-        key presses. There is also no differnce between uppercase and lowercase letters in KeyboardSoundPlayer.</p>
+        key presses. There is also no difference between uppercase and lowercase letters in KeyboardSoundPlayer.</p>
         <div id="key-display" style="
         background-color: #ddd;
         color: #2c3e50;
