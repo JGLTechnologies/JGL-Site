@@ -5,7 +5,7 @@ go 1.24.2
 toolchain go1.24.4
 
 require (
-	github.com/JGLTechnologies/SimpleFiles v1.1.1
+	github.com/JGLTechnologies/SimpleFiles v1.1.3
 	github.com/JGLTechnologies/gin-rate-limit v1.5.6
 	github.com/chenyahui/gin-cache v1.10.0
 	github.com/gammazero/workerpool v1.1.3

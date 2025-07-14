@@ -86,6 +86,9 @@ func main() {
 	router.GET("/home", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/contact", cache.CacheByRequestPath(store, cacheTime), contact)
 	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, cacheTime), kbs)
+	router.GET("/KeyboardSoundPlayer/vm_exe", cache.CacheByRequestPath(store, cacheTime), func(c *gin.Context) {
+		c.File("static/voicemeeterprosetup.exe")
+	})
 	router.GET("/logo.png", cache.CacheByRequestPath(store, cacheTime), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, cacheTime), favicon)
 	router.GET("/ksp_logo.png", cache.CacheByRequestPath(store, cacheTime), kspLogo)
