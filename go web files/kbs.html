@@ -307,25 +307,26 @@
         <h2 id="enabling-mic-output">Enabling Mic Output / Audio Capture</h2>
         <p>
             To enable microphone output and audio capture you need to download an external program, <a href="https://vb-audio.com/Voicemeeter/banana.htm" target="_blank">Voicemeeter</a>.
-            This is a well trusted and free program. Once you run the installer and restart your computer, follow these steps:
+            This is a well trusted and free program. You can use this link or go to Voicemeeter Config and click Download Voicmeeter. After the installer runs, follow these steps:
         </p>
         <ul>
-            <li>Go in KeyboardSoundPlayer settings and enable Mic Output</li>
-            <li>Open Voicemeeter Banana</li>
-            <li>Under Stereo Input 1 select your default mic and make sure the B1 is the only green button</li>
-            <li>On the left side of Virtual Inputs (Voicemeeter Input) make sure A1 and B2 are green</li>
-            <li>On the left right of Virtual Inputs (Voicemeeter AUX 1) make sure A1 and B1 are green</li>
-            <li>Under HARDWARE OUT go to A1 and then go to WDM then select your default speakers</li>
-            <li>Now you can minimize Voicemeeter (It must remain running for the mic output to work)</li>
-            <li>Now go in the Windows Control Panel and find Manage Audio Devices</li>
-            <li>Go to the playback tab and make Voicemeeter Input the Default Device</li>
-            <li>Go to the recording tab and make Voicemeeter Out B1 the Default Device</li>
+            <li>Go in KeyboardSoundPlayer settings and enable Mic Output / Audio Capture</li>
+            <li>Open Voicemeeter Config in keyboardSoundPlayer</li>
+            <li>Select your input and your output devices</li>
+            <li>Don't worry about select path unless the path is blank</li>
+            <li>Now press Copy Setting Path</li>
+            <li>Press Open Voicemeeter</li>
+            <li>Now select Menu in the upper right-hand corner</li>
+            <li>Select Load Settings on Startup</li>
+            <li>Paste that path that we copied then click open</li>
+            <li>Now restart Voicemeeter</li>
+            <li>Inside your game change your input device to Voicemeeter Out B1</li>
+            <li>Inside your game change your output device to Voicemeeter Input</li>
             <li>You are now finished!!!</li>
-            <li>When you are done you can close Voicemeeter and reset your default devices, or you can just always let Voicemeeter run in the background and even make it run on Windows startup.</li>
         </ul>
         <p>
-            <span style="font-weight: bold;">Note:</span> Mic Output must be enabled for Audio Capture. This is because of how KeyboardSoundPlayer works with Voicemeeter.
-            If you really don't want microphone output but do want audio capture, then you need to unselect B1 under Voicemeeter AUX 1.
+            <span style="font-weight: bold;">Note:</span> If you have Mic Output or Audio Capture enabled, then you have to have Voicemeeter running. If you don't have either enabled,
+            and you try to run Voicemeeter and KeyboardSoundPlayer at the same time then you will run into an error. By default, KeyboardSoundPlayer only uses Voicemeeter for those features.
         </p>
     </div>
     <div class="section">
