@@ -92,6 +92,9 @@ func main() {
 	router.GET("/logo.png", cache.CacheByRequestPath(store, cacheTime), logo)
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, cacheTime), favicon)
 	router.GET("/ksp_logo.png", cache.CacheByRequestPath(store, cacheTime), kspLogo)
+	router.GET("/domain_ownership_verification", func(c *gin.Context) {
+		c.String(200, "This domain is Owned and Managed by JGL Technologies LLC. Email gluca@jgltechnologies for more info.")
+	})
 
 	testGroup := router.Group("/test")
 	{
