@@ -2,7 +2,7 @@ module JGLSite
 
 go 1.24.2
 
-toolchain go1.24.4
+toolchain go1.24.5
 
 require (
 	github.com/JGLTechnologies/SimpleFiles v1.1.3
