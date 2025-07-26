@@ -22,7 +22,6 @@ import (
 )
 
 var store *persist.MemoryStore
-var Projects []*api.Project
 
 const port string = ":81"
 const cacheTime = time.Minute * 5
