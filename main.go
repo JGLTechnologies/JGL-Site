@@ -41,6 +41,7 @@ func main() {
 	r.AddFromFiles("contact-limit", "go web files/limit.html")
 	r.AddFromFiles("contact-captcha", "go web files/captcha.html")
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
+	r.AddFromFiles("contact-spam", "go web files/spam.html")
 	r.AddFromFiles("error", "go web files/error.html")
 	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html")
 	r.AddFromFiles("kbs", "go web files/kbs.html", "go web files/base.html")

@@ -76,7 +76,11 @@ func Contact(c *gin.Context) {
 			} else if res.StatusCode == 401 {
 				c.HTML(401, "contact-captcha", gin.H{})
 			} else if res.StatusCode == 403 {
-				c.HTML(403, "contact-bl", gin.H{})
+				if res.String() == "blacklist" {
+					c.HTML(403, "contact-bl", gin.H{})
+				} else {
+					c.HTML(403, "contact-spam", gin.H{})
+				}
 			} else {
 				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
 				utils.Pool.Submit(func() {
