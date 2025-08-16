@@ -79,7 +79,7 @@
         var email = document.getElementById("email");
         var name = document.getElementById("name");
         var message = document.getElementById("message");
-        if (name.value == null || email.value == null || message.value == null || message.value == "" || name.value == "" || email.value == "" || !email.validity.valid) {
+        if (name.value == null || email.value == null || message.value == null || message.value == "" || name.value == "" || email.value == "" || !email.validity.valid || !message.validity.valid) {
         }
         else {
             var button = document.getElementById("submitButton");
