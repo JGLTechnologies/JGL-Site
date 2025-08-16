@@ -41,7 +41,7 @@ func Contact(c *gin.Context) {
 		c.HTML(400, "client-error", gin.H{"message": "The form body you provided is invalid.", "title": "Invalid form body"})
 		return
 	}
-	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": c.ClientIP()}
+	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": c.ClientIP(), "ua": c.GetHeader("User-Agent")}
 	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/contact")
 	if err != nil {
 		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
