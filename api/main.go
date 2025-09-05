@@ -2,14 +2,12 @@ package api
 
 import (
 	"JGLSite/utils"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/imroc/req/v3"
 	"math"
-	"os"
 	"time"
 )
 
@@ -93,33 +91,6 @@ func Contact(c *gin.Context) {
 			}
 		}
 	}
-}
-
-type TokenFile struct {
-	RefreshToken string `json:"refresh_token"`
-}
-
-// loadRefreshToken reads the token from tokens.json
-func loadRefreshToken() (string, error) {
-	f, err := os.ReadFile("tokens.json")
-	if err != nil {
-		return "", err
-	}
-	var tf TokenFile
-	if err := json.Unmarshal(f, &tf); err != nil {
-		return "", err
-	}
-	return tf.RefreshToken, nil
-}
-
-// saveRefreshToken writes the latest token to tokens.json
-func saveRefreshToken(token string) error {
-	tf := TokenFile{RefreshToken: token}
-	data, err := json.MarshalIndent(tf, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile("tokens.json", data, 0600)
 }
 
 func GetErr(c *gin.Context) {
