@@ -4,3 +4,4 @@ __pycache__/
 /venv/
 Docker Testing
 errors.db
+tokens.json
