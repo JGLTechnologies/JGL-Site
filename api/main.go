@@ -135,6 +135,8 @@ func GetKSPData(c *gin.Context) {
 
 	msToken := tokenData.AccessToken
 
+	fmt.Println(msToken)
+
 	// --- Step 2: query Partner Center with msToken ---
 	appId := os.Getenv("KSP_ID")
 	endDate := time.Now().Format("2006-01-02")
