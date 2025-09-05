@@ -110,9 +110,23 @@ func main() {
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Second*5), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Second*5), api.BotInfo)
 		apiGroup.POST("/traffic", cache.CacheByRequestPath(store, time.Second*5), api.CFProxy)
+		apiGroup.OPTIONS("/traffic", cache.CacheByRequestPath(store, time.Second*5), api.CFProxy)
 		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), reqIDMiddleware, api.Contact)
 		apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
 	}
+
+	apiGroup.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if c.Request.Method == http.MethodOptions {
+			c.Status(http.StatusNoContent) // 204
+			c.Abort()
+			return
+		}
+		c.Next()
+	})
 
 	router.NoRoute(noRoute)
 	router.NoMethod(noMethod)

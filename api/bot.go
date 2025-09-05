@@ -18,7 +18,6 @@ func BotStatus(c *gin.Context) {
 }
 
 func BotInfo(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
 	var data map[string]interface{}
 	res, err := botClient.R().Get("http://localhost:85/info")
 	if err != nil {
