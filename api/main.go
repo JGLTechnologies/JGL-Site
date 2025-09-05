@@ -7,11 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/imroc/req/v3"
+	"io"
 	"math"
+	"net/http"
+	"os"
+	"strings"
 	"time"
 )
 
 var client = req.C().SetTimeout(time.Second * 5)
+
+const cfGraphQL = "https://api.cloudflare.com/client/v4/graphql"
 
 type postForm struct {
 	Name    string `form:"name" binding:"required"`
@@ -91,6 +97,59 @@ func Contact(c *gin.Context) {
 			}
 		}
 	}
+}
+
+func CFProxy(c *gin.Context) {
+	// Read the incoming request body (expected JSON GraphQL payload).
+	cfToken := os.Getenv("cfToken")
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.String(http.StatusBadRequest, "read body: %v", err)
+		return
+	}
+	resp, err := client.R().
+		SetHeaders(map[string]string{
+			"Authorization": "Bearer " + cfToken,
+			"Content-Type":  "application/json",
+		}).
+		SetBodyBytes(body).
+		Post(cfGraphQL)
+	if err != nil {
+		c.String(http.StatusBadGateway, "upstream error: %v", err)
+		return
+	}
+
+	// Copy upstream headers (avoid hop-by-hop headers).
+	hopByHop := map[string]struct{}{
+		"Connection":          {},
+		"Keep-Alive":          {},
+		"Proxy-Authenticate":  {},
+		"Proxy-Authorization": {},
+		"TE":                  {},
+		"Trailers":            {},
+		"Transfer-Encoding":   {},
+		"Upgrade":             {},
+	}
+	for k, vv := range resp.Header {
+		if _, skip := hopByHop[http.CanonicalHeaderKey(k)]; skip {
+			continue
+		}
+		for _, v := range vv {
+			// Gin merges headers; use Add to preserve multi-value headers.
+			c.Writer.Header().Add(k, v)
+		}
+	}
+
+	// Status + body passthrough.
+	c.Status(resp.StatusCode)
+	// Prefer the exact bytes from upstream.
+	b, berr := io.ReadAll(resp.Body)
+	if berr != nil {
+		// Fallback to any buffered text if reading the body fails.
+		c.String(resp.StatusCode, strings.TrimSpace(resp.String()))
+		return
+	}
+	c.Writer.Write(b)
 }
 
 func GetErr(c *gin.Context) {

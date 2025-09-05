@@ -109,6 +109,7 @@ func main() {
 	{
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Second*5), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Second*5), api.BotInfo)
+		apiGroup.GET("/traffic", cache.CacheByRequestPath(store, time.Second*5), api.CFProxy)
 		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), reqIDMiddleware, api.Contact)
 		apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
 	}
