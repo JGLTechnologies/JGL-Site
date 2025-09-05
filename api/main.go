@@ -7,7 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/imroc/req/v3"
+	"log"
 	"math"
+	"os"
 	"time"
 )
 
@@ -91,6 +93,69 @@ func Contact(c *gin.Context) {
 			}
 		}
 	}
+}
+
+func GetKSPData(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	if c.GetHeader("Key") != os.Getenv("KSP_API") {
+		c.String(403, "Invalid Code")
+		return
+	}
+
+	// --- Step 1: fetch msToken ---
+	tenantID := os.Getenv("AZURE_TENANT_ID")
+	clientID := os.Getenv("AZURE_CLIENT_ID")
+	clientSecret := os.Getenv("AZURE_CLIENT_SECRET")
+
+	tokenURL := fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/token", tenantID)
+
+	tokenResp, err := client.R().
+		SetHeader("Content-Type", "application/x-www-form-urlencoded").
+		SetFormData(map[string]string{
+			"grant_type":    "client_credentials",
+			"client_id":     clientID,
+			"client_secret": clientSecret,
+			"resource":      "https://manage.devcenter.microsoft.com",
+		}).
+		Post(tokenURL)
+	if err != nil {
+		log.Printf("Token request failed: %v", err)
+		c.String(500, "Failed to get token")
+		return
+	}
+
+	var tokenData struct {
+		AccessToken string `json:"access_token"`
+	}
+	if err := tokenResp.UnmarshalJson(&tokenData); err != nil {
+		log.Printf("Failed to parse token response: %v", err)
+		c.String(500, "Invalid token response")
+		return
+	}
+
+	msToken := tokenData.AccessToken
+
+	// --- Step 2: query Partner Center with msToken ---
+	appId := os.Getenv("KSP_ID")
+	endDate := time.Now().Format("2006-01-02")
+	startDate := time.Now().AddDate(0, 0, -30).Format("2006-01-02")
+
+	url := fmt.Sprintf(
+		"https://manage.devcenter.microsoft.com/v1.0/my/analytics/acquisitions?applicationId=%s&aggregationLevel=day&startDate=%s&endDate=%s",
+		appId, startDate, endDate,
+	)
+
+	resp, err := client.R().
+		SetHeader("Authorization", "Bearer "+msToken).
+		SetHeader("Content-Type", "application/json").
+		Get(url)
+	if err != nil {
+		log.Printf("Data request failed: %v", err)
+		c.String(500, "Failed to fetch app data")
+		return
+	}
+
+	c.String(200, resp.String())
 }
 
 func GetErr(c *gin.Context) {
