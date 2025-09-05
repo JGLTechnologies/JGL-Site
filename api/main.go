@@ -2,6 +2,7 @@ package api
 
 import (
 	"JGLSite/utils"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
@@ -95,6 +96,33 @@ func Contact(c *gin.Context) {
 	}
 }
 
+type TokenFile struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+// loadRefreshToken reads the token from tokens.json
+func loadRefreshToken() (string, error) {
+	f, err := os.ReadFile("tokens.json")
+	if err != nil {
+		return "", err
+	}
+	var tf TokenFile
+	if err := json.Unmarshal(f, &tf); err != nil {
+		return "", err
+	}
+	return tf.RefreshToken, nil
+}
+
+// saveRefreshToken writes the latest token to tokens.json
+func saveRefreshToken(token string) error {
+	tf := TokenFile{RefreshToken: token}
+	data, err := json.MarshalIndent(tf, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile("tokens.json", data, 0600)
+}
+
 func GetKSPData(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "*")
 	if c.GetHeader("Key") != os.Getenv("KSP_API") {
@@ -102,20 +130,28 @@ func GetKSPData(c *gin.Context) {
 		return
 	}
 
-	// --- Step 1: fetch msToken ---
 	tenantID := os.Getenv("AZURE_TENANT_ID")
 	clientID := os.Getenv("AZURE_CLIENT_ID")
 	clientSecret := os.Getenv("AZURE_CLIENT_SECRET")
 
-	tokenURL := fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/token", tenantID)
+	// --- Step 1: read refresh token from file
+	refreshToken, err := loadRefreshToken()
+	if err != nil {
+		log.Printf("Failed to load refresh token: %v", err)
+		c.String(500, "Missing refresh token")
+		return
+	}
+
+	// --- Step 2: exchange refresh token for access token ---
+	tokenURL := fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0/token", tenantID)
 
 	tokenResp, err := client.R().
 		SetHeader("Content-Type", "application/x-www-form-urlencoded").
 		SetFormData(map[string]string{
-			"grant_type":    "client_credentials",
+			"grant_type":    "refresh_token",
 			"client_id":     clientID,
 			"client_secret": clientSecret,
-			"resource":      "https://manage.devcenter.microsoft.com",
+			"refresh_token": refreshToken,
 		}).
 		Post(tokenURL)
 	if err != nil {
@@ -125,7 +161,8 @@ func GetKSPData(c *gin.Context) {
 	}
 
 	var tokenData struct {
-		AccessToken string `json:"access_token"`
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
 	}
 	if err := tokenResp.UnmarshalJson(&tokenData); err != nil {
 		log.Printf("Failed to parse token response: %v", err)
@@ -135,9 +172,16 @@ func GetKSPData(c *gin.Context) {
 
 	msToken := tokenData.AccessToken
 
-	fmt.Println(msToken)
+	// --- Step 3: update stored refresh token if new one is returned
+	if tokenData.RefreshToken != "" && tokenData.RefreshToken != refreshToken {
+		if err := saveRefreshToken(tokenData.RefreshToken); err != nil {
+			log.Printf("Failed to save new refresh token: %v", err)
+		} else {
+			log.Println("Refresh token updated successfully.")
+		}
+	}
 
-	// --- Step 2: query Partner Center with msToken ---
+	// --- Step 4: query Partner Center with msToken ---
 	appId := os.Getenv("KSP_ID")
 	endDate := time.Now().Format("2006-01-02")
 	startDate := time.Now().AddDate(0, 0, -30).Format("2006-01-02")
