@@ -139,18 +139,9 @@ func CFProxy(c *gin.Context) {
 			c.Writer.Header().Add(k, v)
 		}
 	}
-
-	// Status + body passthrough.
+	c.Header("Access-Control-Allow-Origin", "*")
 	c.Status(resp.StatusCode)
-	// Prefer the exact bytes from upstream.
-	b, berr := io.ReadAll(resp.Body)
-	if berr != nil {
-		// Fallback to any buffered text if reading the body fails.
-		c.String(resp.StatusCode, strings.TrimSpace(resp.String()))
-		return
-	}
-	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-	c.Writer.Write(b)
+	c.String(resp.StatusCode, strings.TrimSpace(resp.String()))
 }
 
 func GetErr(c *gin.Context) {
