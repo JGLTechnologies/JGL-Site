@@ -99,8 +99,14 @@ func Contact(c *gin.Context) {
 	}
 }
 
+func setCORS(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*") // OK since you don't use credentials
+	c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+}
+
 func CFProxy(c *gin.Context) {
-	// Read the incoming request body (expected JSON GraphQL payload).
+	setCORS(c)
 	cfToken := os.Getenv("cfToken")
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
@@ -139,7 +145,7 @@ func CFProxy(c *gin.Context) {
 			c.Writer.Header().Add(k, v)
 		}
 	}
-	c.Header("Access-Control-Allow-Origin", "*")
+	setCORS(c)
 	c.Status(resp.StatusCode)
 	c.String(resp.StatusCode, strings.TrimSpace(resp.String()))
 }
