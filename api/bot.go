@@ -21,7 +21,7 @@ func BotInfo(c *gin.Context) {
 	var data map[string]interface{}
 	res, err := botClient.R().Get("http://localhost:85/info")
 	if err != nil {
-		c.AbortWithStatusJSON(200, gin.H{"guilds": "Not Found", "cogs": "Not Found", "shards": "Not Found", "size": gin.H{"gb": "Not Found", "mb": "Not Found", "kb": "Not Found"}, "ping": "Not Found"})
+		c.AbortWithStatusJSON(200, gin.H{"guilds": "Not Found", "cogs": "Not Found", "shards": "Not Found", "size": gin.H{"gb": "Not Found", "mb": "Not Found", "kb": "Not Found"}, "ping": "Not Found", "tickets": "Not Found", "messages": "Not Found"})
 	} else {
 		err := res.UnmarshalJson(&data)
 		if err != nil {

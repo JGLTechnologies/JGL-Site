@@ -107,9 +107,8 @@ func main() {
 
 	apiGroup := router.Group("/api")
 	{
-		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, cacheTime), api.BotStatus)
-		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, cacheTime), api.BotInfo)
-		apiGroup.GET("/downloads", cache.CacheByRequestPath(store, cacheTime), api.Downloads)
+		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Second*5), api.BotStatus)
+		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Second*5), api.BotInfo)
 		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), reqIDMiddleware, api.Contact)
 		apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
 	}
