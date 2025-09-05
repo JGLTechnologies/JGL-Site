@@ -134,7 +134,7 @@ func GetKSPData(c *gin.Context) {
 	clientID := os.Getenv("AZURE_CLIENT_ID")
 	clientSecret := os.Getenv("AZURE_CLIENT_SECRET")
 
-	// --- Step 1: read refresh token from file
+	// --- Step 1: load refresh token from tokens.json ---
 	refreshToken, err := loadRefreshToken()
 	if err != nil {
 		log.Printf("Failed to load refresh token: %v", err)
@@ -152,6 +152,8 @@ func GetKSPData(c *gin.Context) {
 			"client_id":     clientID,
 			"client_secret": clientSecret,
 			"refresh_token": refreshToken,
+			// explicitly request Dev Center as the resource
+			"scope": "https://manage.devcenter.microsoft.com/.default offline_access",
 		}).
 		Post(tokenURL)
 	if err != nil {
@@ -172,7 +174,7 @@ func GetKSPData(c *gin.Context) {
 
 	msToken := tokenData.AccessToken
 
-	// --- Step 3: update stored refresh token if new one is returned
+	// --- Step 3: save new refresh token if rotated ---
 	if tokenData.RefreshToken != "" && tokenData.RefreshToken != refreshToken {
 		if err := saveRefreshToken(tokenData.RefreshToken); err != nil {
 			log.Printf("Failed to save new refresh token: %v", err)
@@ -181,8 +183,8 @@ func GetKSPData(c *gin.Context) {
 		}
 	}
 
-	// --- Step 4: query Partner Center with msToken ---
-	appId := os.Getenv("KSP_ID")
+	// --- Step 4: query Dev Center Analytics with msToken ---
+	appId := os.Getenv("KSP_ID") // Store ID: 9PFSJGVSHM0L
 	endDate := time.Now().Format("2006-01-02")
 	startDate := time.Now().AddDate(0, 0, -30).Format("2006-01-02")
 
