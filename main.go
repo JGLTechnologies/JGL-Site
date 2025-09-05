@@ -110,7 +110,7 @@ func main() {
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Second*5), api.BotStatus)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Second*5), api.BotInfo)
 		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), reqIDMiddleware, api.Contact)
-		apiGroup.GET("/ksp", utils.GetMW(cacheTime, 1), reqIDMiddleware, api.GetKSPData)
+		apiGroup.GET("/ksp", cache.CacheByRequestPath(store, cacheTime), api.GetKSPData)
 		apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
 	}
 
