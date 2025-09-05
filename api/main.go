@@ -100,6 +100,7 @@ func Contact(c *gin.Context) {
 }
 
 func CFProxy(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
 	// Read the incoming request body (expected JSON GraphQL payload).
 	cfToken := os.Getenv("cfToken")
 	body, err := io.ReadAll(c.Request.Body)
