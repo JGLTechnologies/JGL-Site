@@ -151,7 +151,6 @@ func main() {
 		apiGroup.GET("/jna", api.JNA)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Second*5), api.BotInfo)
 		apiGroup.POST("/traffic", cache.CacheByRequestPath(store, time.Second*5), api.CFProxy)
-		apiGroup.OPTIONS("/traffic", cache.CacheByRequestPath(store, time.Second*5), api.CFProxy)
 		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), reqIDMiddleware, api.Contact)
 		apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
 	}
@@ -277,6 +276,10 @@ func noRoute(c *gin.Context) {
 }
 
 func noMethod(c *gin.Context) {
+	if c.Request.Method == http.MethodOptions {
+		c.Status(http.StatusNoContent)
+		return
+	}
 	if utils.StartsWith(c.Request.URL.String(), "/api") {
 		c.JSON(405, gin.H{"error": "Method Not Allowed"})
 	} else {
