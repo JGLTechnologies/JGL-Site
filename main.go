@@ -16,8 +16,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/crypto/ssh/knownhosts"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -160,18 +158,13 @@ func jnu(c *gin.Context) {
 	password := os.Getenv("sshpass")
 	host := "192.168.1.173:22"
 
-	hostKeyCallback, err := knownhosts.New("~/.ssh/known_hosts")
-	if err != nil {
-		log.Fatal(err)
-	} // ip:port
-
 	// Configure client
 	config := &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{
 			ssh.Password(password),
 		},
-		HostKeyCallback: hostKeyCallback,
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
 	// Connect
