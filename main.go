@@ -184,7 +184,7 @@ func jnu(c *gin.Context) {
 	defer session.Close()
 
 	// Run a command on the remote host
-	err = session.Start("sudo pkill firefox-esr ; nohup DISPLAY=:0 firefox-esr --kiosk /var/www/drive/jglnews.html >/dev/null 2>&1 &")
+	err = session.Start("bash -c 'sudo pkill firefox-esr ; DISPLAY=:0 firefox-esr --kiosk /var/www/drive/jglnews.html & disown'")
 	if err != nil {
 		c.String(500, fmt.Sprintf("Error: %v", err))
 		return
