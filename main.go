@@ -6,6 +6,7 @@ import (
 	"JGLSite/utils"
 	"context"
 	"errors"
+	"fmt"
 	"github.com/JGLTechnologies/SimpleFiles"
 	cache "github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
@@ -14,6 +15,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/knownhosts"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -82,6 +86,7 @@ func main() {
 	}))
 
 	// Routes
+	router.GET("/jnu", gin.BasicAuth(map[string]string{"": os.Getenv("pass")}), jnu)
 	router.GET("/", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/home", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/contact", cache.CacheByRequestPath(store, cacheTime), contact)
@@ -148,6 +153,52 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		panic(err)
 	}
+}
+
+func jnu(c *gin.Context) {
+	user := os.Getenv("sshuser")
+	password := os.Getenv("sshpass")
+	host := "192.168.1.173:22"
+
+	hostKeyCallback, err := knownhosts.New("~/.ssh/known_hosts")
+	if err != nil {
+		log.Fatal(err)
+	} // ip:port
+
+	// Configure client
+	config := &ssh.ClientConfig{
+		User: user,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(password),
+		},
+		HostKeyCallback: hostKeyCallback,
+	}
+
+	// Connect
+	client, err := ssh.Dial("tcp", host, config)
+	if err != nil {
+		c.String(500, fmt.Sprintf("Error: %v", err))
+		return
+	}
+	defer client.Close()
+
+	// Create a new session
+	session, err := client.NewSession()
+	if err != nil {
+		c.String(500, fmt.Sprintf("Error: %v", err))
+		return
+	}
+	defer session.Close()
+
+	// Run a command on the remote host
+	output, err := session.CombinedOutput("sudo pkill firefox-esr &&  DISPLAY=:0 firefox-esr --kiosk /var/www/drive/jglnews.html & && disown")
+	if err != nil {
+		c.String(500, fmt.Sprintf("Error: %v", err))
+		return
+	}
+	c.String(200, fmt.Sprintf("Success: %v", output))
+	return
+
 }
 
 func kbs(c *gin.Context) {
