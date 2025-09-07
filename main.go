@@ -184,17 +184,12 @@ func jnu(c *gin.Context) {
 	defer session.Close()
 
 	// Run a command on the remote host
-	output, err := session.CombinedOutput(
-		"bash -c 'sudo pkill firefox-esr ; DISPLAY=:0 firefox-esr --kiosk /var/www/drive/jglnews.html & disown'",
-	)
-
+	err = session.Start("sudo pkill firefox-esr ; nohup DISPLAY=:0 firefox-esr --kiosk /var/www/drive/jglnews.html >/dev/null 2>&1 &")
 	if err != nil {
 		c.String(500, fmt.Sprintf("Error: %v", err))
 		return
 	}
-	c.String(200, fmt.Sprintf("Success: %v", output))
-	return
-
+	c.String(200, "Success")
 }
 
 func kbs(c *gin.Context) {
