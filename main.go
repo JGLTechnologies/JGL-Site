@@ -276,8 +276,8 @@ func noRoute(c *gin.Context) {
 }
 
 func noMethod(c *gin.Context) {
-	if c.Request.Method == http.MethodOptions {
-		c.Status(http.StatusNoContent)
+	if c.Request.Method == "OPTIONS" {
+		c.Next()
 		return
 	}
 	if utils.StartsWith(c.Request.URL.String(), "/api") {
