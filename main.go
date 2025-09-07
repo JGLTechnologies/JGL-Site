@@ -30,13 +30,32 @@ const port string = ":81"
 const cacheTime = time.Minute * 5
 
 func AllowCors(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "*")
-	c.Header("Access-Control-Allow-Headers", "*")
+	origin := c.GetHeader("Origin")
+	if origin == "" {
+		c.Header("Access-Control-Allow-Origin", "*")
+	} else {
+		// reflect origin (use this if you might enable credentials later)
+		c.Header("Access-Control-Allow-Origin", origin)
+	}
+
+	c.Header("Vary", "Origin, Access-Control-Request-Method, Access-Control-Request-Headers")
+
+	// must be an explicit list — no '*'
+	c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+
+	// echo what the browser requested (handles custom headers like "Key" or "Pass")
+	reqHdrs := c.GetHeader("Access-Control-Request-Headers")
+	if reqHdrs == "" {
+		// sensible defaults if no preflight header is present
+		reqHdrs = "Content-Type, Authorization, Key, Pass"
+	}
+	c.Header("Access-Control-Allow-Headers", reqHdrs)
+
+	// If you ever send cookies/Authorization with credentials from JS:
+	// c.Header("Access-Control-Allow-Credentials", "true")
 
 	if c.Request.Method == http.MethodOptions {
-		c.Status(http.StatusNoContent) // 204
-		c.Abort()
+		c.AbortWithStatus(http.StatusNoContent) // 204
 		return
 	}
 	c.Next()
