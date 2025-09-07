@@ -32,8 +32,6 @@
 <div class="wrap">
     <div class="card">
         <h1>Post Announcement</h1>
-        <p class="muted">This sends a <strong>GET</strong> request to <code>https://jgltechnologies.com/jnau</code> with the fields below placed in request <em>headers</em> (<code>Pass</code>, <code>Title</code>, <code>Body</code>, <code>Expire</code> days).</p>
-
         <form id="annForm">
             <label for="pass">Password (header: Pass)</label>
             <input id="pass" name="pass" type="password" required placeholder="••••••••" />
@@ -57,13 +55,6 @@
         </form>
 
         <div id="output" class="out" style="display:none;"></div>
-
-        <p class="muted" style="margin-top:10px;">
-            Note: Browsers will do a CORS preflight for custom headers. Make sure your
-            <code>/jnau</code> handler responds with the right CORS headers (e.g.
-            <code>Access-Control-Allow-Origin</code>, <code>Access-Control-Allow-Headers</code> including
-            <code>Pass, Title, Body, Expire</code>, and handles <code>OPTIONS</code>).
-        </p>
     </div>
 </div>
 
@@ -104,6 +95,12 @@
             });
 
             const text = await res.text().catch(() => '');
+            if (res.ok) {
+                document.getElementById('pass').value = ""
+                document.getElementById('title').value = ""
+                document.getElementById('body').value = ""
+                document.getElementById('expire').value = ""
+            }
             statusEl.innerHTML = res.ok
                 ? `<span class="ok">Success</span> (HTTP ${res.status})`
                 : `<span class="err">Failed</span> (HTTP ${res.status})`;

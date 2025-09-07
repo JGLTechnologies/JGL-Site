@@ -31,8 +31,8 @@ const cacheTime = time.Minute * 5
 
 func AllowCors(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-	c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	c.Header("Access-Control-Allow-Methods", "*")
+	c.Header("Access-Control-Allow-Headers", "*")
 
 	if c.Request.Method == http.MethodOptions {
 		c.Status(http.StatusNoContent) // 204
