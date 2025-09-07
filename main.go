@@ -276,16 +276,35 @@ func noRoute(c *gin.Context) {
 }
 
 func noMethod(c *gin.Context) {
-	if c.Request.Method == "OPTIONS" {
-		c.Next()
+	if c.Request.Method == http.MethodOptions {
+		// Ensure CORS headers are present
+		origin := c.GetHeader("Origin")
+		if origin != "" {
+			c.Header("Access-Control-Allow-Origin", origin)
+		} else {
+			c.Header("Access-Control-Allow-Origin", "*")
+		}
+		c.Header("Vary", "Origin, Access-Control-Request-Method, Access-Control-Request-Headers")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+
+		// Echo requested headers (wildcard isn't accepted on preflight)
+		reqHdrs := c.GetHeader("Access-Control-Request-Headers")
+		if reqHdrs == "" {
+			reqHdrs = "Content-Type, Authorization, Key, Pass"
+		}
+		c.Header("Access-Control-Allow-Headers", reqHdrs)
+
+		c.AbortWithStatus(http.StatusNoContent) // 204 and STOP
 		return
 	}
-	if utils.StartsWith(c.Request.URL.String(), "/api") {
-		c.JSON(405, gin.H{"error": "Method Not Allowed"})
-	} else {
-		c.HTML(405, "status", gin.H{
-			"code":    "405",
-			"message": "The method you used is not allowed.",
-		})
+
+	// Non-OPTIONS -> your 405 handling
+	if strings.HasPrefix(c.Request.URL.Path, "/api") {
+		c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "Method Not Allowed"})
+		return
 	}
+	c.HTML(http.StatusMethodNotAllowed, "status", gin.H{
+		"code":    "405",
+		"message": "The method you used is not allowed.",
+	})
 }
