@@ -86,7 +86,7 @@ func main() {
 	}))
 
 	// Routes
-	router.GET("/jnu", gin.BasicAuth(map[string]string{"": os.Getenv("pass")}), jnu)
+	router.GET("/jnu", gin.BasicAuth(map[string]string{"jgl": os.Getenv("pass")}), jnu)
 	router.GET("/", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/home", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/contact", cache.CacheByRequestPath(store, cacheTime), contact)
