@@ -3,6 +3,7 @@ package api
 import (
 	"JGLSite/utils"
 	"fmt"
+	"github.com/JGLTechnologies/SimpleFiles"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -18,6 +19,13 @@ import (
 var client = req.C().SetTimeout(time.Second * 5)
 
 const cfGraphQL = "https://api.cloudflare.com/client/v4/graphql"
+
+type Announcement struct {
+	Title  string
+	Body   string
+	Time   int64
+	Expire int64
+}
 
 type postForm struct {
 	Name    string `form:"name" binding:"required"`
@@ -97,6 +105,27 @@ func Contact(c *gin.Context) {
 			}
 		}
 	}
+}
+
+func JNA(c *gin.Context) {
+	if c.GetHeader("Key") != os.Getenv("pass") {
+		c.String(403, "Incorrect Password")
+		return
+	}
+	f, _ := SimpleFiles.New("jna.json", nil)
+	s, _ := f.ReadString()
+	if s == "" {
+		f.WriteString("[]")
+	}
+	var announcements []Announcement
+	f.ReadJSON(&announcements)
+	finalAnnouncements := []Announcement{}
+	for _, a := range announcements {
+		if a.Expire > time.Now().Unix() {
+			finalAnnouncements = append(finalAnnouncements, a)
+		}
+	}
+	c.JSON(200, finalAnnouncements)
 }
 
 func CFProxy(c *gin.Context) {

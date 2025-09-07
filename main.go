@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -27,6 +28,19 @@ var store *persist.MemoryStore
 
 const port string = ":81"
 const cacheTime = time.Minute * 5
+
+func AllowCors(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if c.Request.Method == http.MethodOptions {
+		c.Status(http.StatusNoContent) // 204
+		c.Abort()
+		return
+	}
+	c.Next()
+}
 
 func main() {
 	godotenv.Load("/var/www/.env")
@@ -40,6 +54,7 @@ func main() {
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
 	r.AddFromFiles("status", "go web files/status.html")
 	r.AddFromFiles("contact-thank-you", "go web files/thank-you.html")
+	r.AddFromFiles("jna", "go web files/jna.html")
 	r.AddFromFiles("contact-limit", "go web files/limit.html")
 	r.AddFromFiles("contact-captcha", "go web files/captcha.html")
 	r.AddFromFiles("contact-bl", "go web files/bl.html")
@@ -85,6 +100,8 @@ func main() {
 
 	// Routes
 	router.GET("/jnu", gin.BasicAuth(map[string]string{"jgl": os.Getenv("pass")}), jnu)
+	router.GET("/jna", gin.BasicAuth(map[string]string{"jgl": os.Getenv("pass")}), jna)
+	router.GET("/jnau", AllowCors, jnau)
 	router.GET("/", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/home", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/contact", cache.CacheByRequestPath(store, cacheTime), contact)
@@ -109,20 +126,10 @@ func main() {
 	}
 
 	apiGroup := router.Group("/api")
-	apiGroup.Use(func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if c.Request.Method == http.MethodOptions {
-			c.Status(http.StatusNoContent) // 204
-			c.Abort()
-			return
-		}
-		c.Next()
-	})
+	apiGroup.Use(AllowCors)
 	{
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Second*5), api.BotStatus)
+		apiGroup.GET("/jna", api.JNA)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Second*5), api.BotInfo)
 		apiGroup.POST("/traffic", cache.CacheByRequestPath(store, time.Second*5), api.CFProxy)
 		apiGroup.OPTIONS("/traffic", cache.CacheByRequestPath(store, time.Second*5), api.CFProxy)
@@ -214,6 +221,29 @@ func home(c *gin.Context) {
 
 func contact(c *gin.Context) {
 	c.HTML(200, "contact", gin.H{})
+}
+
+func jna(c *gin.Context) {
+	c.HTML(200, "jna", gin.H{})
+}
+
+func jnau(c *gin.Context) {
+	if c.GetHeader("Pass") != os.Getenv("pass") {
+		c.String(403, "Incorrect Password")
+		return
+	}
+	f, _ := SimpleFiles.New("jna.json", nil)
+	s, _ := f.ReadString()
+	if s == "" {
+		f.WriteString("[]")
+	}
+	var announcements []api.Announcement
+	f.ReadJSON(&announcements)
+	exp, _ := strconv.Atoi(c.GetHeader("Expire"))
+	n := api.Announcement{c.GetHeader("Title"), c.GetHeader("Body"), time.Now().Unix(), time.Now().Unix() + int64(exp*86400)}
+	announcements = append(announcements, n)
+	f.WriteJSON(announcements)
+	c.String(200, "Success")
 }
 
 func noRoute(c *gin.Context) {
