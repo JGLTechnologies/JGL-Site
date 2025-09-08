@@ -33,22 +33,22 @@
     <div class="card">
         <h1>Post Announcement</h1>
         <form id="annForm">
-            <label for="pass">Password (header: Pass)</label>
+            <label for="pass">Password</label>
             <input id="pass" name="pass" type="password" required placeholder="••••••••" />
 
             <div class="row">
                 <div>
-                    <label for="title">Title (header: Title)</label>
-                    <input id="title" name="title" type="text" required placeholder="Release v1.2.3" />
+                    <label for="title">Title</label>
+                    <input id="title" name="title" type="text" required placeholder="Title" />
                 </div>
                 <div>
-                    <label for="expire">Expire (days) (header: Expire)</label>
+                    <label for="expire">Expire (hours)</label>
                     <input id="expire" name="expire" type="number" min="0" step="1" value="7" required />
                 </div>
             </div>
 
             <label for="body">Body (header: Body)</label>
-            <textarea id="body" name="body" required placeholder="Short announcement text…"></textarea>
+            <textarea id="body" name="body" required placeholder="Announcement text…"></textarea>
 
             <button type="submit">Send</button>
             <div id="status" class="muted" style="margin-top:8px;"></div>

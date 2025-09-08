@@ -258,7 +258,7 @@ func jnau(c *gin.Context) {
 	var announcements []api.Announcement
 	f.ReadJSON(&announcements)
 	exp, _ := strconv.Atoi(c.GetHeader("Expire"))
-	n := api.Announcement{c.GetHeader("Title"), c.GetHeader("Body"), time.Now().Unix(), time.Now().Unix() + int64(exp*86400)}
+	n := api.Announcement{c.GetHeader("Title"), c.GetHeader("Body"), time.Now().Unix(), time.Now().Unix() + int64(exp*3600)}
 	announcements = append(announcements, n)
 	f.WriteJSON(announcements)
 	c.String(200, "Success")
