@@ -123,6 +123,7 @@ func main() {
 	router.GET("/jnau", AllowCors, jnau)
 	router.GET("/", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/home", cache.CacheByRequestPath(store, cacheTime), home)
+	router.GET("/ksp_land_down", cache.CacheByRequestPath(store, cacheTime), kspLandDown)
 	router.GET("/contact", cache.CacheByRequestPath(store, cacheTime), contact)
 	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, cacheTime), kbs)
 	router.GET("/robots.txt", cache.CacheByRequestPath(store, cacheTime), func(c *gin.Context) {
@@ -135,7 +136,7 @@ func main() {
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, cacheTime), favicon)
 	router.GET("/ksp_logo.png", cache.CacheByRequestPath(store, cacheTime), kspLogo)
 	router.GET("/domain_ownership_verification", func(c *gin.Context) {
-		c.String(200, "This domain is Owned and Managed by JGL Technologies LLC. Email gluca@jgltechnologies for more info.")
+		c.String(200, "This domain is owned and managed by JGL Technologies LLC. Email gluca@jgltechnologies for more info.")
 	})
 
 	testGroup := router.Group("/test")
@@ -219,6 +220,10 @@ func jnu(c *gin.Context) {
 
 func kbs(c *gin.Context) {
 	c.HTML(200, "kbs", gin.H{})
+}
+
+func kspLandDown(c *gin.Context) {
+	c.File("go web files/ksp_landing_download.html")
 }
 
 func favicon(c *gin.Context) {
