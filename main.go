@@ -210,11 +210,7 @@ func jnu(c *gin.Context) {
 	defer session.Close()
 
 	// Run a command on the remote host
-	session.Start("export DISPLAY=:0")
-	session.Start("export XAUTHORITY=/home/pi/.Xauthority")
-	session.Start("sudo pkill firefox-esr")
-	session.Start("sudo xhost +")
-	err = session.Start("bash -c 'firefox-esr --kiosk /var/www/drive/jglnews.html & disown'")
+	err = session.Start("bash -c 'export DISPLAY=:0; export XAUTHORITY=/home/pi/.Xauthority; sudo pkill firefox-esr; sudo xhost +; firefox-esr --kiosk /var/www/drive/jglnews.html &'")
 	if err != nil {
 		c.String(500, fmt.Sprintf("Error: %v", err))
 		return
