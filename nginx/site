@@ -83,7 +83,7 @@ server {
     }
 
     location = /KeyboardSoundPlayerYoutube {
-        return 301 https://youtu.be/SiP6nGU-e5o;
+        return 301 https://youtu.be/GeKuPdFSxAM;
     }
 
     location = /KeyboardSoundPlayerStore {
