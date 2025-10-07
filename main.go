@@ -11,7 +11,6 @@ import (
 	cache "github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/multitemplate"
-	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
@@ -29,39 +28,8 @@ var store *persist.MemoryStore
 const port string = ":81"
 const cacheTime = time.Minute * 5
 
-func AllowCors(c *gin.Context) {
-	origin := c.GetHeader("Origin")
-	if origin == "" {
-		c.Header("Access-Control-Allow-Origin", "*")
-	} else {
-		// reflect origin (use this if you might enable credentials later)
-		c.Header("Access-Control-Allow-Origin", origin)
-	}
-
-	c.Header("Vary", "Origin, Access-Control-Request-Method, Access-Control-Request-Headers")
-
-	// must be an explicit list — no '*'
-	c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-
-	// echo what the browser requested (handles custom headers like "Key" or "Pass")
-	reqHdrs := c.GetHeader("Access-Control-Request-Headers")
-	if reqHdrs == "" {
-		// sensible defaults if no preflight header is present
-		reqHdrs = "Content-Type, Authorization, Key, Pass"
-	}
-	c.Header("Access-Control-Allow-Headers", reqHdrs)
-
-	// If you ever send cookies/Authorization with credentials from JS:
-	// c.Header("Access-Control-Allow-Credentials", "true")
-
-	if c.Request.Method == http.MethodOptions {
-		c.AbortWithStatus(http.StatusNoContent) // 204
-		return
-	}
-	c.Next()
-}
-
 func main() {
+	// Load env variables and setup databases
 	godotenv.Load("/var/www/.env")
 	defer utils.GetDB().Close()
 	store = persist.NewMemoryStore(time.Minute)
@@ -112,15 +80,21 @@ func main() {
 		}
 	}))
 
-	reqIDMiddleware := requestid.New(requestid.WithGenerator(func() string {
-		id, _ := uuid.NewRandom()
-		return id.String()
-	}))
+	// Cache static files
+	router.Use(func(c *gin.Context) {
+		if strings.HasPrefix(c.Request.URL.Path, "/static/") {
+			c.Writer.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		}
+		c.Next()
+	})
+
+	// Favicon files
+	router.Static("/favicon", "./static/favicon")
 
 	// Routes
 	router.GET("/jnu", gin.BasicAuth(map[string]string{"jgl": os.Getenv("pass")}), jnu)
 	router.GET("/jna", gin.BasicAuth(map[string]string{"jgl": os.Getenv("pass")}), jna)
-	router.GET("/jnau", AllowCors, jnau)
+	router.GET("/jnau", utils.AllowCors, jnau)
 	router.GET("/", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/home", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/ksp_land_down", cache.CacheByRequestPath(store, cacheTime), kspLandDown)
@@ -129,35 +103,40 @@ func main() {
 	router.GET("/robots.txt", cache.CacheByRequestPath(store, cacheTime), func(c *gin.Context) {
 		c.File("static/robots.txt")
 	})
+	router.GET("/favicon.ico", cache.CacheByRequestPath(store, cacheTime), favicon)
 	router.GET("/KeyboardSoundPlayer/vm_exe", cache.CacheByRequestPath(store, cacheTime), func(c *gin.Context) {
 		c.File("static/voicemeeterprosetup.exe")
 	})
 	router.GET("/logo.png", cache.CacheByRequestPath(store, cacheTime), logo)
-	router.GET("/favicon.ico", cache.CacheByRequestPath(store, cacheTime), favicon)
 	router.GET("/ksp_logo.png", cache.CacheByRequestPath(store, cacheTime), kspLogo)
 	router.GET("/domain_ownership_verification", func(c *gin.Context) {
 		c.String(200, "This domain is owned and managed by JGL Technologies LLC. Email gluca@jgltechnologies for more info.")
 	})
 
+	// Testing Group
 	testGroup := router.Group("/test")
 	{
 		testGroup.GET("/bmi", cache.CacheByRequestPath(store, cacheTime), test.BMIHome)
 		testGroup.GET("/bmi/static/main.js", cache.CacheByRequestPath(store, cacheTime), test.BMIJS)
 	}
 
+	// API Group
 	apiGroup := router.Group("/api")
-	apiGroup.Use(AllowCors)
+	apiGroup.Use(utils.AllowCors)
 	{
 		apiGroup.GET("/bot/status", cache.CacheByRequestPath(store, time.Second*5), api.BotStatus)
 		apiGroup.GET("/jna", api.JNA)
 		apiGroup.GET("/bot/info", cache.CacheByRequestPath(store, time.Second*5), api.BotInfo)
 		apiGroup.POST("/traffic", cache.CacheByRequestPath(store, time.Second*5), api.CFProxy)
-		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), reqIDMiddleware, api.Contact)
+		apiGroup.POST("/contact", utils.GetMW(time.Second, 1), utils.ReqIDMiddleware, api.Contact)
 		apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
 	}
 
+	// 404 and 405 Handling
 	router.NoRoute(noRoute)
 	router.NoMethod(noMethod)
+
+	// Server Config
 	srv := &http.Server{
 		Addr:    port,
 		Handler: router,
@@ -218,6 +197,8 @@ func jnu(c *gin.Context) {
 	c.String(200, "Success")
 }
 
+// KeyboardSoundPlayer
+
 func kbs(c *gin.Context) {
 	c.HTML(200, "kbs", gin.H{})
 }
@@ -226,8 +207,10 @@ func kspLandDown(c *gin.Context) {
 	c.File("go web files/ksp_landing_download.html")
 }
 
+// Files
+
 func favicon(c *gin.Context) {
-	c.File("static/favicon.ico")
+	c.File("static/favicon/favicon.ico")
 }
 
 func logo(c *gin.Context) {
@@ -238,6 +221,8 @@ func kspLogo(c *gin.Context) {
 	c.File("static/ksp_logo.png")
 }
 
+// Main website pages
+
 func home(c *gin.Context) {
 	c.HTML(200, "home", gin.H{})
 }
@@ -245,6 +230,8 @@ func home(c *gin.Context) {
 func contact(c *gin.Context) {
 	c.HTML(200, "contact", gin.H{})
 }
+
+// JGL News
 
 func jna(c *gin.Context) {
 	c.HTML(200, "jna", gin.H{})
@@ -268,6 +255,8 @@ func jnau(c *gin.Context) {
 	f.WriteJSON(announcements)
 	c.String(200, "Success")
 }
+
+// Error handlers
 
 func noRoute(c *gin.Context) {
 	if utils.StartsWith(c.Request.URL.String(), "/api") {

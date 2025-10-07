@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"github.com/JGLTechnologies/gin-rate-limit"
 	"github.com/gammazero/workerpool"
+	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
+	"github.com/google/uuid"
 	"github.com/imroc/req/v3"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"os"
-	"strconv"
+	"net/http"
 	"time"
 )
 
@@ -24,6 +25,45 @@ type Err struct {
 	Date    string `json:"date"`
 	Path    string `json:"path"`
 	IP      string `json:"ip"`
+}
+
+// Middleware to give each request a unique id
+var ReqIDMiddleware = requestid.New(requestid.WithGenerator(func() string {
+	id, _ := uuid.NewRandom()
+	return id.String()
+}))
+
+// Middleware to allow CORS
+func AllowCors(c *gin.Context) {
+	origin := c.GetHeader("Origin")
+	if origin == "" {
+		c.Header("Access-Control-Allow-Origin", "*")
+	} else {
+		// reflect origin (use this if you might enable credentials later)
+		c.Header("Access-Control-Allow-Origin", origin)
+	}
+
+	c.Header("Vary", "Origin, Access-Control-Request-Method, Access-Control-Request-Headers")
+
+	// must be an explicit list — no '*'
+	c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+
+	// echo what the browser requested (handles custom headers like "Key" or "Pass")
+	reqHdrs := c.GetHeader("Access-Control-Request-Headers")
+	if reqHdrs == "" {
+		// sensible defaults if no preflight header is present
+		reqHdrs = "Content-Type, Authorization, Key, Pass"
+	}
+	c.Header("Access-Control-Allow-Headers", reqHdrs)
+
+	// If you ever send cookies/Authorization with credentials from JS:
+	// c.Header("Access-Control-Allow-Credentials", "true")
+
+	if c.Request.Method == http.MethodOptions {
+		c.AbortWithStatus(http.StatusNoContent) // 204
+		return
+	}
+	c.Next()
 }
 
 func GetDB() *sql.DB {
@@ -47,49 +87,7 @@ func StartsWith(s string, sw string) bool {
 	}
 }
 
-func GetPythonLibDownloads(project string) string {
-	var data map[string]interface{}
-	res, err := client.R().Get("https://api.pepy.tech/api/projects/" + project)
-	if err != nil || res.IsErrorState() {
-		return "Not Found"
-	}
-	jsonErr := res.UnmarshalJson(&data)
-	if jsonErr != nil {
-		return "Not Found"
-	}
-	return strconv.Itoa(int(data["total_downloads"].(float64)))
-}
-
-func GetNPMLibDownloads(project string) string {
-	var date string
-	date += strconv.Itoa(time.Now().Year())
-	date += "-" + strconv.Itoa(int(time.Now().Month()))
-	date += "-" + strconv.Itoa(time.Now().Day())
-	var data map[string]interface{}
-	res, err := client.R().Get("https://api.npmjs.org/downloads/point/2020-1-1:" + date + "/" + project)
-	if err != nil || res.IsError() {
-		return "Not Found"
-	}
-	jsonErr := res.UnmarshalJson(&data)
-	if jsonErr != nil {
-		return "Not Found"
-	}
-	return strconv.Itoa(int(data["downloads"].(float64)))
-}
-
-func GetGoLibDownloads(project string) string {
-	var data map[string]interface{}
-	res, err := client.R().SetHeader("Authorization", "token "+os.Getenv("gh_token")).Get("https://api.github.com/repos/JGLTechnologies/" + project + "/traffic/clones?per=week")
-	if err != nil || res.IsError() {
-		return "Not Found"
-	}
-	jsonErr := res.UnmarshalJson(&data)
-	if jsonErr != nil {
-		return "Not Found"
-	}
-	return strconv.Itoa(int(data["count"].(float64)))
-}
-
+// Returns the ratelimt middleware
 func GetMW(rate time.Duration, limit uint) func(c *gin.Context) {
 	store := ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
 		Rate:  rate,
