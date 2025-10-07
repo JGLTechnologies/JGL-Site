@@ -55,6 +55,8 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router.HTMLRender = r
 	router.Use(gin.Logger())
+	router.RedirectFixedPath = true
+	router.RedirectTrailingSlash = true
 	router.HandleMethodNotAllowed = true
 	f, _ := SimpleFiles.New("cloudflare_ips.txt", nil)
 	s, _ := f.ReadString()
@@ -99,12 +101,14 @@ func main() {
 	router.GET("/home", cache.CacheByRequestPath(store, cacheTime), home)
 	router.GET("/ksp_land_down", cache.CacheByRequestPath(store, cacheTime), kspLandDown)
 	router.GET("/contact", cache.CacheByRequestPath(store, cacheTime), contact)
-	router.GET("/KeyboardSoundPlayer", cache.CacheByRequestPath(store, cacheTime), kbs)
+	router.GET("/keyboardsoundplayer", cache.CacheByRequestPath(store, cacheTime), ksp)
+	router.GET("/keyboardsoundplayeryoutube", cache.CacheByRequestPath(store, cacheTime), kspYoutube)
+	router.GET("/keyboardsoundplayerstore", cache.CacheByRequestPath(store, cacheTime), kspStore)
 	router.GET("/robots.txt", cache.CacheByRequestPath(store, cacheTime), func(c *gin.Context) {
 		c.File("static/robots.txt")
 	})
 	router.GET("/favicon.ico", cache.CacheByRequestPath(store, cacheTime), favicon)
-	router.GET("/KeyboardSoundPlayer/vm_exe", cache.CacheByRequestPath(store, cacheTime), func(c *gin.Context) {
+	router.GET("/keyboardsoundplayer/vm_exe", cache.CacheByRequestPath(store, cacheTime), func(c *gin.Context) {
 		c.File("static/voicemeeterprosetup.exe")
 	})
 	router.GET("/logo.png", cache.CacheByRequestPath(store, cacheTime), logo)
@@ -199,7 +203,15 @@ func jnu(c *gin.Context) {
 
 // KeyboardSoundPlayer
 
-func kbs(c *gin.Context) {
+func kspYoutube(c *gin.Context) {
+	c.Redirect(301, "https://youtu.be/GeKuPdFSxAM")
+}
+
+func kspStore(c *gin.Context) {
+	c.Redirect(301, "https://apps.microsoft.com/detail/9pfsjgvshm0l?hl=en-US&gl=US")
+}
+
+func ksp(c *gin.Context) {
 	c.HTML(200, "kbs", gin.H{})
 }
 

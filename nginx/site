@@ -30,9 +30,6 @@ server {
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     # Redirects
-    location = /shop {
-        return 301 https://jgltechnologies.myshopify.com;
-    }
 
     location = /discord {
         return 301 https://discord.gg/TUUbzTa3B7;
@@ -76,26 +73,6 @@ server {
 
     location = /gh {
         return 301 https://github.com/JGLTechnologies;
-    }
-
-    location = /SimpleFiles {
-        return 301 https://github.com/JGLTechnologies/SimpleFiles;
-    }
-
-    location = /KeyboardSoundPlayerYoutube {
-        return 301 https://youtu.be/GeKuPdFSxAM;
-    }
-
-    location = /KeyboardSoundPlayerStore {
-        return 301 https://apps.microsoft.com/detail/9pfsjgvshm0l?hl=en-US&gl=US;
-    }
-
-    location = /GambleBot {
-        return 301 https://github.com/JGLTechnologies/GambleBot;
-    }
-
-    location = /GambleBot/invite {
-        return 301 https://discord.com/api/oauth2/authorize?client_id=929595364821074020&permissions=8&scope=bot%20applications.commands;
     }
 
     location = /bot {
