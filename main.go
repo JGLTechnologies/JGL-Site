@@ -36,7 +36,7 @@ func main() {
 
 	// Create HTML templates
 	r := multitemplate.NewRenderer()
-	r.AddFromFiles("ksp_land", "go web files/ksp_land_down.html", "go web files/base.html")
+	r.AddFromFiles("ksp_land", "go web files/ksp_landing_download.html", "go web files/base.html")
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
 	r.AddFromFiles("client-error", "go web files/client_error.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
