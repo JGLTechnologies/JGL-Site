@@ -205,7 +205,7 @@ func jnu(c *gin.Context) {
 // KeyboardSoundPlayer
 
 func kspYoutube(c *gin.Context) {
-	c.Redirect(301, "https://youtu.be/GeKuPdFSxAM")
+	c.Redirect(301, "https://www.youtube.com/watch?v=lxf4MtiYwRY")
 }
 
 func kspStore(c *gin.Context) {
