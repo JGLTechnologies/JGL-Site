@@ -42,69 +42,60 @@ type Project struct {
 
 func Contact(c *gin.Context) {
 	id := requestid.Get(c)
-	formData := postForm{}
-	if bindingErr := c.ShouldBind(&formData); bindingErr != nil {
+	var formData postForm
+	if err := c.ShouldBind(&formData); err != nil {
 		c.HTML(400, "client-error", gin.H{"message": "The request body you provided is invalid.", "title": "Invalid request body"})
 		return
 	}
-	name := formData.Name
-	email := formData.Email
-	message := formData.Message
-	token := formData.Token
-	if len(name) > 200 || len(email) > 254 || len(message) > 1020 {
+	if len(formData.Name) > 200 || len(formData.Email) > 254 || len(formData.Message) > 1020 {
 		c.HTML(400, "client-error", gin.H{"message": "The form body you provided is invalid.", "title": "Invalid form body"})
 		return
 	}
-	data := map[string]string{"name": name, "email": email, "message": message, "token": token, "ip": c.ClientIP(), "ua": c.GetHeader("User-Agent")}
+	data := map[string]string{
+		"name":    formData.Name,
+		"email":   formData.Email,
+		"message": formData.Message,
+		"token":   formData.Token,
+		"ip":      c.ClientIP(),
+		"ua":      c.GetHeader("User-Agent"),
+	}
 	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/contact")
 	if err != nil {
-		errStruct := &utils.Err{Message: err.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
-		utils.Pool.Submit(func() {
-			utils.DB.Create(errStruct)
-		})
-		c.HTML(500, "error", gin.H{"id": id})
-		c.AbortWithStatus(500)
-	} else {
-		var resJSON interface{}
-		jsonErr := res.UnmarshalJson(&resJSON)
-		if jsonErr != nil {
-			errStruct := &utils.Err{Message: jsonErr.Error(), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
-			utils.Pool.Submit(func() {
-				utils.DB.Create(errStruct)
-			})
-			c.HTML(500, "error", gin.H{"id": id})
-			c.AbortWithStatus(500)
-		} else {
-			if res.IsSuccessState() {
-				c.HTML(200, "contact-thank-you", gin.H{})
-			} else if res.StatusCode == 429 {
-				minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Minute.Nanoseconds())).Minutes())
-				seconds := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Second.Nanoseconds())).Seconds())
-				var remaining string
-				if minutes < 1 {
-					remaining = fmt.Sprintf("%v seconds", seconds)
-				} else {
-					remaining = fmt.Sprintf("%v minutes", minutes)
-				}
-				c.HTML(429, "contact-limit", gin.H{"remaining": remaining})
-			} else if res.StatusCode == 401 {
-				c.HTML(401, "contact-captcha", gin.H{})
-			} else if res.StatusCode == 403 {
-				if res.String() == "blacklist" {
-					c.HTML(403, "contact-bl", gin.H{})
-				} else {
-					c.HTML(403, "contact-spam", gin.H{})
-				}
-			} else {
-				errStruct := &utils.Err{Message: resJSON.(map[string]interface{})["error"].(string), Date: time.Now().Format("Jan 02, 2006 3:04:05 pm"), ID: id, IP: c.ClientIP(), Path: c.Request.URL.String()}
-				utils.Pool.Submit(func() {
-					utils.DB.Create(errStruct)
-				})
-				c.HTML(500, "error", gin.H{"id": id})
-				c.AbortWithStatus(500)
-			}
-		}
+		renderError(c, id, err.Error())
+		return
 	}
+
+	var resJSON interface{}
+	if err := res.UnmarshalJson(&resJSON); err != nil {
+		renderError(c, id, err.Error())
+		return
+	}
+
+	if res.IsSuccessState() {
+		c.HTML(200, "contact-thank-you", gin.H{})
+		return
+	}
+
+	if res.StatusCode == 429 {
+		c.HTML(429, "contact-limit", gin.H{"remaining": formatRemaining(resJSON)})
+		return
+	}
+
+	if res.StatusCode == 401 {
+		c.HTML(401, "contact-captcha", gin.H{})
+		return
+	}
+
+	if res.StatusCode == 403 {
+		if res.String() == "blacklist" {
+			c.HTML(403, "contact-bl", gin.H{})
+		} else {
+			c.HTML(403, "contact-spam", gin.H{})
+		}
+		return
+	}
+
+	renderError(c, id, resJSON.(map[string]interface{})["error"].(string))
 }
 
 func JNA(c *gin.Context) {
@@ -191,4 +182,30 @@ func GetErr(c *gin.Context) {
 	} else {
 		c.JSON(200, err)
 	}
+}
+
+func renderError(c *gin.Context, id string, message string) {
+	errStruct := &utils.Err{
+		Message: message,
+		Date:    time.Now().Format("Jan 02, 2006 3:04:05 pm"),
+		ID:      id,
+		IP:      c.ClientIP(),
+		Path:    c.Request.URL.String(),
+	}
+	utils.Pool.Submit(func() {
+		utils.DB.Create(errStruct)
+	})
+	c.HTML(500, "error", gin.H{"id": id})
+	c.AbortWithStatus(500)
+}
+
+func formatRemaining(resJSON interface{}) string {
+	minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Minute.Nanoseconds())).Minutes())
+	seconds := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Second.Nanoseconds())).Seconds())
+
+	if minutes < 1 {
+		return fmt.Sprintf("%v seconds", seconds)
+	}
+
+	return fmt.Sprintf("%v minutes", minutes)
 }

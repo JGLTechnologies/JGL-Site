@@ -1,35 +1,27 @@
 upstream jgl {
     keepalive 100;
-    server localhost:81;
+    server 127.0.0.1:81;
 }
 
 server {
-    server_name jgltechnologies.com;
-
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
+    server_name jgltechnologies.com;
 
     ssl_certificate /etc/cloudflare/fullchain.pem;
     ssl_certificate_key /etc/cloudflare/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
-
     ssl_prefer_server_ciphers off;
     ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384';
-
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:10m;
     ssl_session_tickets off;
-
     ssl_stapling on;
     ssl_stapling_verify on;
-
     resolver 1.1.1.1 1.0.0.1 valid=300s;
     resolver_timeout 5s;
 
-    # Security header
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-
-    # Redirects
 
     location = /discord {
         return 301 https://discord.gg/TUUbzTa3B7;
@@ -93,10 +85,11 @@ server {
         proxy_connect_timeout 300;
         proxy_read_timeout 300;
         proxy_send_timeout 300;
-
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
     }
