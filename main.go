@@ -7,6 +7,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/JGLTechnologies/SimpleFiles"
 	cache "github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
@@ -15,12 +22,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/ssh"
-	"net/http"
-	"os"
-	"os/signal"
-	"strconv"
-	"strings"
-	"time"
 )
 
 const (
@@ -88,17 +89,17 @@ func newTemplates() multitemplate.Renderer {
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("ksp_land", "go web files/ksp_landing_download.html", "go web files/base.html")
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
-	r.AddFromFiles("client-error", "go web files/client_error.html")
+	r.AddFromFiles("client-error", "go web files/client_error.html", "go web files/base.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
-	r.AddFromFiles("status", "go web files/status.html")
-	r.AddFromFiles("contact-thank-you", "go web files/thank-you.html")
-	r.AddFromFiles("jna", "go web files/jna.html")
-	r.AddFromFiles("contact-limit", "go web files/limit.html")
-	r.AddFromFiles("contact-captcha", "go web files/captcha.html")
-	r.AddFromFiles("contact-bl", "go web files/bl.html")
-	r.AddFromFiles("contact-spam", "go web files/spam.html")
-	r.AddFromFiles("error", "go web files/error.html")
-	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html")
+	r.AddFromFiles("status", "go web files/status.html", "go web files/base.html")
+	r.AddFromFiles("contact-thank-you", "go web files/thank-you.html", "go web files/base.html")
+	r.AddFromFiles("jna", "go web files/jna.html", "go web files/base.html")
+	r.AddFromFiles("contact-limit", "go web files/limit.html", "go web files/base.html")
+	r.AddFromFiles("contact-captcha", "go web files/captcha.html", "go web files/base.html")
+	r.AddFromFiles("contact-bl", "go web files/bl.html", "go web files/base.html")
+	r.AddFromFiles("contact-spam", "go web files/spam.html", "go web files/base.html")
+	r.AddFromFiles("error", "go web files/error.html", "go web files/base.html")
+	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html", "go web files/base.html")
 	r.AddFromFiles("kbs", "go web files/kbs.html", "go web files/base.html")
 	return r
 }
