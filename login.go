@@ -40,12 +40,18 @@ func apiLogin() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{"error": "login is not configured"})
 			return
 		}
-		if !isLoggedIn(c) {
+		if !isLoggedIn(c) && !hasValidAPIKey(c) {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authentication required"})
 			return
 		}
 		c.Next()
 	}
+}
+
+func hasValidAPIKey(c *gin.Context) bool {
+	secret := os.Getenv("pass")
+	key := c.GetHeader("key")
+	return secret != "" && key != "" && subtle.ConstantTimeCompare([]byte(key), []byte(secret)) == 1
 }
 
 func isLoggedIn(c *gin.Context) bool {
