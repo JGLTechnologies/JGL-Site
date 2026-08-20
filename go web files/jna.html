@@ -118,7 +118,9 @@
 		} catch (error) {
 			button.disabled = false;
 			emailStatus.textContent = `Could not remove email address: ${error}`;
-		}
+		} finally {
+            setTimeout(() => emailStatus.textContent = "", 3000);
+        }
 	}
 
 	async function loadEmails() {
