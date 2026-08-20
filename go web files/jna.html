@@ -91,7 +91,7 @@
 			if (!response.ok) throw new Error(await response.text());
 			renderEmails(await response.json());
 		} catch (error) {
-			emailStatus.textContent = `Could not load email list: ${error}`;
+			emailStatus.textContent = 'No email addresses have been added.';
 		}
 	}
 

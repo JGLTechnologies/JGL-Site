@@ -44,11 +44,7 @@ func getJNAEmails(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to read email list"})
 		return
 	}
-	if data.Emails == nil {
-		c.JSON(http.StatusOK, "[]")
-	} else {
-		c.JSON(http.StatusOK, data.Emails)
-	}
+	c.JSON(http.StatusOK, data.Emails)
 }
 
 func addJNAEmail(c *gin.Context) {
