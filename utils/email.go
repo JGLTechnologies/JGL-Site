@@ -2,19 +2,26 @@ package utils
 
 import (
 	"bytes"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"html/template"
 	"mime"
 	"mime/multipart"
 	"mime/quotedprintable"
+	"net"
 	"net/mail"
 	"net/smtp"
 	"os"
 	"strings"
+	"time"
 )
 
-const gmailSMTPAddress = "smtp.gmail.com:587"
+const (
+	gmailSMTPHost    = "smtp.gmail.com"
+	gmailSMTPAddress = gmailSMTPHost + ":587"
+	smtpTimeout      = 20 * time.Second
+)
 
 var announcementEmailTemplate = template.Must(template.New("announcement-email").Parse(`<!doctype html>
 <html lang="en">
@@ -71,12 +78,55 @@ func SendEmail(recipients []string, subject, body string) error {
 		return fmt.Errorf("build email: %w", err)
 	}
 
-	auth := smtp.PlainAuth("", from, password, "smtp.gmail.com")
-	if err := smtp.SendMail(gmailSMTPAddress, auth, from, to, message); err != nil {
+	auth := smtp.PlainAuth("", from, password, gmailSMTPHost)
+	if err := sendMailWithTimeout(auth, from, to, message); err != nil {
 		return fmt.Errorf("send email through Gmail SMTP: %w", err)
 	}
 
 	return nil
+}
+
+func sendMailWithTimeout(auth smtp.Auth, from string, recipients []string, message []byte) error {
+	connection, err := net.DialTimeout("tcp", gmailSMTPAddress, smtpTimeout)
+	if err != nil {
+		return err
+	}
+	defer connection.Close()
+	if err := connection.SetDeadline(time.Now().Add(smtpTimeout)); err != nil {
+		return err
+	}
+
+	client, err := smtp.NewClient(connection, gmailSMTPHost)
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+	if err := client.StartTLS(&tls.Config{ServerName: gmailSMTPHost, MinVersion: tls.VersionTLS12}); err != nil {
+		return err
+	}
+	if err := client.Auth(auth); err != nil {
+		return err
+	}
+	if err := client.Mail(from); err != nil {
+		return err
+	}
+	for _, recipient := range recipients {
+		if err := client.Rcpt(recipient); err != nil {
+			return err
+		}
+	}
+
+	writer, err := client.Data()
+	if err != nil {
+		return err
+	}
+	if _, err := writer.Write(message); err != nil {
+		return err
+	}
+	if err := writer.Close(); err != nil {
+		return err
+	}
+	return client.Quit()
 }
 
 func buildAnnouncementEmail(from, subject, body string) ([]byte, error) {
