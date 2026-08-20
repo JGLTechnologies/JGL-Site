@@ -26,6 +26,11 @@
         .out { margin-top:16px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#0b1220; color:#e5e7eb; padding:14px; border-radius:10px; white-space:pre-wrap; }
         .ok { color:#059669; }
         .err { color:#dc2626; }
+		#emailList { list-style:none; margin:16px 0 0; padding:0; }
+		#emailList li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid var(--border); }
+		#emailList li:last-child { border-bottom:0; }
+		.remove-email { flex:0 0 auto; width:28px; height:28px; margin:0; padding:0; border-radius:50%; background:#fee2e2; color:#b91c1c; font-size:19px; line-height:1; }
+		.remove-email:hover { background:#fecaca; }
     </style>
 </head>
 <body>
@@ -79,10 +84,41 @@
 	function renderEmails(emails) {
 		emailList.replaceChildren(...emails.map(email => {
 			const item = document.createElement('li');
-			item.textContent = email;
+			const address = document.createElement('span');
+			address.textContent = email;
+			const removeButton = document.createElement('button');
+			removeButton.type = 'button';
+			removeButton.className = 'remove-email';
+			removeButton.textContent = '×';
+			removeButton.title = `Remove ${email}`;
+			removeButton.setAttribute('aria-label', `Remove ${email}`);
+			removeButton.addEventListener('click', () => removeEmail(email, removeButton));
+			item.append(address, removeButton);
 			return item;
 		}));
 		if (!emails.length) emailList.textContent = 'No email addresses have been added.';
+	}
+
+	async function removeEmail(email, button) {
+		button.disabled = true;
+		emailStatus.textContent = `Removing ${email}...`;
+		try {
+			const response = await fetch(`/jna-emails?email=${encodeURIComponent(email)}`, {
+				method: 'DELETE',
+				credentials: 'same-origin'
+			});
+			const result = await response.json().catch(() => ({}));
+			if (!response.ok) {
+				button.disabled = false;
+				emailStatus.textContent = result.error || 'Could not remove email address.';
+				return;
+			}
+			emailStatus.textContent = 'Email address removed.';
+			renderEmails(result);
+		} catch (error) {
+			button.disabled = false;
+			emailStatus.textContent = `Could not remove email address: ${error}`;
+		}
 	}
 
 	async function loadEmails() {

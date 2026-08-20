@@ -157,6 +157,7 @@ func registerSiteRoutes(router *gin.Engine) {
 	router.POST("/jnau", apiLogin(), jnau)
 	router.GET("/jna-emails", apiLogin(), getJNAEmails)
 	router.POST("/jna-emails", apiLogin(), addJNAEmail)
+	router.DELETE("/jna-emails", apiLogin(), removeJNAEmail)
 
 	router.GET("/", pageCache, home)
 	router.GET("/home", pageCache, home)

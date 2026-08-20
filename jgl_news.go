@@ -72,3 +72,38 @@ func addJNAEmail(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, data.Emails)
 }
+
+func removeJNAEmail(c *gin.Context) {
+	email := strings.TrimSpace(c.Query("email"))
+	if email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "email address is required"})
+		return
+	}
+
+	data, err := api.ReadJNAData()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to read email list"})
+		return
+	}
+
+	emails := make([]string, 0, len(data.Emails))
+	found := false
+	for _, existing := range data.Emails {
+		if strings.EqualFold(existing, email) {
+			found = true
+			continue
+		}
+		emails = append(emails, existing)
+	}
+	if !found {
+		c.JSON(http.StatusNotFound, gin.H{"error": "email address was not found"})
+		return
+	}
+
+	data.Emails = emails
+	if err := api.WriteJNAData(data); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to save email list"})
+		return
+	}
+	c.JSON(http.StatusOK, data.Emails)
+}
