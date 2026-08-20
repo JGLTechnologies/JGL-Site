@@ -113,7 +113,6 @@
 				emailStatus.textContent = result.error || 'Could not remove email address.';
 				return;
 			}
-			emailStatus.textContent = 'Email address removed.';
 			renderEmails(result);
 		} catch (error) {
 			button.disabled = false;
@@ -149,7 +148,6 @@
 				return;
 			}
 			document.getElementById('email').value = '';
-			emailStatus.textContent = 'Email address added.';
 			renderEmails(result);
 		} catch (error) {
 			emailStatus.textContent = `Could not add email address: ${error}`;
