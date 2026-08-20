@@ -25,17 +25,17 @@ const (
 
 var announcementEmailTemplate = template.Must(template.New("announcement-email").Parse(`<!doctype html>
 <html lang="en">
-<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;color:#111827;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3f4f6;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#f5f6f8;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f6f8;padding:40px 16px;">
     <tr><td align="center">
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
-        <tr><td style="background:#111827;padding:20px 28px;color:#ffffff;font-size:14px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;">JGL Technologies</td></tr>
-        <tr><td style="padding:32px 28px;">
-          <div style="color:#16a34a;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Announcement</div>
-          <h1 style="margin:0 0 18px;font-size:26px;line-height:1.3;color:#111827;">{{.Subject}}</h1>
-          <div style="font-size:16px;line-height:1.7;color:#374151;white-space:pre-wrap;">{{.Body}}</div>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 4px 16px rgba(17,24,39,.06);">
+        <tr><td style="padding:30px 36px 22px;border-bottom:1px solid #e5e7eb;">
+          <img src="https://jgltechnologies.com/logo.png" width="64" alt="JGL Technologies" style="display:block;width:64px;height:auto;border:0;">
         </td></tr>
-        <tr><td style="border-top:1px solid #e5e7eb;padding:18px 28px;color:#6b7280;font-size:12px;">This is an official announcement from JGL Technologies.</td></tr>
+        <tr><td style="padding:34px 36px 40px;">
+          <h1 style="margin:0 0 22px;font-size:30px;line-height:1.25;font-weight:700;color:#111827;">{{.Subject}}</h1>
+          <div style="font-size:16px;line-height:1.75;color:#4b5563;white-space:pre-wrap;">{{.Body}}</div>
+        </td></tr>
       </table>
     </td></tr>
   </table>
@@ -79,7 +79,7 @@ func SendEmail(recipients []string, subject, body string) error {
 	}
 
 	auth := smtp.PlainAuth("", from, password, gmailSMTPHost)
-	if err := sendMailWithTimeout(auth, from, to, message); err != nil {
+	if err := sendMailWithTimeout(auth, "info@jgltechnologies.com", to, message); err != nil {
 		return fmt.Errorf("send email through Gmail SMTP: %w", err)
 	}
 
