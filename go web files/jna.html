@@ -153,7 +153,9 @@
 			renderEmails(result);
 		} catch (error) {
 			emailStatus.textContent = `Could not add email address: ${error}`;
-		}
+		} finally {
+            setTimeout(() => emailStatus.textContent = "", 3000);
+        }
 	});
 
 	loadEmails();
