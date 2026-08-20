@@ -20,7 +20,7 @@ import (
 const (
 	gmailSMTPHost    = "smtp.gmail.com"
 	gmailSMTPAddress = gmailSMTPHost + ":587"
-	smtpTimeout      = 20 * time.Second
+	smtpTimeout      = 10 * time.Second
 )
 
 var announcementEmailTemplate = template.Must(template.New("announcement-email").Parse(`<!doctype html>

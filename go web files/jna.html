@@ -164,8 +164,12 @@
         outEl.textContent = '';
 
         const title = document.getElementById('title').value;
-        const body = oneLine(document.getElementById('body').value);
+        const body = document.getElementById('body').value;
         const expire = String(parseInt(document.getElementById('expire').value, 10) || 0);
+		const sendButton = form.querySelector('button[type="submit"]');
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 15000);
+		sendButton.disabled = true;
 
         try {
             const res = await fetch('/jnau', {
@@ -179,7 +183,8 @@
                     expire
                 }),
                 credentials: 'same-origin',
-                cache: 'no-store'
+				cache: 'no-store',
+				signal: controller.signal
             });
 
             const text = await res.text().catch(() => '');
@@ -194,9 +199,17 @@
             outEl.style.display = 'block';
             outEl.textContent = text || '(empty response body)';
         } catch (err) {
-            statusEl.innerHTML = `<span class="err">Network error</span>`;
+			const timedOut = err.name === 'AbortError';
+			statusEl.innerHTML = timedOut
+				? `<span class="err">Request timed out</span>`
+				: `<span class="err">Network error</span>`;
             outEl.style.display = 'block';
-            outEl.textContent = String(err);
+			outEl.textContent = timedOut
+				? 'Gmail did not respond in time. Check the SMTP credentials and server connection.'
+				: String(err);
+		} finally {
+			clearTimeout(timeout);
+			sendButton.disabled = false;
         }
     });
 </script>
