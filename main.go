@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"time"
 
@@ -33,7 +32,6 @@ const (
 )
 
 var store *persist.MemoryStore
-var JNAFile, _ = SimpleFiles.New("jna.json", nil)
 
 func main() {
 	godotenv.Load("/var/www/.env")
@@ -157,6 +155,8 @@ func registerSiteRoutes(router *gin.Engine) {
 	router.GET("/jnu", requireLogin(), jnu)
 	router.GET("/jna", requireLogin(), jna)
 	router.POST("/jnau", apiLogin(), jnau)
+	router.GET("/jna-emails", apiLogin(), getJNAEmails)
+	router.POST("/jna-emails", apiLogin(), addJNAEmail)
 
 	router.GET("/", pageCache, home)
 	router.GET("/home", pageCache, home)
@@ -193,7 +193,7 @@ func registerAPIRoutes(router *gin.Engine) {
 
 	apiGroup.Use(utils.AllowCors)
 	apiGroup.GET("/bot/status", shortCache, api.BotStatus)
-	apiGroup.GET("/jna", api.JNA)
+	apiGroup.GET("/jna", apiLogin(), api.JNA)
 	apiGroup.GET("/bot/info", shortCache, api.BotInfo)
 	apiGroup.POST("/traffic", shortCache, api.CFProxy)
 	apiGroup.POST("/contact", utils.GetMW(time.Second, 1), utils.ReqIDMiddleware, api.Contact)
@@ -273,25 +273,6 @@ func home(c *gin.Context) {
 
 func contact(c *gin.Context) {
 	c.HTML(200, "contact", gin.H{})
-}
-
-func jna(c *gin.Context) {
-	c.HTML(200, "jna", gin.H{})
-}
-
-func jnau(c *gin.Context) {
-	var f = JNAFile
-	s, _ := f.ReadString()
-	if s == "" {
-		f.WriteString("[]")
-	}
-	var announcements []api.Announcement
-	f.ReadJSON(&announcements)
-	exp, _ := strconv.Atoi(c.PostForm("expire"))
-	n := api.Announcement{c.PostForm("title"), c.PostForm("body"), time.Now().Unix(), time.Now().Unix() + int64(exp*3600)}
-	announcements = append(announcements, n)
-	f.WriteJSON(announcements)
-	c.String(200, "Success")
 }
 
 func noRoute(c *gin.Context) {

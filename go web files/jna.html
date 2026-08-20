@@ -12,7 +12,7 @@
         .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; box-shadow:0 2px 10px rgba(0,0,0,.04); }
         h1 { margin:0 0 14px; font-size:1.25rem; }
         label { display:block; font-weight:600; margin:12px 0 6px; }
-        input[type="text"], input[type="password"], input[type="number"], textarea {
+        input[type="text"], input[type="password"], input[type="number"], input[type="email"], textarea {
             width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font:inherit; background:#fff;
         }
         textarea { min-height:140px; resize:vertical; }
@@ -53,12 +53,72 @@
 
         <div id="output" class="out" style="display:none;"></div>
     </div>
+
+	<div class="card" style="margin-top:18px;">
+		<h1>Email list</h1>
+		<form id="emailForm">
+			<label for="email">Add an email address</label>
+			<div class="row">
+				<div><input id="email" name="email" type="email" required placeholder="name@example.com" /></div>
+				<button type="submit" style="margin-top:0;">Add</button>
+			</div>
+			<div id="emailStatus" class="muted" style="margin-top:8px;"></div>
+		</form>
+		<ul id="emailList" class="muted"></ul>
+	</div>
 </div>
 
 <script>
     const form = document.getElementById('annForm');
     const statusEl = document.getElementById('status');
     const outEl = document.getElementById('output');
+	const emailForm = document.getElementById('emailForm');
+	const emailStatus = document.getElementById('emailStatus');
+	const emailList = document.getElementById('emailList');
+
+	function renderEmails(emails) {
+		emailList.replaceChildren(...emails.map(email => {
+			const item = document.createElement('li');
+			item.textContent = email;
+			return item;
+		}));
+		if (!emails.length) emailList.textContent = 'No email addresses have been added.';
+	}
+
+	async function loadEmails() {
+		try {
+			const response = await fetch('/jna-emails', { credentials: 'same-origin', cache: 'no-store' });
+			if (!response.ok) throw new Error(await response.text());
+			renderEmails(await response.json());
+		} catch (error) {
+			emailStatus.textContent = `Could not load email list: ${error}`;
+		}
+	}
+
+	emailForm.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		emailStatus.textContent = 'Adding...';
+		try {
+			const response = await fetch('/jna-emails', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+				body: new URLSearchParams({ email: document.getElementById('email').value }),
+				credentials: 'same-origin'
+			});
+			const result = await response.json().catch(() => ({}));
+			if (!response.ok) {
+				emailStatus.textContent = result.error || 'Could not add email address.';
+				return;
+			}
+			document.getElementById('email').value = '';
+			emailStatus.textContent = 'Email address added.';
+			renderEmails(result);
+		} catch (error) {
+			emailStatus.textContent = `Could not add email address: ${error}`;
+		}
+	});
+
+	loadEmails();
 
 
     form.addEventListener('submit', async (e) => {
