@@ -29,8 +29,8 @@ var announcementEmailTemplate = template.Must(template.New("announcement-email")
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f6f8;padding:40px 16px;">
     <tr><td align="center">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 4px 16px rgba(17,24,39,.06);">
-        <tr><td style="padding:30px 36px 22px;border-bottom:1px solid #e5e7eb;">
-          <img src="https://jgltechnologies.com/logo.png" width="180" alt="JGL Technologies" style="display:block;width:180px;max-width:100%;height:auto;border:0;">
+        <tr><td style="padding:32px 36px 26px;background:#eef2ff;border-bottom:1px solid #dfe3f5;border-radius:12px 12px 0 0;">
+          <img src="https://jgltechnologies.com/logo.png" width="240" alt="JGL Technologies" style="display:block;width:240px;max-width:100%;height:auto;border:0;">
         </td></tr>
         <tr><td style="padding:34px 36px 40px;">
           <h1 style="margin:0 0 22px;font-size:30px;line-height:1.25;font-weight:700;color:#111827;">{{.Subject}}</h1>
@@ -73,7 +73,7 @@ func SendEmail(recipients []string, subject, body string) error {
 		to = append(to, address.Address)
 	}
 
-	message, err := buildAnnouncementEmail(from, subject, body)
+	message, err := buildAnnouncementEmail("info@jgltechnologies.com", subject, body)
 	if err != nil {
 		return fmt.Errorf("build email: %w", err)
 	}
