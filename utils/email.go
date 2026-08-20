@@ -109,12 +109,22 @@ Content-Type: text/html; charset=UTF-8
 
 <!doctype html>
 <html lang="en">
-<body style="font-family:Arial,Helvetica,sans-serif;color:#111827;">
-  <img src="https://jgltechnologies.com/logo.png" width="240" alt="JGL Technologies">
-  <h1>%s</h1>
-  <div style="white-space:pre-wrap;">%s</div>
+<body style="margin:0;padding:0;background:#f5f6f8;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+  <table role="presentation" width="100%%" cellspacing="0" cellpadding="0" style="background:#f5f6f8;padding:40px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 4px 16px rgba(17,24,39,.06);">
+        <tr><td style="padding:32px 36px 26px;background:#eef2ff;border-bottom:1px solid #dfe3f5;border-radius:12px 12px 0 0;">
+          <img src="https://jgltechnologies.com/logo.png" width="240" alt="JGL Technologies" style="display:block;width:240px;max-width:100%%;height:auto;border:0;">
+        </td></tr>
+        <tr><td style="padding:34px 36px 40px;">
+          <h1 style="margin:0 0 22px;font-size:30px;line-height:1.25;font-weight:700;color:#111827;">%s</h1>
+          <div style="font-size:16px;line-height:1.75;color:#4b5563;white-space:pre-wrap;">%s</div>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
 </body>
-</html>\`,
+</html>`,
 		from,
 		html.EscapeString(subject),
 		html.EscapeString(body),
