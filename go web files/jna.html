@@ -187,7 +187,12 @@
 				signal: controller.signal
             });
 
-            const text = await res.text().catch(() => '');
+			const responseBody = await res.text().catch(() => '');
+			let message = responseBody;
+			try {
+				const parsed = JSON.parse(responseBody);
+				message = parsed.details || parsed.error || responseBody;
+			} catch (_) {}
             if (res.ok) {
                 document.getElementById('title').value = ""
                 document.getElementById('body').value = ""
@@ -197,7 +202,7 @@
                 ? `<span class="ok">Success</span> (HTTP ${res.status})`
                 : `<span class="err">Failed</span> (HTTP ${res.status})`;
             outEl.style.display = 'block';
-            outEl.textContent = text || '(empty response body)';
+			outEl.textContent = message || '(empty response body)';
         } catch (err) {
 			const timedOut = err.name === 'AbortError';
 			statusEl.innerHTML = timedOut

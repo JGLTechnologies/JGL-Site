@@ -3,6 +3,7 @@ package main
 import (
 	"JGLSite/api"
 	"JGLSite/utils"
+	"log"
 	"net/http"
 	"net/mail"
 	"strconv"
@@ -31,7 +32,11 @@ func jnau(c *gin.Context) {
 	}
 	if len(data.Emails) > 0 {
 		if err := utils.SendEmail(data.Emails, n.Title, n.Body); err != nil {
-			c.String(http.StatusBadGateway, "Announcement saved, but the email could not be sent: %v", err)
+			log.Printf("JGL News email failed: %v", err)
+			c.JSON(http.StatusFailedDependency, gin.H{
+				"error":   "announcement saved, but the email could not be sent",
+				"details": err.Error(),
+			})
 			return
 		}
 	}
