@@ -30,7 +30,7 @@ var announcementEmailTemplate = template.Must(template.New("announcement-email")
     <tr><td align="center">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 4px 16px rgba(17,24,39,.06);">
         <tr><td style="padding:30px 36px 22px;border-bottom:1px solid #e5e7eb;">
-          <img src="https://jgltechnologies.com/logo.png" width="64" alt="JGL Technologies" style="display:block;width:64px;height:auto;border:0;">
+          <img src="https://jgltechnologies.com/logo.png" width="180" alt="JGL Technologies" style="display:block;width:180px;max-width:100%;height:auto;border:0;">
         </td></tr>
         <tr><td style="padding:34px 36px 40px;">
           <h1 style="margin:0 0 22px;font-size:30px;line-height:1.25;font-weight:700;color:#111827;">{{.Subject}}</h1>
