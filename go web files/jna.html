@@ -33,9 +33,6 @@
     <div class="card">
         <h1>Post Announcement</h1>
         <form id="annForm">
-            <label for="pass">Password</label>
-            <input id="pass" name="pass" type="password" required placeholder="••••••••" />
-
             <div class="row">
                 <div>
                     <label for="title">Title</label>
@@ -63,10 +60,6 @@
     const statusEl = document.getElementById('status');
     const outEl = document.getElementById('output');
 
-    function oneLine(s) {
-        // Headers cannot contain CR/LF. Flatten newlines and trim.
-        return String(s || '').replace(/[\r\n]+/g, ' ').trim();
-    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -74,29 +67,27 @@
         outEl.style.display = 'none';
         outEl.textContent = '';
 
-        const pass = document.getElementById('pass').value;
         const title = document.getElementById('title').value;
         const body = oneLine(document.getElementById('body').value);
         const expire = String(parseInt(document.getElementById('expire').value, 10) || 0);
 
         try {
-            const res = await fetch('https://jgltechnologies.com/jnau', {
-                method: 'GET',
-                mode: 'cors',
+            const res = await fetch('/jnau', {
+                method: 'POST',
                 headers: {
-                    'Pass': pass,
-                    'Title': oneLine(title),
-                    'Body': body,
-                    'Expire': expire
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                 },
-                // No body — your server reads only headers.
-                credentials: 'omit',
+                body: new URLSearchParams({
+                    title: title,
+                    body,
+                    expire
+                }),
+                credentials: 'same-origin',
                 cache: 'no-store'
             });
 
             const text = await res.text().catch(() => '');
             if (res.ok) {
-                document.getElementById('pass').value = ""
                 document.getElementById('title').value = ""
                 document.getElementById('body').value = ""
                 document.getElementById('expire').value = ""

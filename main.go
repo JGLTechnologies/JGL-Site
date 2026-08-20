@@ -25,11 +25,15 @@ import (
 )
 
 const (
-	port      = ":81"
-	cacheTime = 5 * time.Minute
+	port                = ":81"
+	cacheTime           = 5 * time.Minute
+	loginCookieName     = "jgl_login"
+	loginCookieMaxAge   = 24 * time.Hour
+	maxLoginKeyFileSize = 64 * 1024
 )
 
 var store *persist.MemoryStore
+var JNAFile, _ = SimpleFiles.New("jna.json", nil)
 
 func main() {
 	godotenv.Load("/var/www/.env")
@@ -94,6 +98,7 @@ func newTemplates() multitemplate.Renderer {
 	r.AddFromFiles("status", "go web files/status.html", "go web files/base.html")
 	r.AddFromFiles("contact-thank-you", "go web files/thank-you.html", "go web files/base.html")
 	r.AddFromFiles("jna", "go web files/jna.html", "go web files/base.html")
+	r.AddFromFiles("login", "go web files/login.html", "go web files/base.html")
 	r.AddFromFiles("contact-limit", "go web files/limit.html", "go web files/base.html")
 	r.AddFromFiles("contact-captcha", "go web files/captcha.html", "go web files/base.html")
 	r.AddFromFiles("contact-bl", "go web files/bl.html", "go web files/base.html")
@@ -147,9 +152,11 @@ func staticCacheMiddleware() gin.HandlerFunc {
 func registerSiteRoutes(router *gin.Engine) {
 	pageCache := cache.CacheByRequestPath(store, cacheTime)
 
-	router.GET("/jnu", gin.BasicAuth(map[string]string{"jgl": os.Getenv("pass")}), jnu)
-	router.GET("/jna", gin.BasicAuth(map[string]string{"jgl": os.Getenv("pass")}), jna)
-	router.GET("/jnau", utils.AllowCors, jnau)
+	router.GET("/login", showLogin)
+	router.POST("/login", verifyLogin)
+	router.GET("/jnu", requireLogin(), jnu)
+	router.GET("/jna", requireLogin(), jna)
+	router.POST("/jnau", apiLogin(), jnau)
 
 	router.GET("/", pageCache, home)
 	router.GET("/home", pageCache, home)
@@ -273,19 +280,15 @@ func jna(c *gin.Context) {
 }
 
 func jnau(c *gin.Context) {
-	if c.GetHeader("Pass") != os.Getenv("pass") {
-		c.String(403, "Incorrect Password")
-		return
-	}
-	f, _ := SimpleFiles.New("jna.json", nil)
+	var f = JNAFile
 	s, _ := f.ReadString()
 	if s == "" {
 		f.WriteString("[]")
 	}
 	var announcements []api.Announcement
 	f.ReadJSON(&announcements)
-	exp, _ := strconv.Atoi(c.GetHeader("Expire"))
-	n := api.Announcement{c.GetHeader("Title"), c.GetHeader("Body"), time.Now().Unix(), time.Now().Unix() + int64(exp*3600)}
+	exp, _ := strconv.Atoi(c.PostForm("expire"))
+	n := api.Announcement{c.PostForm("title"), c.PostForm("body"), time.Now().Unix(), time.Now().Unix() + int64(exp*3600)}
 	announcements = append(announcements, n)
 	f.WriteJSON(announcements)
 	c.String(200, "Success")
