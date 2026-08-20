@@ -101,7 +101,6 @@
 
 	async function removeEmail(email, button) {
 		button.disabled = true;
-		emailStatus.textContent = `Removing ${email}...`;
 		try {
 			const response = await fetch(`/jna-emails?email=${encodeURIComponent(email)}`, {
 				method: 'DELETE',
@@ -134,7 +133,6 @@
 
 	emailForm.addEventListener('submit', async (event) => {
 		event.preventDefault();
-		emailStatus.textContent = 'Adding...';
 		try {
 			const response = await fetch('/jna-emails', {
 				method: 'POST',
