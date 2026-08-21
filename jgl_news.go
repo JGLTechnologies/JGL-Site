@@ -1,8 +1,8 @@
 package main
 
 import (
-	"JGLSite/api"
 	"JGLSite/utils"
+	"errors"
 	"log"
 	"net/http"
 	"net/mail"
@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func jna(c *gin.Context) {
@@ -18,20 +19,19 @@ func jna(c *gin.Context) {
 }
 
 func jnau(c *gin.Context) {
-	data, err := api.ReadJNAData()
-	if err != nil {
-		c.String(http.StatusInternalServerError, "Unable to read announcement data")
-		return
-	}
 	exp, _ := strconv.Atoi(c.PostForm("expire"))
-	n := api.Announcement{c.PostForm("title"), c.PostForm("body"), time.Now().Unix(), time.Now().Unix() + int64(exp*3600)}
-	data.Announcements = append(data.Announcements, n)
-	if err := api.WriteJNAData(data); err != nil {
-		c.String(http.StatusInternalServerError, "Unable to save announcement")
-		return
+	now := time.Now().Unix()
+	a := utils.Announcement{
+		Title:  c.PostForm("title"),
+		Body:   c.PostForm("body"),
+		Time:   now,
+		Expire: now + int64(exp*3600),
 	}
-	if len(data.Emails) > 0 {
-		if err := utils.SendEmail(data.Emails, n.Title, n.Body); err != nil {
+	utils.DB.Create(&a)
+	var emails []string
+	utils.DB.Model(&utils.Email{}).Pluck("email", &emails)
+	if len(emails) > 0 {
+		if err := utils.SendEmail(emails, a.Title, a.Body); err != nil {
 			log.Printf("JGL News email failed: %v", err)
 			c.JSON(http.StatusFailedDependency, gin.H{
 				"error":   "announcement saved, but the email could not be sent",
@@ -44,12 +44,9 @@ func jnau(c *gin.Context) {
 }
 
 func getJNAEmails(c *gin.Context) {
-	data, err := api.ReadJNAData()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to read email list"})
-		return
-	}
-	c.JSON(http.StatusOK, data.Emails)
+	var emails []string
+	utils.DB.Model(&utils.Email{}).Pluck("email", &emails)
+	c.JSON(http.StatusOK, emails)
 }
 
 func addJNAEmail(c *gin.Context) {
@@ -59,23 +56,25 @@ func addJNAEmail(c *gin.Context) {
 		return
 	}
 
-	data, err := api.ReadJNAData()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to read email list"})
+	email := utils.Email{Email: address.Address}
+
+	result := utils.DB.Create(&email)
+	switch {
+	case errors.Is(result.Error, gorm.ErrDuplicatedKey):
+		c.JSON(http.StatusConflict, gin.H{
+			"error": "email address already exists",
+		})
+		return
+
+	case result.Error != nil:
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "unable to save email address",
+		})
 		return
 	}
-	for _, existing := range data.Emails {
-		if strings.EqualFold(existing, address.Address) {
-			c.JSON(http.StatusConflict, gin.H{"error": "email address is already in the list"})
-			return
-		}
-	}
-	data.Emails = append(data.Emails, address.Address)
-	if err := api.WriteJNAData(data); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to save email address"})
-		return
-	}
-	c.JSON(http.StatusCreated, data.Emails)
+	var emails []string
+	utils.DB.Model(&utils.Email{}).Pluck("email", &emails)
+	c.JSON(http.StatusCreated, emails)
 }
 
 func removeJNAEmail(c *gin.Context) {
@@ -85,30 +84,8 @@ func removeJNAEmail(c *gin.Context) {
 		return
 	}
 
-	data, err := api.ReadJNAData()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to read email list"})
-		return
-	}
-
-	emails := make([]string, 0, len(data.Emails))
-	found := false
-	for _, existing := range data.Emails {
-		if strings.EqualFold(existing, email) {
-			found = true
-			continue
-		}
-		emails = append(emails, existing)
-	}
-	if !found {
-		c.JSON(http.StatusNotFound, gin.H{"error": "email address was not found"})
-		return
-	}
-
-	data.Emails = emails
-	if err := api.WriteJNAData(data); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to save email list"})
-		return
-	}
-	c.JSON(http.StatusOK, data.Emails)
+	utils.DB.Where("email = ?", email).Delete(&utils.Email{})
+	var emails []string
+	utils.DB.Model(&utils.Email{}).Pluck("email", &emails)
+	c.JSON(http.StatusOK, emails)
 }

@@ -3,5 +3,3 @@ __pycache__/
 *.log
 /venv/
 Docker Testing
-errors.db
-jna.json

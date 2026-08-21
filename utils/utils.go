@@ -2,23 +2,21 @@ package utils
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
-	"github.com/gammazero/workerpool"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
-	"github.com/glebarez/sqlite"
 	"github.com/google/uuid"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-var (
-	DB   *gorm.DB
-	Pool = workerpool.New(20)
-)
+var DB *gorm.DB
 
 type Err struct {
 	ID      string `gorm:"primaryKey" json:"id"`
@@ -26,6 +24,18 @@ type Err struct {
 	Date    string `json:"date"`
 	Path    string `json:"path"`
 	IP      string `json:"ip"`
+}
+
+type Announcement struct {
+	ID     uint   `json:"id" gorm:"primaryKey;autoIncrement:true"`
+	Title  string `json:"title" gorm:"not null"`
+	Body   string `json:"body" gorm:"not null"`
+	Time   int64  `json:"time" gorm:"not null"`
+	Expire int64  `json:"expire" gorm:"not null"`
+}
+
+type Email struct {
+	Email string `json:"email" gorm:"primaryKey"`
 }
 
 var ReqIDMiddleware = requestid.New(requestid.WithGenerator(func() string {
@@ -58,14 +68,38 @@ func AllowCors(c *gin.Context) {
 	c.Next()
 }
 
-func GetDB() *sql.DB {
-	DB, _ = gorm.Open(sqlite.Open("errors.db"), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
+func InitDB() (*sql.DB, error) {
+	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=127.0.0.1 user=%s password=%s dbname=jgldb port=5432 sslmode=disable", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))), &gorm.Config{
+		Logger:         logger.Default.LogMode(logger.Silent),
+		TranslateError: true,
 	})
-	DB.AutoMigrate(&Err{})
 
-	sqlDB, _ := DB.DB()
-	return sqlDB
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	err = db.AutoMigrate(&Err{})
+	err2 := db.AutoMigrate(&Announcement{})
+	err3 := db.AutoMigrate(&Email{})
+
+	if err != nil || err2 != nil || err3 != nil {
+		panic("failed to migrate database")
+	}
+
+	sqlDB, err := db.DB()
+
+	if err != nil {
+		panic("failed to get database connection")
+	}
+
+	sqlDB.SetMaxOpenConns(5)
+	sqlDB.SetMaxIdleConns(2)
+	sqlDB.SetConnMaxIdleTime(5 * time.Minute)
+	sqlDB.SetConnMaxLifetime(30 * time.Minute)
+
+	DB = db
+	DB.Where("expire < ?", time.Now().Unix()).Delete(&Announcement{})
+	return sqlDB, sqlDB.Ping()
 }
 
 func StartsWith(s string, sw string) bool {

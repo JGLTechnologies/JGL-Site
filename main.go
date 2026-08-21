@@ -2,7 +2,6 @@ package main
 
 import (
 	"JGLSite/api"
-	"JGLSite/test"
 	"JGLSite/utils"
 	"context"
 	"errors"
@@ -35,7 +34,11 @@ var store *persist.MemoryStore
 
 func main() {
 	godotenv.Load("/var/www/.env")
-	defer utils.GetDB().Close()
+	sqlDB, err := utils.InitDB()
+	if err != nil {
+		panic(err)
+	}
+	defer sqlDB.Close()
 
 	store = persist.NewMemoryStore(time.Minute)
 
@@ -78,7 +81,6 @@ func newRouter() *gin.Engine {
 	router.Static("/favicon", "./static/favicon")
 
 	registerSiteRoutes(router)
-	registerTestRoutes(router)
 	registerAPIRoutes(router)
 
 	router.NoRoute(noRoute)
@@ -102,7 +104,6 @@ func newTemplates() multitemplate.Renderer {
 	r.AddFromFiles("contact-bl", "go web files/bl.html", "go web files/base.html")
 	r.AddFromFiles("contact-spam", "go web files/spam.html", "go web files/base.html")
 	r.AddFromFiles("error", "go web files/error.html", "go web files/base.html")
-	r.AddFromFiles("bmi-home", "go web files/bmi/build/index.html", "go web files/base.html")
 	r.AddFromFiles("kbs", "go web files/kbs.html", "go web files/base.html")
 	return r
 }
@@ -130,9 +131,7 @@ func recoveryMiddleware() gin.HandlerFunc {
 			IP:      c.ClientIP(),
 			Path:    c.Request.URL.String(),
 		}
-		utils.Pool.Submit(func() {
-			utils.DB.Create(errStruct)
-		})
+		utils.DB.Create(errStruct)
 		c.HTML(500, "error", gin.H{"id": errStruct.ID})
 		c.AbortWithStatus(500)
 	})
@@ -180,14 +179,6 @@ func registerSiteRoutes(router *gin.Engine) {
 	})
 }
 
-func registerTestRoutes(router *gin.Engine) {
-	testGroup := router.Group("/test")
-	pageCache := cache.CacheByRequestPath(store, cacheTime)
-
-	testGroup.GET("/bmi", pageCache, test.BMIHome)
-	testGroup.GET("/bmi/static/main.js", pageCache, test.BMIJS)
-}
-
 func registerAPIRoutes(router *gin.Engine) {
 	apiGroup := router.Group("/api")
 	shortCache := cache.CacheByRequestPath(store, 5*time.Second)
@@ -196,7 +187,7 @@ func registerAPIRoutes(router *gin.Engine) {
 	apiGroup.GET("/bot/status", shortCache, api.BotStatus)
 	apiGroup.GET("/jna", apiLogin(), api.JNA)
 	apiGroup.GET("/bot/info", shortCache, api.BotInfo)
-	apiGroup.POST("/traffic", shortCache, api.CFProxy)
+	apiGroup.POST("/traffic", apiLogin(), api.CFProxy)
 	apiGroup.POST("/contact", utils.GetMW(time.Second, 1), utils.ReqIDMiddleware, api.Contact)
 	apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
 }
@@ -204,7 +195,7 @@ func registerAPIRoutes(router *gin.Engine) {
 func jnu(c *gin.Context) {
 	user := os.Getenv("sshuser")
 	password := os.Getenv("sshpass")
-	host := "192.168.1.173:22"
+	host := "jgltv:22"
 
 	// Configure client
 	config := &ssh.ClientConfig{

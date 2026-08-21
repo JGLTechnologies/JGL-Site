@@ -164,9 +164,7 @@ func renderError(c *gin.Context, id string, message string) {
 		IP:      c.ClientIP(),
 		Path:    c.Request.URL.String(),
 	}
-	utils.Pool.Submit(func() {
-		utils.DB.Create(errStruct)
-	})
+	utils.DB.Create(errStruct)
 	c.HTML(500, "error", gin.H{"id": id})
 	c.AbortWithStatus(500)
 }
