@@ -5,7 +5,6 @@ import (
 	"JGLSite/utils"
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,7 +18,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
-	"golang.org/x/crypto/ssh"
 )
 
 const (
@@ -190,45 +188,6 @@ func registerAPIRoutes(router *gin.Engine) {
 	apiGroup.POST("/traffic", apiLogin(), api.CFProxy)
 	apiGroup.POST("/contact", utils.GetMW(time.Second, 1), utils.ReqIDMiddleware, api.Contact)
 	apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
-}
-
-func jnu(c *gin.Context) {
-	user := os.Getenv("sshuser")
-	password := os.Getenv("sshpass")
-	host := "jgltv:22"
-
-	// Configure client
-	config := &ssh.ClientConfig{
-		User: user,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(password),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
-
-	// Connect
-	client, err := ssh.Dial("tcp", host, config)
-	if err != nil {
-		c.String(500, fmt.Sprintf("Error: %v", err))
-		return
-	}
-	defer client.Close()
-
-	// Create a new session
-	session, err := client.NewSession()
-	if err != nil {
-		c.String(500, fmt.Sprintf("Error: %v", err))
-		return
-	}
-	defer session.Close()
-
-	// Run a command on the remote host
-	err = session.Start("bash -c 'export DISPLAY=:0; export XAUTHORITY=/home/pi/.Xauthority; sudo pkill firefox-esr; sudo xhost +; sudo unclutter -display :0 -idle 0 -root & firefox-esr --kiosk /var/www/drive/jglnews.html &'")
-	if err != nil {
-		c.String(500, fmt.Sprintf("Error: %v", err))
-		return
-	}
-	c.String(200, "Success")
 }
 
 func kspYoutube(c *gin.Context) {
