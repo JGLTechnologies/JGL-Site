@@ -64,6 +64,10 @@ func isLoggedIn(c *gin.Context) bool {
 }
 
 func showLogin(c *gin.Context) {
+	if isLoggedIn(c) {
+		c.Redirect(http.StatusSeeOther, safeNextPath(c.Query("next")))
+		return
+	}
 	renderLogin(c, http.StatusOK, "")
 }
 
@@ -105,9 +109,8 @@ func verifyLogin(c *gin.Context) {
 		renderLogin(c, http.StatusUnauthorized, "The key file is not valid.")
 		return
 	}
-
 	secure := c.Request.TLS != nil || strings.EqualFold(c.GetHeader("X-Forwarded-Proto"), "https")
-	c.SetSameSite(http.SameSiteStrictMode)
+	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie(loginCookieName, loginCookieValue(secret), int(loginCookieMaxAge.Seconds()), "/", "", secure, true)
 	c.Redirect(http.StatusSeeOther, next)
 }
