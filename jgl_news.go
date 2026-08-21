@@ -96,7 +96,7 @@ func removeJNAEmail(c *gin.Context) {
 func jnu(c *gin.Context) {
 	user := os.Getenv("sshuser")
 	password := os.Getenv("sshpass")
-	host := "jgltv"
+	host := "jgltv:22"
 
 	// Configure client
 	config := &ssh.ClientConfig{
