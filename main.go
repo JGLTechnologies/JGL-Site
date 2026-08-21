@@ -186,7 +186,7 @@ func registerAPIRoutes(router *gin.Engine) {
 	apiGroup.Use(utils.AllowCors)
 	apiGroup.GET("/bot/status", shortCache, api.BotStatus)
 	apiGroup.GET("/jna", apiLogin(), api.JNA)
-	apiGroup.GET("/bot/info", shortCache, api.BotInfo)
+	apiGroup.GET("/bot/info", apiLogin(), api.BotInfo)
 	apiGroup.POST("/traffic", apiLogin(), api.CFProxy)
 	apiGroup.POST("/contact", utils.GetMW(time.Second, 1), utils.ReqIDMiddleware, api.Contact)
 	apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
