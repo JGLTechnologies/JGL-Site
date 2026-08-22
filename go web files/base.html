@@ -81,11 +81,12 @@
         min-height: clamp(72px, 11vh, 96px);
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
         gap: 24px;
     }
 
     .notice-logo {
+        margin-inline: auto;
         display: inline-flex;
         align-items: center;
         border-radius: 12px;
@@ -93,20 +94,8 @@
 
     .notice-logo img {
         display: block;
-        width: clamp(230px, 26vw, 300px);
+        width: clamp(280px, 32vw, 420px);
         height: auto;
-    }
-
-    .notice-support-link {
-        color: var(--notice-purple);
-        font-size: 0.92rem;
-        font-weight: 700;
-        text-decoration: none;
-    }
-
-    .notice-support-link:hover {
-        text-decoration: underline;
-        text-underline-offset: 4px;
     }
 
     .notice-main {
@@ -337,7 +326,6 @@
     }
 
     .notice-logo:focus-visible,
-    .notice-support-link:focus-visible,
     .notice-button:focus-visible,
     .notice-help a:focus-visible,
     .notice-site-footer a:focus-visible {
@@ -357,11 +345,7 @@
         }
 
         .notice-logo img {
-            width: clamp(190px, 54vw, 245px);
-        }
-
-        .notice-support-link {
-            display: none;
+            width: clamp(240px, 70vw, 320px);
         }
 
         .notice-main {
@@ -420,7 +404,7 @@
         }
 
         .notice-logo img {
-            width: 240px;
+            width: 330px;
         }
 
         .notice-main {
@@ -482,7 +466,7 @@
         }
 
         .notice-logo img {
-            width: 195px;
+            width: 250px;
         }
 
         .notice-main {
@@ -569,11 +553,7 @@
         }
 
         .notice-logo img {
-            width: 170px;
-        }
-
-        .notice-support-link {
-            font-size: 0.78rem;
+            width: 210px;
         }
 
         .notice-main {
@@ -634,17 +614,13 @@
         }
 
         .notice-logo img {
-            width: clamp(190px, 54vw, 245px);
-        }
-
-        .notice-support-link {
-            display: none;
+            width: clamp(240px, 70vw, 320px);
         }
     }
 
     @media (max-width: 720px) and (max-height: 520px) {
         .notice-logo img {
-            width: 170px;
+            width: 200px;
         }
     }
 
@@ -665,7 +641,6 @@
     <a class="notice-logo" href="/" aria-label="JGL Technologies home">
         <img src="/logo.png" alt="JGL Technologies">
     </a>
-    <a class="notice-support-link" href="/contact">Contact support</a>
 </header>
 {{ end }}
 
