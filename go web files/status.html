@@ -1,95 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{ template "favicon" . }}
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
-    <title>{{ .code }}</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap');
-
-        #head {
-            position: relative;
-            bottom: 130px;
-            font-size: 250px;
-            font-family: Montserrat, sans-serif;
-        }
-
-        #text {
-            font-family: Montserrat, sans-serif;
-            position: relative;
-            bottom: 400px;
-        }
-
-        #button {
-            position: relative;
-            bottom: 390px;
-            background-color: dodgerblue;
-            padding: 7px;
-            border-radius: 5px;
-            width: 115px;
-            height: 40px;
-            border-color: currentColor;
-        }
-
-        @media only screen and (max-width: 1000px) {
-            #head {
-                font-size: 250px;
-            }
-        }
-
-        @media only screen and (max-width: 800px) {
-            #head {
-                font-size: 230px;
-            }
-
-            #button {
-                padding: 6px;
-                width: 110px;
-                height: 35px;
-                bottom: 380px;
-            }
-
-            #text {
-                bottom: 390px;
-            }
-        }
-
-        @media only screen and (max-width: 600px) {
-            #head {
-                font-size: 200px;
-            }
-
-            #button {
-                padding: 5.3px;
-                width: 102px;
-                height: 32px;
-                bottom: 350px;
-            }
-
-            #text {
-                bottom: 350px;
-            }
-        }
-
-        body {
-            padding: 0;
-            margin: 0;
-        }
-    </style>
-    <script>
-        function returnHome() {
-            document.location = "/"
-        }
-    </script>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="JGL Technologies could not complete this request.">
+    {{ template "favicon" . }}
+    <title>{{ .code }} | JGL Technologies</title>
+    {{ template "notice_styles" . }}
 </head>
-<body>
-<div style="text-align: center;">
-    <p id="head">{{ .code }}</p>
-    <h3><p id="text">{{ .message }}</p></h3>
-    <button onclick="returnHome()" id="button">Return Home</button>
-</div>
+<body class="notice-page">
+{{ template "notice_header" . }}
+
+<main class="notice-main" aria-labelledby="notice-title">
+    <article class="notice-card">
+        <p class="notice-status-code" aria-label="Status code {{ .code }}">{{ .code }}</p>
+        <p class="notice-eyebrow">Something went wrong</p>
+        <h1 class="notice-title" id="notice-title">We couldn't complete that request</h1>
+        <p class="notice-message">{{ .message }}</p>
+        <div class="notice-actions">
+            <a class="notice-button notice-button--primary" href="/">Return home</a>
+            <a class="notice-button notice-button--secondary" href="/contact">Contact support</a>
+        </div>
+        <p class="notice-help">
+            If you believe this page should be available, email
+            <a href="mailto:info@jgltechnologies.com">info@jgltechnologies.com</a>.
+        </p>
+    </article>
+</main>
+
+{{ template "notice_footer" . }}
 </body>
 </html>

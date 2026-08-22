@@ -19,6 +19,372 @@
 <link rel="manifest" href="/favicon/site.webmanifest" />
 {{ end }}
 
+{{ define "notice_styles" }}
+<style>
+    :root {
+        color-scheme: light;
+        --notice-ink: #17162b;
+        --notice-muted: #65657a;
+        --notice-border: #e5e5ef;
+        --notice-surface: #ffffff;
+        --notice-purple: #27207f;
+        --notice-purple-dark: #1d1765;
+        --notice-green: #00a85a;
+        --notice-danger: #d4444c;
+        --notice-warning: #c97a16;
+        --notice-shadow: 0 24px 70px rgba(28, 25, 74, 0.13);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        min-width: 320px;
+        background: #f7f7fb;
+    }
+
+    body.notice-page {
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        color: var(--notice-ink);
+        background:
+            radial-gradient(circle at 6% 10%, rgba(39, 32, 127, 0.13), transparent 26rem),
+            radial-gradient(circle at 94% 88%, rgba(0, 168, 90, 0.12), transparent 24rem),
+            #f7f7fb;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .notice-site-header,
+    .notice-main,
+    .notice-site-footer {
+        width: min(100% - 40px, 1120px);
+        margin-inline: auto;
+    }
+
+    .notice-site-header {
+        min-height: 108px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+    }
+
+    .notice-logo {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 12px;
+    }
+
+    .notice-logo img {
+        display: block;
+        width: clamp(190px, 24vw, 252px);
+        height: auto;
+    }
+
+    .notice-support-link {
+        color: var(--notice-purple);
+        font-size: 0.92rem;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .notice-support-link:hover {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+    .notice-main {
+        flex: 1;
+        display: grid;
+        place-items: center;
+        padding: 44px 0 72px;
+    }
+
+    .notice-card {
+        position: relative;
+        width: min(100%, 760px);
+        overflow: hidden;
+        padding: clamp(32px, 6vw, 64px);
+        border: 1px solid rgba(39, 32, 127, 0.1);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: var(--notice-shadow);
+    }
+
+    .notice-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        height: 6px;
+        background: linear-gradient(90deg, var(--notice-purple), var(--notice-green));
+    }
+
+    .notice-card--success::before {
+        background: var(--notice-green);
+    }
+
+    .notice-card--warning::before {
+        background: linear-gradient(90deg, var(--notice-warning), #e2a33d);
+    }
+
+    .notice-card--danger::before {
+        background: linear-gradient(90deg, var(--notice-danger), #eb7479);
+    }
+
+    .notice-icon {
+        width: 62px;
+        height: 62px;
+        margin-bottom: 28px;
+        display: grid;
+        place-items: center;
+        border-radius: 18px;
+        color: var(--notice-purple);
+        background: #eeedf8;
+        font-size: 1.75rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .notice-card--success .notice-icon {
+        color: #087744;
+        background: #e3f6ed;
+    }
+
+    .notice-card--warning .notice-icon {
+        color: #9b5b0e;
+        background: #fff2dc;
+    }
+
+    .notice-card--danger .notice-icon {
+        color: #b32f38;
+        background: #fdebed;
+    }
+
+    .notice-eyebrow {
+        margin: 0 0 10px;
+        color: var(--notice-purple);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .notice-card--success .notice-eyebrow {
+        color: #087744;
+    }
+
+    .notice-card--warning .notice-eyebrow {
+        color: #9b5b0e;
+    }
+
+    .notice-card--danger .notice-eyebrow {
+        color: #b32f38;
+    }
+
+    .notice-title {
+        max-width: 680px;
+        margin: 0;
+        color: var(--notice-ink);
+        font-size: clamp(2.1rem, 6vw, 4rem);
+        font-weight: 780;
+        letter-spacing: -0.045em;
+        line-height: 1.04;
+    }
+
+    .notice-message {
+        max-width: 620px;
+        margin: 22px 0 0;
+        color: var(--notice-muted);
+        font-size: clamp(1rem, 2vw, 1.15rem);
+    }
+
+    .notice-status-code {
+        margin: 0 0 26px;
+        color: var(--notice-purple);
+        font-size: clamp(4.5rem, 16vw, 8rem);
+        font-weight: 820;
+        letter-spacing: -0.075em;
+        line-height: 0.8;
+    }
+
+    .notice-actions {
+        margin-top: 34px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .notice-button {
+        min-height: 50px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 20px;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        font-size: 0.96rem;
+        font-weight: 750;
+        text-decoration: none;
+        transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .notice-button--primary {
+        color: #ffffff;
+        background: var(--notice-purple);
+        box-shadow: 0 10px 24px rgba(39, 32, 127, 0.2);
+    }
+
+    .notice-button--primary:hover {
+        background: var(--notice-purple-dark);
+        transform: translateY(-1px);
+    }
+
+    .notice-button--secondary {
+        color: var(--notice-purple);
+        border-color: #d8d7e7;
+        background: #ffffff;
+    }
+
+    .notice-button--secondary:hover {
+        border-color: #aaa7cb;
+        background: #f8f7fc;
+        transform: translateY(-1px);
+    }
+
+    .notice-help {
+        margin: 30px 0 0;
+        padding-top: 24px;
+        border-top: 1px solid var(--notice-border);
+        color: var(--notice-muted);
+        font-size: 0.9rem;
+    }
+
+    .notice-help a {
+        color: var(--notice-purple);
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .notice-help a:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .notice-site-footer {
+        min-height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 0;
+        color: var(--notice-muted);
+        font-size: 0.82rem;
+    }
+
+    .notice-site-footer a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .notice-site-footer a:hover {
+        color: var(--notice-purple);
+    }
+
+    .notice-logo:focus-visible,
+    .notice-support-link:focus-visible,
+    .notice-button:focus-visible,
+    .notice-help a:focus-visible,
+    .notice-site-footer a:focus-visible {
+        outline: 3px solid rgba(0, 168, 90, 0.42);
+        outline-offset: 4px;
+    }
+
+    @media (max-width: 560px) {
+        .notice-site-header,
+        .notice-main,
+        .notice-site-footer {
+            width: min(100% - 28px, 1120px);
+        }
+
+        .notice-site-header {
+            min-height: 88px;
+        }
+
+        .notice-logo img {
+            width: 180px;
+        }
+
+        .notice-support-link {
+            display: none;
+        }
+
+        .notice-main {
+            padding: 22px 0 44px;
+        }
+
+        .notice-card {
+            border-radius: 22px;
+        }
+
+        .notice-icon {
+            width: 54px;
+            height: 54px;
+            margin-bottom: 24px;
+            border-radius: 15px;
+        }
+
+        .notice-actions {
+            display: grid;
+        }
+
+        .notice-button {
+            width: 100%;
+        }
+
+        .notice-site-footer {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .notice-site-footer span:last-child {
+            display: none;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .notice-button {
+            transition: none;
+        }
+
+        .notice-button:hover {
+            transform: none;
+        }
+    }
+</style>
+{{ end }}
+
+{{ define "notice_header" }}
+<header class="notice-site-header">
+    <a class="notice-logo" href="/" aria-label="JGL Technologies home">
+        <img src="/logo.png" alt="JGL Technologies">
+    </a>
+    <a class="notice-support-link" href="/contact">Contact support</a>
+</header>
+{{ end }}
+
+{{ define "notice_footer" }}
+<footer class="notice-site-footer">
+    <span>&copy; JGL Technologies LLC</span>
+    <span><a href="mailto:info@jgltechnologies.com">info@jgltechnologies.com</a></span>
+</footer>
+{{ end }}
+
 {{ define "footer" }}
 <footer class="bg-dark py-4 mt-auto">
     <div class="container px-5">
