@@ -1,6 +1,7 @@
 package main
 
 import (
+	"JGLSite/utils"
 	"crypto/hmac"
 	"crypto/sha256"
 	"crypto/subtle"
@@ -33,19 +34,36 @@ func requireLogin() gin.HandlerFunc {
 	}
 }
 
-// APILogin rejects unauthenticated API requests without redirecting to an HTML page.
 func apiLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if os.Getenv("pass") == "" {
 			c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{"error": "login is not configured"})
 			return
 		}
-		if !isLoggedIn(c) && !hasValidAPIKey(c) {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authentication required"})
-			return
+		if c.GetHeader("key") != "" {
+			if hasValidAPIKey(c) {
+				utils.AllowCors(c)
+				c.Next()
+			} else {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authentication required"})
+			}
+		} else {
+			if !isLoggedIn(c) {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authentication required"})
+			} else {
+				if c.Request.Method != "GET" && !hasTrustedOrigin(c) {
+					c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "invalid origin"})
+				} else {
+					c.Next()
+				}
+			}
 		}
-		c.Next()
 	}
+}
+
+func hasTrustedOrigin(c *gin.Context) bool {
+	origins := c.Request.Header.Values("Origin")
+	return len(origins) == 1 && origins[0] == "https://jgltechnologies.com"
 }
 
 func hasValidAPIKey(c *gin.Context) bool {

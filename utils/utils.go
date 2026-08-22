@@ -3,7 +3,6 @@ package utils
 import (
 	"database/sql"
 	"fmt"
-	"net/http"
 	"os"
 	"time"
 
@@ -52,20 +51,8 @@ func AllowCors(c *gin.Context) {
 	}
 
 	c.Header("Vary", "Origin, Access-Control-Request-Method, Access-Control-Request-Headers")
-	c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-
-	reqHdrs := c.GetHeader("Access-Control-Request-Headers")
-	if reqHdrs == "" {
-		reqHdrs = "Content-Type, Authorization, Key, Pass"
-	}
-	c.Header("Access-Control-Allow-Headers", reqHdrs)
-
-	if c.Request.Method == http.MethodOptions {
-		c.AbortWithStatus(http.StatusNoContent)
-		return
-	}
-
-	c.Next()
+	c.Header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+	c.Header("Access-Control-Allow-Headers", "Content-Type, Key")
 }
 
 func InitDB() (*sql.DB, error) {

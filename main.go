@@ -149,12 +149,7 @@ func registerSiteRoutes(router *gin.Engine) {
 
 	router.GET("/login", showLogin)
 	router.POST("/login", verifyLogin)
-	router.GET("/jnu", requireLogin(), jnu)
-	router.GET("/jna", requireLogin(), jna)
-	router.POST("/jnau", apiLogin(), jnau)
-	router.GET("/jna-emails", apiLogin(), getJNAEmails)
-	router.POST("/jna-emails", apiLogin(), addJNAEmail)
-	router.DELETE("/jna-emails", apiLogin(), removeJNAEmail)
+	router.GET("/jn", requireLogin(), jn)
 
 	router.GET("/", pageCache, home)
 	router.GET("/home", pageCache, home)
@@ -180,10 +175,17 @@ func registerSiteRoutes(router *gin.Engine) {
 func registerAPIRoutes(router *gin.Engine) {
 	apiGroup := router.Group("/api")
 	shortCache := cache.CacheByRequestPath(store, 5*time.Second)
-
-	apiGroup.Use(utils.AllowCors)
+	apiGroup.OPTIONS("/*path", func(c *gin.Context) {
+		utils.AllowCors(c)
+		c.Status(http.StatusNoContent)
+	})
 	apiGroup.GET("/bot/status", shortCache, api.BotStatus)
 	apiGroup.GET("/jna", apiLogin(), api.JNA)
+	apiGroup.POST("/jnu", apiLogin(), api.JNU)
+	apiGroup.POST("/jnau", apiLogin(), jnau)
+	apiGroup.GET("/jna-emails", apiLogin(), getJNAEmails)
+	apiGroup.POST("/jna-emails", apiLogin(), addJNAEmail)
+	apiGroup.DELETE("/jna-emails", apiLogin(), removeJNAEmail)
 	apiGroup.GET("/bot/info", apiLogin(), shortCache, api.BotInfo)
 	apiGroup.POST("/traffic", apiLogin(), api.CFProxy)
 	apiGroup.POST("/contact", utils.GetMW(time.Second, 1), utils.ReqIDMiddleware, api.Contact)
@@ -238,26 +240,6 @@ func noRoute(c *gin.Context) {
 }
 
 func noMethod(c *gin.Context) {
-	if c.Request.Method == http.MethodOptions {
-		origin := c.GetHeader("Origin")
-		if origin != "" {
-			c.Header("Access-Control-Allow-Origin", origin)
-		} else {
-			c.Header("Access-Control-Allow-Origin", "*")
-		}
-		c.Header("Vary", "Origin, Access-Control-Request-Method, Access-Control-Request-Headers")
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-
-		reqHdrs := c.GetHeader("Access-Control-Request-Headers")
-		if reqHdrs == "" {
-			reqHdrs = "Content-Type, Authorization, Key, Pass"
-		}
-		c.Header("Access-Control-Allow-Headers", reqHdrs)
-
-		c.AbortWithStatus(http.StatusNoContent) // 204 and STOP
-		return
-	}
-
 	if strings.HasPrefix(c.Request.URL.Path, "/api") {
 		c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "Method Not Allowed"})
 		return

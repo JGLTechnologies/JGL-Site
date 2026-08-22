@@ -3,21 +3,18 @@ package main
 import (
 	"JGLSite/utils"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"net/mail"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/ssh"
 	"gorm.io/gorm"
 )
 
-func jna(c *gin.Context) {
+func jn(c *gin.Context) {
 	c.HTML(http.StatusOK, "jna", gin.H{})
 }
 
@@ -91,44 +88,4 @@ func removeJNAEmail(c *gin.Context) {
 	var emails []string
 	utils.DB.Model(&utils.Email{}).Pluck("email", &emails)
 	c.JSON(http.StatusOK, emails)
-}
-
-func jnu(c *gin.Context) {
-	user := os.Getenv("sshuser")
-	password := os.Getenv("sshpass")
-	host := "jgltv:22"
-
-	// Configure client
-	config := &ssh.ClientConfig{
-		User: user,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(password),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Timeout:         5 * time.Second,
-	}
-
-	// Connect
-	client, err := ssh.Dial("tcp", host, config)
-	if err != nil {
-		c.String(500, fmt.Sprintf("Error: %v", err))
-		return
-	}
-	defer client.Close()
-
-	// Create a new session
-	session, err := client.NewSession()
-	if err != nil {
-		c.String(500, fmt.Sprintf("Error: %v", err))
-		return
-	}
-	defer session.Close()
-
-	// Run a command on the remote host
-	err = session.Start("bash -c 'export DISPLAY=:0; export XAUTHORITY=/home/pi/.Xauthority; sudo pkill firefox-esr; sudo xhost +; sudo unclutter -display :0 -idle 0 -root & firefox-esr --kiosk /var/www/drive/jglnews.html &'")
-	if err != nil {
-		c.String(500, fmt.Sprintf("Error: %v", err))
-		return
-	}
-	c.String(200, "Success")
 }
