@@ -56,7 +56,7 @@ func AllowCors(c *gin.Context) {
 }
 
 func InitDB() (*sql.DB, error) {
-	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=127.0.0.1 user=%s password=%s dbname=jgldb port=5432 sslmode=disable", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=192.168.1.163 user=%s password=%s dbname=jgldb port=5432 sslmode=disable", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))), &gorm.Config{
 		Logger:         logger.Default.LogMode(logger.Silent),
 		TranslateError: true,
 	})

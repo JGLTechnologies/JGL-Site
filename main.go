@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"strings"
 	"time"
 
@@ -31,7 +32,11 @@ const (
 var store *persist.MemoryStore
 
 func main() {
-	godotenv.Load("/var/www/.env")
+	if runtime.GOOS == "windows" {
+		godotenv.Load(".env")
+	} else {
+		godotenv.Load("/var/www/.env")
+	}
 	sqlDB, err := utils.InitDB()
 	if err != nil {
 		panic(err)
@@ -79,6 +84,7 @@ func newRouter() *gin.Engine {
 	router.Static("/favicon", "./static/favicon")
 
 	registerSiteRoutes(router)
+	registerRedirectRoutes(router)
 	registerAPIRoutes(router)
 
 	router.NoRoute(noRoute)
@@ -156,8 +162,6 @@ func registerSiteRoutes(router *gin.Engine) {
 	router.GET("/contact", pageCache, contact)
 	router.GET("/ksp_land_down", pageCache, kspLandDown)
 	router.GET("/keyboardsoundplayer", pageCache, ksp)
-	router.GET("/keyboardsoundplayeryoutube", pageCache, kspYoutube)
-	router.GET("/keyboardsoundplayerstore", pageCache, kspStore)
 	router.GET("/robots.txt", pageCache, func(c *gin.Context) {
 		c.File("static/robots.txt")
 	})
@@ -166,6 +170,7 @@ func registerSiteRoutes(router *gin.Engine) {
 		c.File("static/voicemeeterprosetup.exe")
 	})
 	router.GET("/logo.png", pageCache, logo)
+	router.GET("/logo_square.png", pageCache, logoSquare)
 	router.GET("/ksp_logo.png", pageCache, kspLogo)
 	router.GET("/domain_ownership_verification", func(c *gin.Context) {
 		c.String(200, "This domain is owned and managed by JGL Technologies LLC. Email gluca@jgltechnologies for more info.")
@@ -192,14 +197,6 @@ func registerAPIRoutes(router *gin.Engine) {
 	apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
 }
 
-func kspYoutube(c *gin.Context) {
-	c.Redirect(301, "https://www.youtube.com/watch?v=lxf4MtiYwRY")
-}
-
-func kspStore(c *gin.Context) {
-	c.Redirect(301, "https://apps.microsoft.com/detail/9pfsjgvshm0l?hl=en-US&gl=US")
-}
-
 func ksp(c *gin.Context) {
 	c.HTML(200, "kbs", gin.H{})
 }
@@ -214,6 +211,10 @@ func favicon(c *gin.Context) {
 
 func logo(c *gin.Context) {
 	c.File("static/logo.png")
+}
+
+func logoSquare(c *gin.Context) {
+	c.File("static/logo_square.png")
 }
 
 func kspLogo(c *gin.Context) {

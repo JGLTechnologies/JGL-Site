@@ -1,105 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{ template "noscript" . }}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Submit a bug report, ask a question about any of our products, or inquire about our services.">
+    <meta name="author" content="JGL Technologies LLC">
     {{ template "favicon" . }}
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <meta name="description" content/>
-    <meta name="author" content/>
     <script src="https://www.google.com/recaptcha/api.js?render=6LecNN0bAAAAAJ_jSdE2k6-7ydrxKbSMNMwNjAul"></script>
     <title>Contact Us</title>
-    <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
-    <!-- styles -->
     {{ template "css" . }}
 </head>
-<body class="d-flex flex-column">
-<main class="flex-shrink-0">
-    <!-- Navigation-->
-    {{ template "navbar" . }}
-    <!-- Page content-->
-    <section class="py-5">
-        <div class="container px-5">
-            <!-- Contact form-->
-            <div class="bg-light rounded-3 py-5 px-4 px-md-5 mb-5">
-                <div class="text-center mb-5">
-                    <h1 class="fw-bolder">Contact us</h1>
-                    <p class="lead fw-normal text-muted mb-0">Submit a bug report, ask a question about any of our products, or inquire about our services.
-                        We will reply by email within one day.
-                        You can also get support on our <a href="/discord" style="color: var(--bs-dark); text-decoration: none;">Discord server</a>.</p>
+<body class="site-page site-page--contact">
+<a class="skip-link" href="#main-content">Skip to content</a>
+{{ template "noscript" . }}
+{{ template "navbar" . }}
+
+<main id="main-content">
+    <section class="contact-hero">
+        <div class="site-shell contact-hero__layout">
+            <h1>Contact us</h1>
+            <p>
+                Submit a bug report, ask a question about any of our products, or inquire about our services.
+            </p>
+        </div>
+    </section>
+
+    <section class="contact-section" aria-label="Contact options and form">
+        <div class="site-shell contact-layout">
+            <div class="contact-form-card">
+                <div class="contact-form-card__header">
+                    <h2>Send a message</h2>
+                    <p>All fields are required.</p>
                 </div>
-                <div class="row gx-5 justify-content-center">
-                    <div class="col-lg-8 col-xl-6">
-                        <form id="contactForm" method="POST" accept-charset="utf-8"
-                              enctype="application/x-www-form-urlencoded">
-                            <!-- Name input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" name="name" id="name" type="text"
-                                       placeholder="Enter your name..." data-sb-validations="required" required/>
-                                <label for="name">Full name</label>
-                                <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
-                            </div>
-                            <!-- Email address input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" maxlength="254" id="email" name="email" type="email"
-                                       placeholder="name@example.com" required/>
-                                <label for="email">Email address</label>
-                            </div>
-                            <!-- Message input-->
-                            <div class="form-floating mb-3">
-                                <textarea minlength="25" class="form-control" id="message" name="message" type="text"
-                                          placeholder="Enter your message here..." style="height: 10rem"
-                                          data-sb-validations="required" maxlength="1020" required></textarea>
-                                <label for="message">Message</label>
-                                <div class="invalid-feedback" data-sb-feedback="message:required">A message is
-                                    required.
-                                </div>
-                            </div>
-                            <input type="hidden" id="hiddentoken" name="token">
-                            <!-- Submit Button-->
-                            <div class="d-grid">
-                                <button class="btn btn-primary btn-lg g-recaptcha" id="submitButton" type="submit"
-                                        onclick="onClick()">Submit
-                                </button>
-                            </div>
-                        </form>
+
+                <form id="contactForm" method="POST" accept-charset="utf-8"
+                      enctype="application/x-www-form-urlencoded">
+                    <div class="form-field">
+                        <label for="name">Full name</label>
+                        <input name="name" id="name" type="text" placeholder="Enter your name..."
+                               autocomplete="name" data-sb-validations="required" required>
+                        <div class="field-feedback" data-sb-feedback="name:required">A name is required.</div>
                     </div>
-                </div>
+
+                    <div class="form-field">
+                        <label for="email">Email address</label>
+                        <input maxlength="254" id="email" name="email" type="email"
+                               placeholder="name@example.com" autocomplete="email" required>
+                        <div class="field-feedback">Enter a valid email address.</div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="message">Message</label>
+                        <textarea minlength="25" id="message" name="message"
+                                  placeholder="Enter your message here..."
+                                  data-sb-validations="required" maxlength="1020"
+                                  required></textarea>
+                        <div class="field-feedback" data-sb-feedback="message:required">A message is required.</div>
+                    </div>
+
+                    <input type="hidden" id="hiddentoken" name="token">
+
+                    <button class="site-button site-button--primary contact-submit g-recaptcha"
+                            id="submitButton" type="submit" onclick="onClick()">
+                        Submit
+                    </button>
+
+                    <p class="recaptcha-notice">
+                        This site is protected by reCAPTCHA and the Google
+                        <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+                        <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+                    </p>
+                </form>
             </div>
+
+            <aside class="contact-details">
+                <h2>Contact options</h2>
+                <div class="contact-methods">
+                    <a class="contact-method" href="mailto:info@jgltechnologies.com">
+                        <span class="contact-method__icon" aria-hidden="true">@</span>
+                        <span>
+                            <small>Email</small>
+                            info@jgltechnologies.com
+                        </span>
+                    </a>
+                    <a class="contact-method" href="/discord">
+                        <span class="contact-method__icon contact-method__icon--discord" aria-hidden="true">#</span>
+                        <span>
+                            <small>Product support</small>
+                            Discord server
+                        </span>
+                    </a>
+                </div>
+
+                <div class="response-card">
+                    <small>Email response time</small>
+                    <strong>Within one day</strong>
+                </div>
+            </aside>
         </div>
     </section>
 </main>
+
 <script>
     "use strict";
     var form = document.getElementById("contactForm");
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
     });
+
     function onClick() {
         var email = document.getElementById("email");
         var name = document.getElementById("name");
         var message = document.getElementById("message");
-        if (name.value == null || email.value == null || message.value == null || message.value == "" || name.value == "" || email.value == "" || !email.validity.valid || !message.validity.valid) {
+
+        if (name.value === "" || email.value === "" || message.value === "" ||
+            !email.validity.valid || !message.validity.valid) {
+            return;
         }
-        else {
-            var button = document.getElementById("submitButton");
-            button.style.display = "none";
-            grecaptcha.ready(function () {
-                grecaptcha.execute('6LecNN0bAAAAAJ_jSdE2k6-7ydrxKbSMNMwNjAul', { action: 'submit' }).then(function (token) {
-                    var form = document.getElementById("contactForm");
-                    document.getElementById("hiddentoken").value = token;
-                    form.action = "/api/contact";
-                    form.submit();
-                });
+
+        var button = document.getElementById("submitButton");
+        button.style.display = "none";
+
+        grecaptcha.ready(function () {
+            grecaptcha.execute("6LecNN0bAAAAAJ_jSdE2k6-7ydrxKbSMNMwNjAul", {action: "submit"}).then(function (token) {
+                var contactForm = document.getElementById("contactForm");
+                document.getElementById("hiddentoken").value = token;
+                contactForm.action = "/api/contact";
+                contactForm.submit();
             });
-        }
+        });
     }
 </script>
-<!-- Footer-->
-{{ template "footer" . }}
-<!-- Bootstrap core JS-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 
+{{ template "footer" . }}
+</body>
 </html>

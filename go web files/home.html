@@ -1,66 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{ template "noscript" . }}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="JGL Technologies is a computer technology company specializing in the development of consumer software.">
+    <meta name="author" content="JGL Technologies LLC">
     {{ template "favicon" . }}
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <title>JGL Technologies</title>
-    <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
-    <!-- styles -->
     {{ template "css" . }}
 </head>
-<body class="d-flex flex-column">
-<main class="flex-shrink-0">
-    <!-- Navigation-->
-    {{ template "navbar" . }}
-    <!-- Header-->
-    <header class="py-5">
-        <div class="container px-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-8 col-xxl-6">
-                    <div class="text-center my-5">
-                        <h1 class="fw-bolder mb-3">About Us</h1>
-                        <p class="lead fw-normal text-muted mb-4">
-                            JGL Technologies is a computer technology company specializing in the development of consumer software. We maintain numerous projects on our <a href="/gh" style="color: var(--bs-dark); text-decoration: none;">Github</a>. For inquiries or additional information, please reach out via our <a href="/contact" style="color: var(--bs-dark); text-decoration: none;">contact page</a>. 🙂
-                        </p>
-                        <a class="btn btn-primary btn-lg" href="/discord">Join our Discord
-                            server</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    <!-- Works in progress-->
-    <section class="py-5 bg-light" id="projects">
-        <div class="container px-5 my-5">
-            <div class="row gx-5 align-items-center">
-                <div class="col-lg-6"><img class="img-fluid rounded mb-5 mb-lg-0"
-                                           src="/logo.png"
-                                           alt="..."/></div>
-                <div class="col-lg-6">
-                    <h2 class="fw-bolder">Top Projects</h2>
-                    <p class="lead fw-normal text-muted mb-0">
-                        <a href="/KeyboardSoundPlayer" style="color: var(--bs-dark); text-decoration: none;">KeyboardSoundPlayer:</a>
-                        <br><span style="position: relative; left: 10px;">
-                        KeyboardSoundPlayer is an application that lets you map audio to any key on your keyboard, turning it into a versatile soundboard. Capture audio on the fly and instantly bind it to a key, or add sounds directly from YouTube links. You can also generate audio from text or load local files such as MP3 and WAV when needed. Keys may be mapped to functions for greater interactivity, and audio can be set up to play through your microphone, making it ideal for streaming, gaming, or calls.
-                    </span>
-                        <br><a href="/bot" style="color: var(--bs-dark); text-decoration: none;">JGL Bot:</a>
-                        <br><span style="position: relative; left: 10px;">JGL Bot is a Discord bot full of features such as reaction roles, moderation, reminders, tickets, and much more.</span>
-                        <br>
-                        <br>
-                        <br>
-                    </p>
+<body class="site-page site-page--home">
+<a class="skip-link" href="#main-content">Skip to content</a>
+{{ template "noscript" . }}
+{{ template "navbar" . }}
+
+<main id="main-content">
+    <section class="home-hero">
+        <div class="site-shell home-hero__layout">
+            <div class="home-hero__content">
+                <p class="home-hero__label">JGL Technologies</p>
+                <h1>About Us</h1>
+                <p class="home-hero__lead">
+                    JGL Technologies is a computer technology company specializing in the development of consumer
+                    software. We maintain numerous projects on our <a href="/gh">GitHub</a>. For inquiries or
+                    additional information, please reach out via our <a href="/contact">contact page</a>.
+                </p>
+                <div class="home-hero__actions">
+                    <a class="site-button site-button--primary" href="/discord">Join our Discord server</a>
+                    <a class="site-button site-button--secondary" href="#projects">View top projects</a>
                 </div>
             </div>
         </div>
     </section>
-</main>
-<!-- Footer-->
-{{ template "footer" . }}
-<!-- Bootstrap core JS-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 
+    <section class="projects-section" id="projects" aria-labelledby="projects-title">
+        <div class="site-shell">
+            <div class="section-heading">
+                <h2 id="projects-title">Top Projects</h2>
+            </div>
+
+            <div class="project-grid">
+                <article class="project-card">
+                    <div class="project-card__top">
+                        <span class="project-card__number">01</span>
+                        <div class="project-card__mark">
+                            <img src="/ksp_logo.png" alt="" aria-hidden="true">
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <p class="project-card__type">Keyboard soundboard software</p>
+                        <h3><a href="/KeyboardSoundPlayer">KeyboardSoundPlayer</a></h3>
+                        <p>
+                            KeyboardSoundPlayer is an application that lets you map audio to any key on your keyboard,
+                            turning it into a versatile soundboard. Capture audio on the fly and instantly bind it to a
+                            key, or add sounds directly from YouTube links. You can also generate audio from text or load
+                            local files such as MP3 and WAV when needed. Keys may be mapped to functions for greater
+                            interactivity, and audio can be set up to play through your microphone, making it ideal for
+                            streaming, gaming, or calls.
+                        </p>
+                    </div>
+                    <a class="project-card__link" href="/KeyboardSoundPlayer">
+                        View KeyboardSoundPlayer <span aria-hidden="true">&rarr;</span>
+                    </a>
+                </article>
+
+                <article class="project-card project-card--bot">
+                    <div class="project-card__top">
+                        <span class="project-card__number">02</span>
+                        <div class="project-card__mark">
+                            <img src="/logo_square.png" alt="" aria-hidden="true">
+                        </div>
+                    </div>
+                    <div class="project-card__content">
+                        <p class="project-card__type">Discord bot</p>
+                        <h3><a href="/bot">JGL Bot</a></h3>
+                        <p>
+                            JGL Bot is a Discord bot full of features such as reaction roles, moderation, reminders,
+                            tickets, and much more.
+                        </p>
+                    </div>
+                    <a class="project-card__link" href="/bot">
+                        View JGL Bot <span aria-hidden="true">&rarr;</span>
+                    </a>
+                </article>
+            </div>
+        </div>
+    </section>
+</main>
+
+{{ template "footer" . }}
+</body>
 </html>
