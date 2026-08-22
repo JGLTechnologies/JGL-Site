@@ -1,99 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{ template "favicon" . }}
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
-    <title>Error</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap');
-
-        #head {
-            position: relative;
-            top: 150px;
-            font-size: 100px;
-            font-family: Montserrat, sans-serif;
-        }
-
-        #text {
-            font-family: Montserrat, sans-serif;
-            position: relative;
-            top: 65px;
-
-        }
-
-        #button {
-            position: relative;
-            background-color: dodgerblue;
-            padding: 7px;
-            border-radius: 5px;
-            width: 115px;
-            height: 40px;
-            border-color: currentColor;
-            top: 70px;
-        }
-
-        @media only screen and (max-width: 1000px) {
-            #head {
-                font-size: 85px;
-            }
-        }
-
-        @media only screen and (max-width: 800px) {
-            #head {
-                font-size: 75px;
-            }
-
-            #button {
-                padding: 6px;
-                width: 110px;
-                height: 35px;
-                top: 90px;
-            }
-
-            #text {
-                top: 95px;
-            }
-        }
-
-        @media only screen and (max-width: 600px) {
-            #head {
-                font-size: 50px;
-            }
-
-            #button {
-                padding: 5.3px;
-                width: 102px;
-                height: 32px;
-                top: 120px;
-            }
-
-            #text {
-                top: 120px;
-            }
-        }
-
-        body {
-            padding: 0;
-            margin: 0;
-            min-height: 600px;
-        }
-    </style>
-    <script>
-        function returnHome() {
-            document.location = "/"
-        }
-    </script>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="JGL Technologies encountered an unexpected error.">
+    {{ template "favicon" . }}
+    <title>Unexpected Error | JGL Technologies</title>
+    {{ template "notice_styles" . }}
 </head>
-<body>
-<div style="text-align: center;">
-    <p id="head">Error</p>
-    <h3><p id="text">It looks like something went wrong. <strong>Error ID: {{ .id }}</strong>
-        <br>If this error continues, please report it on our <a href="/discord">discord server</a>.
-    </p></h3>
-    <button onclick="returnHome()" id="button">Return Home</button>
-</div>
+<body class="notice-page">
+{{ template "notice_header" . }}
+
+<main class="notice-main" aria-labelledby="notice-title">
+    <article class="notice-card notice-card--danger">
+        <div class="notice-icon" aria-hidden="true">!</div>
+        <p class="notice-eyebrow">Unexpected error</p>
+        <h1 class="notice-title" id="notice-title">Something went wrong</h1>
+        <p class="notice-message">
+            We hit an unexpected problem while processing your request. You can return home and try again.
+        </p>
+        <div class="notice-reference">
+            <span>Error reference</span>
+            <code>{{ .id }}</code>
+        </div>
+        <div class="notice-actions">
+            <a class="notice-button notice-button--primary" href="/">Return home</a>
+            <a class="notice-button notice-button--secondary" href="/contact">Contact support</a>
+        </div>
+        <p class="notice-help">
+            If the problem continues, share the error reference with us on our
+            <a href="/discord">Discord server</a> or by email at
+            <a href="mailto:info@jgltechnologies.com">info@jgltechnologies.com</a>.
+        </p>
+    </article>
+</main>
+
+{{ template "notice_footer" . }}
 </body>
 </html>

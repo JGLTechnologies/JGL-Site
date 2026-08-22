@@ -40,16 +40,19 @@
     }
 
     html {
+        height: 100%;
         min-width: 320px;
+        overflow: hidden;
         background: #f7f7fb;
     }
 
     body.notice-page {
+        height: 100vh;
         min-height: 100vh;
         margin: 0;
-        display: flex;
-        flex-direction: column;
-        overflow-x: hidden;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        overflow: hidden;
         color: var(--notice-ink);
         background:
             radial-gradient(circle at 6% 10%, rgba(39, 32, 127, 0.13), transparent 26rem),
@@ -60,6 +63,13 @@
         -webkit-font-smoothing: antialiased;
     }
 
+    @supports (height: 100svh) {
+        body.notice-page {
+            height: 100svh;
+            min-height: 100svh;
+        }
+    }
+
     .notice-site-header,
     .notice-main,
     .notice-site-footer {
@@ -68,7 +78,7 @@
     }
 
     .notice-site-header {
-        min-height: 108px;
+        min-height: clamp(72px, 11vh, 96px);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -83,7 +93,7 @@
 
     .notice-logo img {
         display: block;
-        width: clamp(190px, 24vw, 252px);
+        width: clamp(180px, 22vw, 230px);
         height: auto;
     }
 
@@ -100,17 +110,18 @@
     }
 
     .notice-main {
-        flex: 1;
+        min-height: 0;
         display: grid;
         place-items: center;
-        padding: 44px 0 72px;
+        padding: clamp(12px, 3vh, 28px) 0;
     }
 
     .notice-card {
         position: relative;
         width: min(100%, 760px);
+        max-height: 100%;
         overflow: hidden;
-        padding: clamp(32px, 6vw, 64px);
+        padding: clamp(28px, 5vw, 52px);
         border: 1px solid rgba(39, 32, 127, 0.1);
         border-radius: 28px;
         background: rgba(255, 255, 255, 0.96);
@@ -138,15 +149,15 @@
     }
 
     .notice-icon {
-        width: 62px;
-        height: 62px;
-        margin-bottom: 28px;
+        width: 54px;
+        height: 54px;
+        margin-bottom: 22px;
         display: grid;
         place-items: center;
-        border-radius: 18px;
+        border-radius: 16px;
         color: var(--notice-purple);
         background: #eeedf8;
-        font-size: 1.75rem;
+        font-size: 1.55rem;
         font-weight: 800;
         line-height: 1;
     }
@@ -191,7 +202,7 @@
         max-width: 680px;
         margin: 0;
         color: var(--notice-ink);
-        font-size: clamp(2.1rem, 6vw, 4rem);
+        font-size: clamp(1.9rem, 5vw, 3.4rem);
         font-weight: 780;
         letter-spacing: -0.045em;
         line-height: 1.04;
@@ -199,33 +210,62 @@
 
     .notice-message {
         max-width: 620px;
-        margin: 22px 0 0;
+        margin: 16px 0 0;
         color: var(--notice-muted);
         font-size: clamp(1rem, 2vw, 1.15rem);
     }
 
+    .notice-reference {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 13px 16px;
+        border: 1px solid var(--notice-border);
+        border-radius: 14px;
+        background: #f8f8fc;
+    }
+
+    .notice-reference span {
+        color: var(--notice-muted);
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .notice-reference code {
+        color: var(--notice-ink);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 0.88rem;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+        text-align: right;
+    }
+
     .notice-status-code {
-        margin: 0 0 26px;
+        margin: 0 0 20px;
         color: var(--notice-purple);
-        font-size: clamp(4.5rem, 16vw, 8rem);
+        font-size: clamp(4rem, 13vw, 6.5rem);
         font-weight: 820;
         letter-spacing: -0.075em;
         line-height: 0.8;
     }
 
     .notice-actions {
-        margin-top: 34px;
+        margin-top: 26px;
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
     }
 
     .notice-button {
-        min-height: 50px;
+        min-height: 46px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 12px 20px;
+        padding: 10px 18px;
         border: 1px solid transparent;
         border-radius: 12px;
         font-size: 0.96rem;
@@ -258,8 +298,8 @@
     }
 
     .notice-help {
-        margin: 30px 0 0;
-        padding-top: 24px;
+        margin: 22px 0 0;
+        padding-top: 18px;
         border-top: 1px solid var(--notice-border);
         color: var(--notice-muted);
         font-size: 0.9rem;
@@ -277,12 +317,12 @@
     }
 
     .notice-site-footer {
-        min-height: 76px;
+        min-height: 56px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        padding: 18px 0;
+        padding: 10px 0;
         color: var(--notice-muted);
         font-size: 0.82rem;
     }
@@ -313,11 +353,11 @@
         }
 
         .notice-site-header {
-            min-height: 88px;
+            min-height: 70px;
         }
 
         .notice-logo img {
-            width: 180px;
+            width: 168px;
         }
 
         .notice-support-link {
@@ -325,35 +365,286 @@
         }
 
         .notice-main {
-            padding: 22px 0 44px;
+            padding: 10px 0 14px;
         }
 
         .notice-card {
-            border-radius: 22px;
+            padding: clamp(22px, 6vw, 30px);
+            border-radius: 20px;
         }
 
         .notice-icon {
-            width: 54px;
-            height: 54px;
-            margin-bottom: 24px;
-            border-radius: 15px;
+            width: 46px;
+            height: 46px;
+            margin-bottom: 16px;
+            border-radius: 14px;
         }
 
         .notice-actions {
             display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .notice-reference {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .notice-reference code {
+            text-align: left;
         }
 
         .notice-button {
             width: 100%;
+            padding-inline: 10px;
+            font-size: 0.86rem;
         }
 
         .notice-site-footer {
+            min-height: 44px;
             justify-content: center;
+            padding: 6px 0;
             text-align: center;
         }
 
         .notice-site-footer span:last-child {
             display: none;
+        }
+    }
+
+    @media (max-height: 800px) {
+        .notice-site-header {
+            min-height: 70px;
+        }
+
+        .notice-logo img {
+            width: 186px;
+        }
+
+        .notice-main {
+            padding: 10px 0 14px;
+        }
+
+        .notice-card {
+            padding: clamp(26px, 4vw, 38px);
+        }
+
+        .notice-icon {
+            width: 46px;
+            height: 46px;
+            margin-bottom: 14px;
+            border-radius: 14px;
+        }
+
+        .notice-eyebrow {
+            margin-bottom: 7px;
+        }
+
+        .notice-title {
+            font-size: clamp(1.75rem, 4vw, 2.8rem);
+        }
+
+        .notice-message {
+            margin-top: 12px;
+            font-size: 1rem;
+        }
+
+        .notice-reference {
+            margin-top: 15px;
+            padding: 10px 14px;
+        }
+
+        .notice-status-code {
+            margin-bottom: 14px;
+            font-size: clamp(3.6rem, 11vw, 5rem);
+        }
+
+        .notice-actions {
+            margin-top: 18px;
+        }
+
+        .notice-help {
+            margin-top: 16px;
+            padding-top: 12px;
+        }
+
+        .notice-site-footer {
+            min-height: 48px;
+            padding: 6px 0;
+        }
+    }
+
+    @media (max-height: 650px) {
+        .notice-site-header {
+            min-height: 58px;
+        }
+
+        .notice-logo img {
+            width: 154px;
+        }
+
+        .notice-main {
+            padding: 6px 0 8px;
+        }
+
+        .notice-card {
+            padding: 18px 26px;
+            border-radius: 20px;
+        }
+
+        .notice-card::before {
+            height: 4px;
+        }
+
+        .notice-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            font-size: 1.25rem;
+        }
+
+        .notice-eyebrow {
+            margin-bottom: 5px;
+            font-size: 0.68rem;
+        }
+
+        .notice-title {
+            font-size: clamp(1.55rem, 4vw, 2.3rem);
+        }
+
+        .notice-message {
+            margin-top: 8px;
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        .notice-reference {
+            margin-top: 10px;
+            gap: 8px;
+            padding: 8px 11px;
+        }
+
+        .notice-reference span {
+            font-size: 0.65rem;
+        }
+
+        .notice-reference code {
+            font-size: 0.76rem;
+        }
+
+        .notice-status-code {
+            margin-bottom: 9px;
+            font-size: clamp(3rem, 10vw, 4rem);
+        }
+
+        .notice-actions {
+            margin-top: 12px;
+            gap: 8px;
+        }
+
+        .notice-button {
+            min-height: 38px;
+            padding: 7px 11px;
+            font-size: 0.82rem;
+        }
+
+        .notice-help {
+            margin-top: 10px;
+            padding-top: 8px;
+            font-size: 0.76rem;
+            line-height: 1.35;
+        }
+
+        .notice-site-footer {
+            display: none;
+        }
+    }
+
+    @media (max-height: 520px) {
+        .notice-site-header {
+            min-height: 46px;
+        }
+
+        .notice-logo img {
+            width: 138px;
+        }
+
+        .notice-support-link {
+            font-size: 0.78rem;
+        }
+
+        .notice-main {
+            padding: 3px 0 5px;
+        }
+
+        .notice-card {
+            padding: 13px 22px;
+            border-radius: 17px;
+        }
+
+        .notice-icon {
+            display: none;
+        }
+
+        .notice-title {
+            font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+        }
+
+        .notice-message {
+            margin-top: 5px;
+            font-size: 0.8rem;
+        }
+
+        .notice-reference {
+            margin-top: 7px;
+            padding: 6px 9px;
+        }
+
+        .notice-status-code {
+            margin-bottom: 6px;
+            font-size: 2.75rem;
+        }
+
+        .notice-actions {
+            margin-top: 8px;
+        }
+
+        .notice-button {
+            min-height: 34px;
+            padding-block: 5px;
+        }
+
+        .notice-help {
+            margin-top: 7px;
+            padding-top: 6px;
+            font-size: 0.69rem;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .notice-site-header {
+            justify-content: center;
+        }
+
+        .notice-logo {
+            margin-inline: auto;
+        }
+
+        .notice-logo img {
+            width: clamp(148px, 44vw, 178px);
+        }
+
+        .notice-support-link {
+            display: none;
+        }
+    }
+
+    @media (max-width: 720px) and (max-height: 520px) {
+        .notice-logo img {
+            width: 138px;
         }
     }
 
