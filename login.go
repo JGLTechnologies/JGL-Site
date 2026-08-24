@@ -51,7 +51,7 @@ func apiLogin() gin.HandlerFunc {
 			if !isLoggedIn(c) {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authentication required"})
 			} else {
-				if c.Request.Method != "GET" && !hasTrustedOrigin(c) {
+				if !hasTrustedOrigin(c) {
 					c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "invalid origin"})
 				} else {
 					c.Next()

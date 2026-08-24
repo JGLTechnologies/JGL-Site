@@ -97,17 +97,11 @@ func newTemplates() multitemplate.Renderer {
 	r := multitemplate.NewRenderer()
 	r.AddFromFiles("ksp_land", "go web files/ksp_landing_download.html", "go web files/base.html")
 	r.AddFromFiles("home", "go web files/home.html", "go web files/base.html")
-	r.AddFromFiles("client-error", "go web files/client_error.html", "go web files/base.html")
+	r.AddFromFiles("error", "go web files/error.html", "go web files/base.html")
 	r.AddFromFiles("contact", "go web files/contact.html", "go web files/base.html")
-	r.AddFromFiles("status", "go web files/status.html", "go web files/base.html")
 	r.AddFromFiles("contact-thank-you", "go web files/thank-you.html", "go web files/base.html")
 	r.AddFromFiles("jna", "go web files/jna.html", "go web files/base.html")
 	r.AddFromFiles("login", "go web files/login.html", "go web files/base.html")
-	r.AddFromFiles("contact-limit", "go web files/limit.html", "go web files/base.html")
-	r.AddFromFiles("contact-captcha", "go web files/captcha.html", "go web files/base.html")
-	r.AddFromFiles("contact-bl", "go web files/bl.html", "go web files/base.html")
-	r.AddFromFiles("contact-spam", "go web files/spam.html", "go web files/base.html")
-	r.AddFromFiles("error", "go web files/error.html", "go web files/base.html")
 	r.AddFromFiles("kbs", "go web files/kbs.html", "go web files/base.html")
 	return r
 }
@@ -122,7 +116,7 @@ func loadTrustedProxies() []string {
 func recoveryMiddleware() gin.HandlerFunc {
 	return gin.CustomRecovery(func(c *gin.Context, err interface{}) {
 		err = strings.Split(err.(error).Error(), "runtime/debug.Stack()")[0]
-		if utils.StartsWith(c.Request.URL.String(), "/api") {
+		if strings.HasPrefix(c.Request.URL.Path, "/api") && c.Request.URL.Path != "/api/contact" {
 			c.AbortWithStatusJSON(500, gin.H{"error": err})
 			return
 		}
@@ -136,8 +130,8 @@ func recoveryMiddleware() gin.HandlerFunc {
 			Path:    c.Request.URL.String(),
 		}
 		utils.DB.Create(errStruct)
-		c.HTML(500, "error", gin.H{"id": errStruct.ID})
-		c.AbortWithStatus(500)
+		utils.RenderErrorPage(c, http.StatusInternalServerError,
+			"We hit an unexpected problem while processing your request. Error reference: "+errStruct.ID)
 	})
 }
 
@@ -193,8 +187,8 @@ func registerAPIRoutes(router *gin.Engine) {
 	apiGroup.DELETE("/jna-emails", apiLogin(), removeJNAEmail)
 	apiGroup.GET("/bot/info", apiLogin(), shortCache, api.BotInfo)
 	apiGroup.POST("/traffic", apiLogin(), api.CFProxy)
-	apiGroup.POST("/contact", utils.GetMW(time.Second, 1), utils.ReqIDMiddleware, api.Contact)
-	apiGroup.GET("/error", cache.CacheByRequestURI(store, cacheTime), api.GetErr)
+	apiGroup.POST("/contact", utils.GetPageMW(time.Second, 1), api.Contact)
+	apiGroup.GET("/error", apiLogin(), api.GetErr)
 }
 
 func ksp(c *gin.Context) {
@@ -233,10 +227,7 @@ func noRoute(c *gin.Context) {
 	if utils.StartsWith(c.Request.URL.String(), "/api") {
 		c.JSON(404, gin.H{"error": "Not Found"})
 	} else {
-		c.HTML(404, "status", gin.H{
-			"code":    "404",
-			"message": "The page you requested does not exist.",
-		})
+		utils.RenderErrorPage(c, http.StatusNotFound, "The page you requested does not exist.")
 	}
 }
 
@@ -245,8 +236,5 @@ func noMethod(c *gin.Context) {
 		c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "Method Not Allowed"})
 		return
 	}
-	c.HTML(http.StatusMethodNotAllowed, "status", gin.H{
-		"code":    "405",
-		"message": "The method you used is not allowed.",
-	})
+	utils.RenderErrorPage(c, http.StatusMethodNotAllowed, "The method you used is not allowed.")
 }

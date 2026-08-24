@@ -2,6 +2,7 @@ package api
 
 import (
 	"JGLSite/utils"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -10,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/imroc/req/v3"
@@ -34,14 +34,13 @@ type Project struct {
 }
 
 func Contact(c *gin.Context) {
-	id := requestid.Get(c)
 	var formData postForm
 	if err := c.ShouldBind(&formData); err != nil {
-		c.HTML(400, "client-error", gin.H{"message": "The request body you provided is invalid.", "title": "Invalid request body"})
+		utils.RenderErrorPage(c, http.StatusBadRequest, "The request body you provided is invalid.")
 		return
 	}
 	if len(formData.Name) > 200 || len(formData.Email) > 254 || len(formData.Message) > 1020 {
-		c.HTML(400, "client-error", gin.H{"message": "The form body you provided is invalid.", "title": "Invalid form body"})
+		utils.RenderErrorPage(c, http.StatusBadRequest, "The form body you provided is invalid.")
 		return
 	}
 	data := map[string]string{
@@ -54,14 +53,12 @@ func Contact(c *gin.Context) {
 	}
 	res, err := client.R().SetBodyJsonMarshal(&data).Post("http://localhost:85/contact")
 	if err != nil {
-		renderError(c, id, err.Error())
-		return
+		panic(err)
 	}
 
 	var resJSON interface{}
 	if err := res.UnmarshalJson(&resJSON); err != nil {
-		renderError(c, id, err.Error())
-		return
+		panic(err)
 	}
 
 	if res.IsSuccessState() {
@@ -69,26 +66,37 @@ func Contact(c *gin.Context) {
 		return
 	}
 
-	if res.StatusCode == 429 {
-		c.HTML(429, "contact-limit", gin.H{"remaining": formatRemaining(resJSON)})
+	if res.StatusCode == http.StatusTooManyRequests {
+		utils.RenderErrorPage(c, http.StatusTooManyRequests, fmt.Sprintf(
+			"Too many form submissions. Please try again in %s.",
+			formatRemaining(resJSON),
+		))
 		return
 	}
 
-	if res.StatusCode == 401 {
-		c.HTML(401, "contact-captcha", gin.H{})
+	if res.StatusCode == http.StatusUnauthorized {
+		utils.RenderErrorPage(c, http.StatusUnauthorized,
+			"Our security check could not verify your request. Please return to the contact form and try again.")
 		return
 	}
 
-	if res.StatusCode == 403 {
+	if res.StatusCode == http.StatusForbidden {
 		if res.String() == "blacklist" {
-			c.HTML(403, "contact-bl", gin.H{})
+			utils.RenderErrorPage(c, http.StatusForbidden,
+				"You have been blacklisted from submitting forms. If you believe this is a mistake, contact support.")
 		} else {
-			c.HTML(403, "contact-spam", gin.H{})
+			utils.RenderErrorPage(c, http.StatusForbidden,
+				"Our automated filters flagged the submission as possible spam. Please review your message and try again.")
 		}
 		return
 	}
 
-	renderError(c, id, resJSON.(map[string]interface{})["error"].(string))
+	if response, ok := resJSON.(map[string]interface{}); ok {
+		if message, ok := response["error"].(string); ok && strings.TrimSpace(message) != "" {
+			panic(errors.New(message))
+		}
+	}
+	panic(fmt.Errorf("contact service returned status %d", res.StatusCode))
 }
 
 func CFProxy(c *gin.Context) {
@@ -110,7 +118,6 @@ func CFProxy(c *gin.Context) {
 		return
 	}
 
-	// Copy upstream headers (avoid hop-by-hop headers).
 	hopByHop := map[string]struct{}{
 		"Connection":          {},
 		"Keep-Alive":          {},
@@ -126,7 +133,6 @@ func CFProxy(c *gin.Context) {
 			continue
 		}
 		for _, v := range vv {
-			// Gin merges headers; use Add to preserve multi-value headers.
 			c.Writer.Header().Add(k, v)
 		}
 	}
@@ -156,22 +162,18 @@ func GetErr(c *gin.Context) {
 	}
 }
 
-func renderError(c *gin.Context, id string, message string) {
-	errStruct := &utils.Err{
-		Message: message,
-		Date:    time.Now().Format("Jan 02, 2006 3:04:05 pm"),
-		ID:      id,
-		IP:      c.ClientIP(),
-		Path:    c.Request.URL.String(),
-	}
-	utils.DB.Create(errStruct)
-	c.HTML(500, "error", gin.H{"id": id})
-	c.AbortWithStatus(500)
-}
-
 func formatRemaining(resJSON interface{}) string {
-	minutes := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Minute.Nanoseconds())).Minutes())
-	seconds := math.Trunc(time.Duration(resJSON.(map[string]interface{})["remaining"].(float64) * float64(time.Second.Nanoseconds())).Seconds())
+	response, ok := resJSON.(map[string]interface{})
+	if !ok {
+		return "a short while"
+	}
+	remaining, ok := response["remaining"].(float64)
+	if !ok || remaining <= 0 || math.IsNaN(remaining) || math.IsInf(remaining, 0) {
+		return "a short while"
+	}
+
+	minutes := math.Trunc(time.Duration(remaining * float64(time.Minute)).Minutes())
+	seconds := math.Trunc(time.Duration(remaining * float64(time.Second)).Seconds())
 
 	if minutes < 1 {
 		return fmt.Sprintf("%v seconds", seconds)

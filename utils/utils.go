@@ -3,13 +3,12 @@ package utils
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
 	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
-	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -36,11 +35,6 @@ type Announcement struct {
 type Email struct {
 	Email string `json:"email" gorm:"primaryKey"`
 }
-
-var ReqIDMiddleware = requestid.New(requestid.WithGenerator(func() string {
-	id, _ := uuid.NewRandom()
-	return id.String()
-}))
 
 func AllowCors(c *gin.Context) {
 	origin := c.GetHeader("Origin")
@@ -104,9 +98,29 @@ func StartsWith(s string, sw string) bool {
 }
 
 func GetMW(rate time.Duration, limit uint) func(c *gin.Context) {
+	return ratelimit.RateLimiter(newRateLimitStore(rate, limit), &ratelimit.Options{})
+}
+
+func GetPageMW(rate time.Duration, limit uint) func(c *gin.Context) {
+	return ratelimit.RateLimiter(newRateLimitStore(rate, limit), &ratelimit.Options{
+		ErrorHandler: func(c *gin.Context, _ ratelimit.Info) {
+			RenderErrorPage(c, http.StatusTooManyRequests, "Too many requests. Please wait a moment and try again.")
+		},
+	})
+}
+
+func newRateLimitStore(rate time.Duration, limit uint) ratelimit.Store {
 	store := ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
 		Rate:  rate,
 		Limit: limit,
 	})
-	return ratelimit.RateLimiter(store, &ratelimit.Options{})
+	return store
+}
+
+func RenderErrorPage(c *gin.Context, statusCode int, message string) {
+	c.HTML(statusCode, "error", gin.H{
+		"code":    statusCode,
+		"message": message,
+	})
+	c.Abort()
 }

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <meta name="description" content="JGL Technologies encountered an unexpected error.">
+    <meta name="description" content="JGL Technologies could not complete this request.">
     {{ template "favicon" . }}
-    <title>Unexpected Error | JGL Technologies</title>
+    <title>Error {{ .code }} | JGL Technologies</title>
     {{ template "notice_styles" . }}
 </head>
 <body class="notice-page">
@@ -14,24 +14,17 @@
 
 <main class="notice-main" aria-labelledby="notice-title">
     <article class="notice-card notice-card--danger">
-        <div class="notice-icon" aria-hidden="true">!</div>
-        <p class="notice-eyebrow">Unexpected error</p>
-        <h1 class="notice-title" id="notice-title">Something went wrong</h1>
-        <p class="notice-message">
-            We hit an unexpected problem while processing your request. You can return home and try again.
-        </p>
-        <div class="notice-reference">
-            <span>Error reference</span>
-            <code>{{ .id }}</code>
-        </div>
+        <p class="notice-status-code" aria-label="Status code {{ .code }}">{{ .code }}</p>
+        <p class="notice-eyebrow">Request not completed</p>
+        <h1 class="notice-title" id="notice-title">We couldn't complete that request</h1>
+        <p class="notice-message">{{ .message }}</p>
         <div class="notice-actions">
             <a class="notice-button notice-button--primary" href="/">Return home</a>
             <a class="notice-button notice-button--secondary" href="/contact">Contact support</a>
         </div>
         <p class="notice-help">
-            If the problem continues, share the error reference with us on our
-            <a href="/discord">Discord server</a> or by email at
-            <a href="mailto:info@jgltechnologies.com">info@jgltechnologies.com</a>.
+            Need help? Email <a href="mailto:info@jgltechnologies.com">info@jgltechnologies.com</a> or visit our
+            <a href="/discord">Discord server</a>.
         </p>
     </article>
 </main>

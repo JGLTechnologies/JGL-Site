@@ -7,7 +7,6 @@ require (
 	github.com/JGLTechnologies/gin-rate-limit v1.5.9
 	github.com/chenyahui/gin-cache v1.10.0
 	github.com/gin-contrib/multitemplate v1.1.2
-	github.com/gin-contrib/requestid v1.0.6
 	github.com/gin-gonic/gin v1.12.0
 	github.com/google/uuid v1.6.0
 	github.com/imroc/req/v3 v3.61.0
