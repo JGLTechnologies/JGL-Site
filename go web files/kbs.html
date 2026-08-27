@@ -6,24 +6,45 @@
         {
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
+            "@id": "https://jgltechnologies.com/keyboardsoundplayer#software",
             "name": "KeyboardSoundPlayer",
+            "alternateName": "Keyboard Sound Player",
             "operatingSystem": "Windows",
             "applicationCategory": "MultimediaApplication",
+            "applicationSubCategory": "Soundboard software",
+            "isAccessibleForFree": false,
+            "downloadUrl": "https://apps.microsoft.com/detail/9pfsjgvshm0l",
+            "image": "https://jgltechnologies.com/ksp_logo.png",
+            "featureList": [
+                "Bind MP3 and WAV audio files to keyboard keys",
+                "Use audio from YouTube videos",
+                "Generate audio with text-to-speech",
+                "Capture recent audio and bind clips instantly",
+                "Play sounds through a virtual microphone",
+                "Map soundboard functions to keyboard keys"
+            ],
             "offers": {
                 "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
+                "availability": "https://schema.org/InStock",
+                "url": "https://apps.microsoft.com/detail/9pfsjgvshm0l"
             },
-            "url": "https://jgltechnologies.com/KeyboardSoundPlayer",
-            "description": "Customizable keyboard soundboard software for Windows. Assign sounds to keys for gaming, streaming, and entertainment.",
+            "url": "https://jgltechnologies.com/keyboardsoundplayer",
+            "mainEntityOfPage": "https://jgltechnologies.com/keyboardsoundplayer",
+            "description": "Windows soundboard software that binds MP3, WAV, YouTube audio, text-to-speech, and captured clips to keyboard keys for gaming, streaming, and calls.",
             "author": {
                 "@type": "Organization",
-                "name": "JGL Technologies"
+                "name": "JGL Technologies",
+                "url": "https://jgltechnologies.com/"
             }
         }
     </script>
     <script>
         function store() {
+            if (typeof gtag !== 'function') {
+                window.location = "/KeyboardSoundPlayerStore";
+                return;
+            }
+
             gtag('event', 'conversion', {
                 'send_to': 'AW-17392647252/WOWOCMzymvkaENT4uuVA',
                 'event_callback': function() {
@@ -33,143 +54,491 @@
 
             // Fallback in case event_callback doesn't fire
             setTimeout(function () {
-                window.open('/KeyboardSoundPlayerStore', '_blank');
+                window.location = '/KeyboardSoundPlayerStore';
             }, 1000);
         }
     </script>
     {{ template "favicon" . }}
     {{ template "css" . }}
     <meta charset="utf-8"/>
-    <meta name="description" content="KeyboardSoundPlayer lets you link audio to any key using MP3s, YouTube, or text-to-speech. Play sounds through your mic for gaming, streaming, or calls. Capture clips and bind them to keys for instant playback." />
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
-    <title>KeyboardSoundPlayer Documentation</title>
+    <title>KeyboardSoundPlayer: Keyboard Soundboard for Windows</title>
+    <meta name="description" content="KeyboardSoundPlayer is a Windows soundboard that binds MP3, WAV, YouTube audio, text-to-speech, and captured clips to any keyboard key."/>
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+    <link rel="canonical" href="https://jgltechnologies.com/keyboardsoundplayer"/>
+
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="JGL Technologies"/>
+    <meta property="og:title" content="KeyboardSoundPlayer: Keyboard Soundboard for Windows"/>
+    <meta property="og:description" content="Bind MP3, WAV, YouTube audio, text-to-speech, and captured clips to any key for gaming, streaming, and calls."/>
+    <meta property="og:url" content="https://jgltechnologies.com/keyboardsoundplayer"/>
+    <meta property="og:image" content="https://jgltechnologies.com/ksp_logo.png"/>
+    <meta property="og:image:width" content="1024"/>
+    <meta property="og:image:height" content="1024"/>
+    <meta property="og:image:alt" content="KeyboardSoundPlayer keyboard and speaker logo"/>
+
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="KeyboardSoundPlayer: Keyboard Soundboard for Windows"/>
+    <meta name="twitter:description" content="Bind audio, YouTube clips, text-to-speech, and captured sounds to any keyboard key."/>
+    <meta name="twitter:image" content="https://jgltechnologies.com/ksp_logo.png"/>
+    <meta name="twitter:image:alt" content="KeyboardSoundPlayer keyboard and speaker logo"/>
+    <meta name="theme-color" content="#0b1218"/>
     <link href="/ksp_logo.png" rel="icon" type="image/png"/>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #27ae60;
-            --bg-light: #fdfdfd;
-            --bg-highlight: #ecf0f1;
-            --code-bg: #f4f4f4;
+            --ksp-ink: #17212b;
+            --ksp-muted: #5f6c78;
+            --ksp-green: #24c875;
+            --ksp-green-dark: #087c48;
+            --ksp-green-soft: #e8f9f0;
+            --ksp-navy: #0b1218;
+            --ksp-panel: #ffffff;
+            --ksp-line: #dce5e0;
+            --ksp-bg: #f3f7f5;
+            --ksp-shadow: 0 22px 60px rgba(10, 33, 23, 0.10);
+            --accent-color: var(--ksp-green-dark);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 110px;
         }
 
         body {
             margin: 0;
-            background-color: var(--bg-light);
-            color: var(--primary-color);
+            color: var(--ksp-ink);
+            background: var(--ksp-bg);
         }
 
         .header {
-            width: 100vw;
+            position: relative;
+            z-index: 10;
+            width: 100%;
             margin: 0 auto;
             padding: 0;
         }
 
         .top-logo {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+            padding: clamp(60px, 8vw, 104px) 24px clamp(66px, 9vw, 116px);
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 78% 32%, rgba(36, 200, 117, 0.24), transparent 26%),
+                linear-gradient(125deg, #081016 0%, #14242a 58%, #0e3225 100%);
         }
 
-        .top-logo img {
-            width: 80px;
-            height: auto;
-            display: block;
-            margin: 0 auto 1rem;
+        .top-logo::before,
+        .top-logo::after {
+            position: absolute;
+            content: "";
+            pointer-events: none;
+        }
+
+        .top-logo::before {
+            inset: 0;
+            opacity: 0.16;
+            background-image:
+                linear-gradient(rgba(255,255,255,.13) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.13) 1px, transparent 1px);
+            background-size: 52px 52px;
+            mask-image: linear-gradient(to right, black, transparent 70%);
+        }
+
+        .top-logo::after {
+            right: -130px;
+            bottom: -230px;
+            width: 520px;
+            height: 520px;
+            border: 1px solid rgba(68, 238, 151, 0.22);
+            border-radius: 50%;
+            box-shadow: 0 0 0 70px rgba(36, 200, 117, 0.04), 0 0 0 140px rgba(36, 200, 117, 0.025);
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 1120px);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr);
+            align-items: center;
+            gap: clamp(42px, 7vw, 92px);
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            margin: 0 0 18px;
+            color: #75eead;
+            font-size: .76rem;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        .hero-eyebrow::before {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--ksp-green);
+            box-shadow: 0 0 0 5px rgba(36, 200, 117, .14);
+            content: "";
         }
 
         .top-logo h1 {
+            max-width: 760px;
             margin: 0;
-            font-size: 2rem;
+            color: #ffffff;
+            font-size: clamp(3.25rem, 7.4vw, 6.5rem);
+            line-height: .95;
+            letter-spacing: -.065em;
+        }
+
+        .hero-copy {
+            max-width: 660px;
+            margin: 24px 0 0;
+            color: rgba(255, 255, 255, .72);
+            font-size: clamp(1rem, 1.6vw, 1.18rem);
+            line-height: 1.75;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .ksp-button {
+            min-height: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 22px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: #062516;
+            background: var(--ksp-green);
+            box-shadow: 0 12px 30px rgba(36, 200, 117, .22);
+            font: inherit;
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        .ksp-button:hover {
+            color: #062516;
+            background: #42dd8d;
+            box-shadow: 0 15px 34px rgba(36, 200, 117, .3);
+            transform: translateY(-2px);
+        }
+
+        .ksp-button--ghost {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, .2);
+            background: rgba(255, 255, 255, .07);
+            box-shadow: none;
+        }
+
+        .ksp-button--ghost:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, .12);
+            box-shadow: none;
+        }
+
+        .hero-art {
+            position: relative;
+            justify-self: end;
+        }
+
+        .hero-art::before {
+            position: absolute;
+            inset: 14%;
+            border-radius: 50%;
+            background: rgba(36, 200, 117, .32);
+            filter: blur(48px);
+            content: "";
+        }
+
+        .top-logo img {
+            position: relative;
+            width: min(100%, 390px);
+            height: auto;
+            display: block;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 32px;
+            box-shadow: 0 30px 70px rgba(0,0,0,.36);
         }
 
         .container_doc {
-            max-width: 900px;
-            margin: 0 auto;
-            padding-bottom: 30px;
-            line-height: 1.6;
+            width: min(100% - 40px, 1040px);
+            margin: -34px auto 0;
+            padding-bottom: 74px;
+            line-height: 1.7;
         }
 
-        h2, h3 {
-            color: var(--accent-color);
+        .intro-card {
+            position: relative;
+            z-index: 2;
+            isolation: isolate;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: start;
+            gap: 16px;
+            margin: 0 0 28px;
+            padding: 26px 30px;
+            border: 1px solid var(--ksp-line);
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: var(--ksp-shadow);
+        }
+
+        .intro-card::before {
+            width: 8px;
+            height: 8px;
+            margin: .62em 4px 0;
+            border-radius: 3px;
+            background: var(--ksp-green);
+            box-shadow: 0 0 0 4px var(--ksp-green-soft);
+            content: "";
+        }
+
+        .intro-card p { margin: 0; }
+
+        .quick-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 28px;
+            padding: 8px;
+            border: 1px solid var(--ksp-line);
+            border-radius: 16px;
+            background: rgba(255,255,255,.72);
+        }
+
+        .quick-nav a {
+            padding: 8px 12px;
+            border-radius: 10px;
+            color: var(--ksp-muted);
+            font-size: .82rem;
+            font-weight: 750;
+            text-decoration: none;
+        }
+
+        .quick-nav a:hover { color: var(--ksp-green-dark); background: var(--ksp-green-soft); }
+
+        .section {
+            margin: 0 0 24px;
+            padding: clamp(24px, 4vw, 40px);
+            border: 1px solid var(--ksp-line);
+            border-radius: 24px;
+            background: var(--ksp-panel);
+            box-shadow: 0 8px 30px rgba(17, 44, 31, .045);
+        }
+
+        .section h2 {
+            margin: 0 0 12px;
+            color: var(--ksp-ink);
+            font-size: clamp(1.55rem, 3vw, 2.05rem);
+            line-height: 1.2;
+            letter-spacing: -.035em;
+        }
+
+        .section h2::after {
+            width: 42px;
+            height: 4px;
+            display: block;
+            margin-top: 14px;
+            border-radius: 99px;
+            background: var(--ksp-green);
+            content: "";
+        }
+
+        .section p:first-of-type { margin-top: 0; }
+        .section p:last-child { margin-bottom: 0; }
+
+        .section ul {
+            margin-block: 20px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .section li {
+            position: relative;
+            margin: 10px 0;
+            padding-left: 28px;
+        }
+
+        .section li::before {
+            position: absolute;
+            top: .63em;
+            left: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 3px;
+            background: var(--ksp-green);
+            box-shadow: 0 0 0 4px var(--ksp-green-soft);
+            content: "";
+        }
+
+        .section li > span {
+            display: block;
+            margin-top: 4px;
+            color: var(--ksp-muted);
+        }
+
+        a { color: var(--ksp-green-dark); text-underline-offset: 3px; }
+
+        code {
+            padding: 3px 7px;
+            border: 1px solid #d9e3de;
+            border-radius: 7px;
+            color: #18553a;
+            background: #f0f6f3;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: .9em;
         }
 
         #funcs {
-            background-color: var(--code-bg);
-            padding: 12px;
-            border-left: 4px solid var(--accent-color);
+            display: grid;
+            gap: 10px;
+            padding: 20px;
             overflow-x: auto;
+            border: 1px solid #26343d;
+            border-left: 4px solid var(--ksp-green);
+            border-radius: 14px;
+            color: #cdd8d3;
+            background: #111b21;
             white-space: nowrap;
         }
 
-        code {
-            font-family: monospace;
-            padding: 2px 4px;
-            border-radius: 4px;
-            background-color: #e8e8e8;
-            color: var(--primary-color);
-        }
+        #funcs code { color: #72e8aa; border-color: #30423a; background: #1c2b27; }
 
         table {
-            width: 100%;
-            overflow-x: auto;
-            display: block;
-            box-sizing: border-box;
+            width: 100% !important;
+            display: table;
+            margin-top: 22px;
+            border: 0 !important;
+            border-collapse: separate !important;
+            border-spacing: 0;
+            border-radius: 16px;
+            font-family: inherit !important;
+            font-size: .9rem;
+            overflow: hidden;
         }
 
-        .config-table th, .config-table td {
-            border: 1px solid #ccc;
-            padding: 10px;
+        table thead { color: #ffffff; background: #142229 !important; }
+
+        table th,
+        table td {
+            padding: 14px 15px !important;
+            border: 0 !important;
+            border-right: 1px solid #e0e7e3 !important;
+            border-bottom: 1px solid #e0e7e3 !important;
+            text-align: left;
+            vertical-align: top;
         }
 
-        .config-table th {
-            background-color: var(--bg-highlight);
+        table th:last-child,
+        table td:last-child { border-right: 0 !important; }
+        table tbody tr:last-child td { border-bottom: 0 !important; }
+        table tbody tr:nth-child(even) { background: #f7faf8; }
+        table tbody tr:hover { background: var(--ksp-green-soft); }
+        table tbody td:first-child { font-weight: 730; }
+        table tbody td:nth-child(2) { background: rgba(36, 200, 117, .07); }
+        .config-table tbody td:nth-child(2) { background: transparent; }
+        .config-table tbody td:nth-child(3) { color: var(--ksp-green-dark); font-family: ui-monospace, monospace; font-weight: 750; }
+
+        .download-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            color: #ffffff;
+            background: linear-gradient(120deg, #142229, #173c2d);
+            border-color: transparent;
         }
 
-        ul {
-            padding-left: 20px;
+        .download-section p { margin: 0; color: rgba(255,255,255,.68); }
+        .download-section .ksp-button { flex: 0 0 auto; }
+
+        .note {
+            padding: 18px 20px;
+            border-left: 4px solid var(--ksp-green);
+            border-radius: 0 12px 12px 0;
+            background: var(--ksp-green-soft);
         }
 
-        a {
-            color: var(--accent-color);
-        }
-
-        .section {
-            margin-bottom: 40px;
-        }
-
-        .top-logo {
-            background-color: transparent !important;
-            color: var(--accent-color) !important;
+        .key-tool {
+            padding: 22px;
+            border: 1px solid #26343d;
+            border-radius: 18px;
+            color: #ffffff;
+            background: #111b21;
             text-align: center;
-            padding: 2rem 1rem;
         }
 
-        .top-logo img {
-            width: 200px !important;
-            height: auto;
-            display: block;
-            margin: 1rem auto 0;
+        #key-display {
+            width: min(100%, 420px);
+            min-height: 76px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 16px;
+            padding: 0 16px;
+            overflow: hidden;
+            border: 1px solid rgba(117, 238, 173, .26);
+            border-radius: 14px;
+            color: #75eead;
+            background: #081116;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: clamp(1.4rem, 4vw, 2.1rem);
+            text-align: center;
         }
 
-        .top-logo h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            color: var(--accent-color) !important;
+        #key-display:empty::before { color: #718079; font-size: .9rem; content: "Your key will appear here"; }
+
+        .ksp-button:focus-visible,
+        .quick-nav a:focus-visible,
+        .section a:focus-visible {
+            outline: 3px solid rgba(36, 200, 117, .45);
+            outline-offset: 3px;
+        }
+
+        @media (max-width: 820px) {
+            .hero-inner { grid-template-columns: 1fr; text-align: center; }
+            .hero-eyebrow, .hero-actions { justify-content: center; }
+            .hero-copy { margin-inline: auto; }
+            .hero-art { width: min(34vw, 180px); justify-self: center; }
+            .hero-art::before { filter: blur(28px); }
+            .top-logo { padding-top: 46px; }
+            .top-logo img { border-radius: 22px; }
+            .top-logo h1 { font-size: clamp(2.7rem, 12vw, 4.8rem); }
+            .download-section { align-items: flex-start; flex-direction: column; }
+            .table-scroll { overflow-x: auto; border-radius: 16px; }
+            .table-scroll table { min-width: 760px; margin-top: 0; }
         }
 
         @media (max-width: 600px) {
-            .top-logo h1 {
-                font-size: 1.75rem;
-            }
+            .container_doc { width: min(100% - 24px, 1040px); }
+            .hero-inner { gap: 30px; }
+            .hero-art { width: 128px; }
+            .intro-card { padding: 22px; }
+            .section { padding: 23px 20px; border-radius: 19px; }
+            .hero-actions { display: grid; }
+            .hero-actions .ksp-button { width: 100%; }
+            .quick-nav { flex-wrap: nowrap; overflow-x: auto; }
+            .quick-nav a { flex: 0 0 auto; }
+            #funcs { font-size: .8rem; }
         }
 
-        @media (max-width: 600px) {
-            .container_doc {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { transition-duration: .01ms !important; }
         }
     </style>
 </head>
@@ -179,16 +548,40 @@
     {{ template "navbar" . }}
 </div>
 <div class="top-logo">
-    <h1>KeyboardSoundPlayer</h1><img alt="Keyboard SoundPlayer Logo" src="/ksp_logo.png"/>
+    <div class="hero-inner">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Soundboard software for Windows</p>
+            <h1>Keyboard<wbr>Sound<wbr>Player</h1>
+            <p class="hero-copy">Turn every key into a moment. Bind clips, music, YouTube audio, or text-to-speech and play it instantly in games, streams, and calls.</p>
+            <div class="hero-actions">
+                <button class="ksp-button" type="button" onclick="store()">Get it from Microsoft Store <span aria-hidden="true">&rarr;</span></button>
+                <a class="ksp-button ksp-button--ghost" href="#documentation">Explore the documentation</a>
+            </div>
+        </div>
+        <div class="hero-art">
+            <img alt="Keyboard SoundPlayer Logo" src="/ksp_logo.png"/>
+        </div>
+    </div>
 </div>
-<div class="container_doc">
+<main class="container_doc" id="documentation">
+    <div class="intro-card">
     <p>
         <strong>KeyboardSoundPlayer</strong> is an application that lets you map audio to any key on your keyboard, turning it into a versatile soundboard. Capture audio on the fly and instantly bind it to a key, or add sounds directly from YouTube links. You can also generate audio from text or load local files such as MP3 and WAV when needed. Keys may be mapped to functions for greater interactivity, and audio can be set up to play through your microphone, making it ideal for streaming, gaming, or calls.
     </p>
-    <br>
-    <div class="section">
+    </div>
+    <nav class="quick-nav" aria-label="KeyboardSoundPlayer documentation sections">
+        <a href="#comparison">Compare</a>
+        <a href="#configuration">Configuration</a>
+        <a href="#keys">Keys</a>
+        <a href="#functions">Functions</a>
+        <a href="#enabling-mic-output">Mic output</a>
+        <a href="#audio-capture">Audio capture</a>
+        <a href="#key-finder">Key finder</a>
+        <a href="#extra-information">Extra info</a>
+    </nav>
+    <div class="section" id="comparison">
         <h2>🥇 KeyboardSoundPlayer vs Other Soundboard Apps</h2>
-        <br>
+        <div class="table-scroll">
         <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: sans-serif;">
             <thead style="background-color: #f0f0f0;">
             <tr>
@@ -251,32 +644,18 @@
             </tr>
             </tbody>
         </table>
+        </div>
     </div>
 
     <!-- Download Button -->
-    <div class="section" style="text-align: center; margin-top: 2rem;">
-        <button
-        onclick="store()"
-        style= "
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: var(--accent-color);
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        "
-        onmouseover="this.style.backgroundColor='#219150'"
-        onmouseout="this.style.backgroundColor='var(--accent-color)'">
-        Download from Microsoft Store
-        </button>
+    <div class="section download-section">
+        <p><strong>Ready to build your soundboard?</strong><br>Download KeyboardSoundPlayer for Windows.</p>
+        <button class="ksp-button" type="button" onclick="store()">Download from Microsoft Store <span aria-hidden="true">&rarr;</span></button>
     </div>
-    <div class="section">
+    <div class="section" id="configuration">
         <h2>Configuration Options</h2>
         <p>This section documents the configuration options available in the config window.</p>
+        <div class="table-scroll">
         <table class="config-table">
             <thead>
             <tr>
@@ -298,8 +677,9 @@
             <tr><td>Capture Duration</td><td>number</td><td>3</td><td>Duration of audio clips</td></tr>
             </tbody>
         </table>
+        </div>
     </div>
-    <div class="section">
+    <div class="section" id="keys">
         <h2>Keys</h2>
         <p>
             In the main window, there are four buttons for binding sounds to keys:
@@ -314,7 +694,7 @@
             See below for how to map a function to a key.
         </p>
     </div>
-  <div class="section">
+  <div class="section" id="functions">
     <h2>Functions</h2>
     <p>Functions can be bound to specific keys. Available functions include:</p>
     <div id="funcs">
@@ -327,7 +707,7 @@
     <div class="section">
         <h2 id="enabling-mic-output">Enabling Mic Output / Audio Capture</h2>
         <p>
-            To enable microphone output and audio capture you need to download an external program, <a href="https://vb-audio.com/Voicemeeter/banana.htm" target="_blank">Voicemeeter</a>.
+            To enable microphone output and audio capture you need to download an external program, <a href="https://vb-audio.com/Voicemeeter/banana.htm" target="_blank" rel="noopener noreferrer">Voicemeeter</a>.
             This is a well trusted and free program. You can use this link or go to Voicemeeter Config and click Download Voicmeeter. After the installer runs, follow these steps:
         </p>
         <ul>
@@ -349,7 +729,7 @@
             <li>Inside your game change your output device to Voicemeeter Input</li>
             <li>You are now finished!!!</li>
         </ul>
-        <p>
+        <p class="note">
             <span style="font-weight: bold;">Note:</span> If you have Mic Output or Audio Capture enabled, then you have to have Voicemeeter running. If you don't have either enabled,
             and you try to run Voicemeeter and KeyboardSoundPlayer at the same time then you will run into an error. By default, KeyboardSoundPlayer only uses Voicemeeter for those features.
         </p>
@@ -360,52 +740,22 @@
             Once you have followed the steps above on how to set up audio capture, you can follow these steps to start using the feature.
         </p>
         <ul>
-            <li style="font-weight: bold">Set a capture key (The default is scroll lock)</li>
-            When you press this key, KeyboardSoundPlayer clips the audio and automatically bind it to a key.
-            <li style="font-weight: bold">Set a duration (The default is 5 seconds)</li>
-            This is the length of the audio clips.
-            <li style="font-weight: bold">Type a key in and press Capture</li>
-            This adds the key to the audio capture queue. Let's say you type <code>a</code> and hit Capture. This means that when you press your capture key (usually scroll lock),
+            <li><strong>Set a capture key (The default is scroll lock)</strong><span>When you press this key, KeyboardSoundPlayer clips the audio and automatically bind it to a key.</span></li>
+            <li><strong>Set a duration (The default is 5 seconds)</strong><span>This is the length of the audio clips.</span></li>
+            <li><strong>Type a key in and press Capture</strong><span>This adds the key to the audio capture queue. Let's say you type <code>a</code> and hit Capture. This means that when you press your capture key (usually scroll lock),
             the audio will get bound to the <code>a</code> key. Now let's say you type <code>a</code> and hit Capture then you type <code>b</code> and hit Capture.
-            This means that the first audio clip will go to <code>a</code> and the second will go to <code>b</code>.
-            <li style="font-weight: bold">Wait a few seconds</li>
-            The audio clips take around 2-3 seconds to process after you press the capture key. It may even be longer for larger duration clips.
-            <li style="font-weight: bold">Have fun!</li>
-            Now that you understand how the feature works, go have some fun. You can use it to mess with people in game chat, or use it to clip something funny one of your friends said on a call.
+            This means that the first audio clip will go to <code>a</code> and the second will go to <code>b</code>.</span></li>
+            <li><strong>Wait a few seconds</strong><span>The audio clips take around 2-3 seconds to process after you press the capture key. It may even be longer for larger duration clips.</span></li>
+            <li><strong>Have fun!</strong><span>Now that you understand how the feature works, go have some fun. You can use it to mess with people in game chat, or use it to clip something funny one of your friends said on a call.</span></li>
         </ul>
     </div>
-    <div class="section">
+    <div class="section" id="key-finder">
         <h2>Key Finder Tool</h2>
         <p>Press a key, and we will tell you what to type into KeyboardSoundPlayer. We do not support key combinations like ctrl+a. KeyboardSoundPlayer will just see it as two separate
         key presses. There is also no difference between uppercase and lowercase letters in KeyboardSoundPlayer.</p>
-        <div id="key-display" style="
-        background-color: #ddd;
-        color: #2c3e50;
-        font-size: 2rem;
-        font-family: monospace;
-        text-align: center;
-        border-radius: 8px;
-        margin: 1rem auto;
-        width: 300px;
-        height: 3rem;
-        line-height: 3rem;
-        overflow: hidden;
-        padding: 0;
-        "></div>
-
-        <div style="text-align: center;">
-            <button id="toggle-tool" style="
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: var(--accent-color);
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        ">Start Tool</button>
+        <div class="key-tool">
+            <div id="key-display" role="status" aria-live="polite"></div>
+            <button class="ksp-button" id="toggle-tool" type="button" aria-pressed="false">Start Tool</button>
         </div>
     </div>
 
@@ -526,16 +876,18 @@
             if (toolActive) {
                 document.addEventListener('keydown', handleKeydown);
                 toggleBtn.textContent = 'Stop Tool';
+                toggleBtn.setAttribute('aria-pressed', 'true');
                 toggleBtn.style.backgroundColor = '#e74c3c';
             } else {
                 document.removeEventListener('keydown', handleKeydown);
                 toggleBtn.textContent = 'Start Tool';
+                toggleBtn.setAttribute('aria-pressed', 'false');
                 toggleBtn.style.backgroundColor = 'var(--accent-color)';
                 keyDisplay.textContent = ""
             }
         });
     </script>
-    <div class="section">
+    <div class="section" id="extra-information">
         <h2>Extra Information</h2>
         <p>
             To play a sound when any key is pressed, name the key <code>"all"</code>.
@@ -543,6 +895,6 @@
             The player can be shut off using the GUI or by pressing <strong>Esc</strong> 5 times quickly.
         </p>
     </div>
-</div>
+</main>
 </body>
 </html>

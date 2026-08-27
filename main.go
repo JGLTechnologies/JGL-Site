@@ -159,6 +159,10 @@ func registerSiteRoutes(router *gin.Engine) {
 	router.GET("/robots.txt", pageCache, func(c *gin.Context) {
 		c.File("static/robots.txt")
 	})
+	router.GET("/sitemap.xml", pageCache, func(c *gin.Context) {
+		c.Header("Content-Type", "application/xml; charset=utf-8")
+		c.File("static/sitemap.xml")
+	})
 	router.GET("/favicon.ico", pageCache, favicon)
 	router.GET("/keyboardsoundplayer/vm_exe", pageCache, func(c *gin.Context) {
 		c.File("static/voicemeeterprosetup.exe")
