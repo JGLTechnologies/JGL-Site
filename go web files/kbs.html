@@ -38,26 +38,6 @@
             }
         }
     </script>
-    <script>
-        function store() {
-            if (typeof gtag !== 'function') {
-                window.location = "/KeyboardSoundPlayerStore";
-                return;
-            }
-
-            gtag('event', 'conversion', {
-                'send_to': 'AW-17392647252/WOWOCMzymvkaENT4uuVA',
-                'event_callback': function() {
-                    window.location = "/KeyboardSoundPlayerStore";
-                }
-            });
-
-            // Fallback in case event_callback doesn't fire
-            setTimeout(function () {
-                window.location = '/KeyboardSoundPlayerStore';
-            }, 1000);
-        }
-    </script>
     {{ template "favicon" . }}
     {{ template "css" . }}
     <meta charset="utf-8"/>
@@ -550,7 +530,7 @@
             <h1>Keyboard<wbr>Sound<wbr>Player</h1>
             <p class="hero-copy">Turn every key into a moment. Bind clips, music, YouTube audio, or text-to-speech and play it instantly in games, streams, and calls.</p>
             <div class="hero-actions">
-                <button class="ksp-button" type="button" onclick="store()">Get it from Microsoft Store <span aria-hidden="true">&rarr;</span></button>
+                <a class="ksp-button" href="/KeyboardSoundPlayerStore">Get it from Microsoft Store <span aria-hidden="true">&rarr;</span></a>
                 <a class="ksp-button ksp-button--ghost" href="#documentation">Explore the documentation</a>
             </div>
         </div>
@@ -646,7 +626,7 @@
     <!-- Download Button -->
     <div class="section download-section">
         <p><strong>Ready to build your soundboard?</strong><br>Download KeyboardSoundPlayer for Windows.</p>
-        <button class="ksp-button" type="button" onclick="store()">Download from Microsoft Store <span aria-hidden="true">&rarr;</span></button>
+        <a class="ksp-button" href="/KeyboardSoundPlayerStore">Download from Microsoft Store <span aria-hidden="true">&rarr;</span></a>
     </div>
     <div class="section" id="configuration">
         <h2>Configuration Options</h2>
