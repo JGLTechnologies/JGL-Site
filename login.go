@@ -62,6 +62,11 @@ func apiLogin() gin.HandlerFunc {
 }
 
 func hasTrustedOrigin(c *gin.Context) bool {
+	switch c.Request.Method {
+	case http.MethodGet, http.MethodHead, http.MethodOptions:
+		return true
+	}
+
 	origins := c.Request.Header.Values("Origin")
 	return len(origins) == 1 && origins[0] == "https://jgltechnologies.com"
 }
