@@ -4,25 +4,28 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>JGL Bot: Discord Moderation, Reaction Roles &amp; Tickets</title>
-    <meta name="description" content="Add moderation, word filtering, reaction roles, reminders, tickets, welcome messages, and configurable server tools to Discord with JGL Bot.">
+    <title>JGL Bot | Discord Moderation, Tickets &amp; Reaction Roles</title>
+    <meta name="description" content="JGL Bot is a Discord moderation bot with reaction roles, private tickets, word filtering, reminders, welcome messages, logging, and configurable server tools.">
     <meta name="author" content="JGL Technologies LLC">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://jgltechnologies.com/jgl-bot">
 
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
     <meta property="og:site_name" content="JGL Technologies">
-    <meta property="og:title" content="JGL Bot: A Better-Run Discord Server">
-    <meta property="og:description" content="Moderation, word filtering, reaction roles, reminders, tickets, and community tools in one configurable Discord bot.">
+    <meta property="og:title" content="JGL Bot | Discord Moderation, Tickets &amp; Reaction Roles">
+    <meta property="og:description" content="Moderation, reaction roles, private tickets, word filtering, reminders, welcome messages, and server tools in one configurable Discord bot.">
     <meta property="og:url" content="https://jgltechnologies.com/jgl-bot">
     <meta property="og:image" content="https://jgltechnologies.com/logo_square.png">
+    <meta property="og:image:secure_url" content="https://jgltechnologies.com/logo_square.png">
+    <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="357">
     <meta property="og:image:height" content="350">
     <meta property="og:image:alt" content="JGL Bot circuit logo">
 
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="JGL Bot: A Better-Run Discord Server">
-    <meta name="twitter:description" content="Moderation, word filtering, reaction roles, reminders, tickets, and community tools for Discord.">
+    <meta name="twitter:title" content="JGL Bot | Discord Moderation, Tickets &amp; Reaction Roles">
+    <meta name="twitter:description" content="Moderation, reaction roles, private tickets, word filtering, reminders, welcome messages, and server tools in one configurable Discord bot.">
     <meta name="twitter:image" content="https://jgltechnologies.com/logo_square.png">
     <meta name="twitter:image:alt" content="JGL Bot circuit logo">
     <meta name="theme-color" content="#111126">
@@ -32,16 +35,71 @@
             "@context": "https://schema.org",
             "@graph": [
                 {
+                    "@type": "Organization",
+                    "@id": "https://jgltechnologies.com/#organization",
+                    "name": "JGL Technologies LLC",
+                    "alternateName": "JGL Technologies",
+                    "url": "https://jgltechnologies.com/",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "@id": "https://jgltechnologies.com/#logo",
+                        "url": "https://jgltechnologies.com/logo_square.png",
+                        "contentUrl": "https://jgltechnologies.com/logo_square.png",
+                        "width": 357,
+                        "height": 350
+                    },
+                    "sameAs": "https://github.com/JGLTechnologies"
+                },
+                {
+                    "@type": "WebSite",
+                    "@id": "https://jgltechnologies.com/#website",
+                    "url": "https://jgltechnologies.com/",
+                    "name": "JGL Technologies",
+                    "publisher": {
+                        "@id": "https://jgltechnologies.com/#organization"
+                    },
+                    "inLanguage": "en-US"
+                },
+                {
+                    "@type": "WebPage",
+                    "@id": "https://jgltechnologies.com/jgl-bot#webpage",
+                    "url": "https://jgltechnologies.com/jgl-bot",
+                    "name": "JGL Bot | Discord Moderation, Tickets & Reaction Roles",
+                    "description": "JGL Bot is a Discord moderation bot with reaction roles, private tickets, word filtering, reminders, welcome messages, logging, and configurable server tools.",
+                    "isPartOf": {
+                        "@id": "https://jgltechnologies.com/#website"
+                    },
+                    "about": {
+                        "@id": "https://jgltechnologies.com/jgl-bot#software"
+                    },
+                    "mainEntity": {
+                        "@id": "https://jgltechnologies.com/jgl-bot#software"
+                    },
+                    "primaryImageOfPage": {
+                        "@id": "https://jgltechnologies.com/#logo"
+                    },
+                    "breadcrumb": {
+                        "@id": "https://jgltechnologies.com/jgl-bot#breadcrumb"
+                    },
+                    "inLanguage": "en-US"
+                },
+                {
                     "@type": "SoftwareApplication",
                     "@id": "https://jgltechnologies.com/jgl-bot#software",
                     "name": "JGL Bot",
+                    "alternateName": "JGL Discord Bot",
                     "applicationCategory": "CommunicationApplication",
                     "applicationSubCategory": "Discord server management bot",
                     "operatingSystem": "Discord",
                     "url": "https://jgltechnologies.com/jgl-bot",
                     "installUrl": "https://jgltechnologies.com/bot/invite",
-                    "image": "https://jgltechnologies.com/logo_square.png",
-                    "sameAs": "https://github.com/JGLTechnologies/JGL-Bot",
+                    "image": {
+                        "@id": "https://jgltechnologies.com/#logo"
+                    },
+                    "sameAs": [
+                        "https://github.com/JGLTechnologies/JGL-Bot",
+                        "https://top.gg/bot/844976951692361800"
+                    ],
                     "description": "A configurable Discord bot for moderation, word filtering, reaction roles, reminders, tickets, welcome messages, logging, and community management.",
                     "featureList": [
                         "Discord moderation and configurable warning punishments",
@@ -54,14 +112,24 @@
                         "Server logging",
                         "Reminders"
                     ],
+                    "softwareRequirements": "A Discord account and permission to add applications to a Discord server",
+                    "publisher": {
+                        "@id": "https://jgltechnologies.com/#organization"
+                    },
                     "author": {
-                        "@type": "Organization",
-                        "name": "JGL Technologies",
-                        "url": "https://jgltechnologies.com/"
+                        "@id": "https://jgltechnologies.com/#organization"
+                    },
+                    "mainEntityOfPage": {
+                        "@id": "https://jgltechnologies.com/jgl-bot#webpage"
+                    },
+                    "potentialAction": {
+                        "@type": "InstallAction",
+                        "target": "https://jgltechnologies.com/bot/invite"
                     }
                 },
                 {
                     "@type": "BreadcrumbList",
+                    "@id": "https://jgltechnologies.com/jgl-bot#breadcrumb",
                     "itemListElement": [
                         {
                             "@type": "ListItem",
@@ -79,10 +147,30 @@
                 },
                 {
                     "@type": "FAQPage",
+                    "@id": "https://jgltechnologies.com/jgl-bot#faq",
+                    "isPartOf": {
+                        "@id": "https://jgltechnologies.com/jgl-bot#webpage"
+                    },
                     "mainEntity": [
                         {
                             "@type": "Question",
-                            "name": "How do I view or reset JGL Bot's server configuration?",
+                            "name": "What features does JGL Bot include?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "JGL Bot includes moderation, warning punishments, word filtering, reaction roles, private support tickets, role dependencies, welcome and goodbye messages, logging, announcements, server lockdown, and reminders."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "What permissions does JGL Bot need?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "The invite requests Discord's Administrator permission so JGL Bot can manage members, roles, channels, bans, timeouts, messages, and tickets. Server owners can use the configured Staff role to control access to most administration commands."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "How do I view or reset the server configuration?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
                                 "text": "Use /config roles, /config channels, /config messages, /config punishments, or /config misc to view a configuration area. Use /config reset all: True to reset every area."
@@ -90,7 +178,7 @@
                         },
                         {
                             "@type": "Question",
-                            "name": "How do I remove a configured role, channel, message, or punishment?",
+                            "name": "How do I remove a role, channel, message, or punishment setting?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
                                 "text": "Run the appropriate /set command without its optional role, channel, message, or punishment value. Removing a punishment still requires its warning number."
@@ -1242,13 +1330,13 @@
         <div class="site-shell bot-hero__grid">
             <div class="bot-hero__content">
                 <div class="bot-brandline">
-                    <img src="/logo_square.png" alt="">
+                    <img src="/logo_square.png" alt="" width="357" height="350" decoding="async">
                     <span>JGL Bot for Discord</span>
                 </div>
-                <h1 id="bot-title">Run your Discord server. Skip the busywork.</h1>
+                <h1 id="bot-title">JGL Bot: Discord moderation without the busywork</h1>
                 <p class="bot-hero__lead">
-                    JGL Bot brings moderation, reaction roles, reminders, tickets, and day-to-day community tools
-                    together—so your team can spend less time managing Discord and more time building the community.
+                    Manage warnings, bans, word filtering, reaction roles, private tickets, reminders, and welcome
+                    messages in one configurable Discord bot—so your team can focus on the community.
                 </p>
                 <div class="bot-hero__actions">
                     <a class="site-button site-button--primary" href="/bot/invite">Add JGL Bot <span aria-hidden="true">&rarr;</span></a>
@@ -1276,7 +1364,7 @@
                     </div>
                     <div class="bot-chat__message">
                         <span class="bot-chat__avatar bot-chat__avatar--jgl" aria-hidden="true">
-                            <img src="/logo_square.png" alt="">
+                            <img src="/logo_square.png" alt="" width="357" height="350" decoding="async">
                         </span>
                         <div>
                             <p class="bot-chat__name">JGL Bot <span>App</span></p>
@@ -1308,7 +1396,7 @@
         <div class="site-shell">
             <div class="bot-section__heading">
                 <p class="bot-kicker">Built for real communities</p>
-                <h2 id="features-title">The essentials, working together.</h2>
+                <h2 id="features-title">Discord moderation, reaction roles, and tickets in one bot</h2>
                 <p>Give members a smoother experience and give staff one consistent toolkit for the work that keeps a server healthy.</p>
             </div>
 
@@ -1356,7 +1444,7 @@
         <div class="site-shell bot-setup__inner">
             <div class="bot-setup__header">
                 <p class="bot-kicker">Quick start</p>
-                <h2 id="setup-title">From invite to configured in three steps.</h2>
+                <h2 id="setup-title">Add and configure JGL Bot in three steps</h2>
                 <p>Add the bot, review the current configuration, and switch on the tools your community needs.</p>
             </div>
 
@@ -1387,7 +1475,7 @@
         <div class="site-shell">
             <div class="bot-docs__heading">
                 <p class="bot-kicker">Documentation</p>
-                <h2 id="docs-title">Command guide</h2>
+                <h2 id="docs-title">JGL Bot command documentation</h2>
                 <p>Use these slash commands in Discord to configure and operate JGL Bot. Copy any example, then replace the sample values with your own.</p>
             </div>
 
@@ -1695,10 +1783,18 @@
         <div class="site-shell bot-faq__layout">
             <div class="bot-faq__intro">
                 <p class="bot-kicker">Good to know</p>
-                <h2 id="faq-title">Frequently asked questions</h2>
+                <h2 id="faq-title">JGL Bot frequently asked questions</h2>
                 <p>Quick answers for common setup and support questions.</p>
             </div>
             <div class="bot-faq__list">
+                <details>
+                    <summary>What features does JGL Bot include?</summary>
+                    <p>JGL Bot includes moderation, warning punishments, word filtering, reaction roles, private support tickets, role dependencies, welcome and goodbye messages, logging, announcements, server lockdown, and reminders.</p>
+                </details>
+                <details>
+                    <summary>What permissions does JGL Bot need?</summary>
+                    <p>The invite requests Discord's Administrator permission so JGL Bot can manage members, roles, channels, bans, timeouts, messages, and tickets. Server owners can use the configured Staff role to control access to most administration commands.</p>
+                </details>
                 <details>
                     <summary>How do I view or reset the server configuration?</summary>
                     <p>View an area with <code>/config roles</code>, <code>/config channels</code>, <code>/config messages</code>, <code>/config punishments</code>, or <code>/config misc</code>. Use <code>/config reset all: True</code> to reset every area.</p>
@@ -1719,7 +1815,7 @@
         <div class="site-shell">
             <div class="bot-cta__card">
                 <div>
-                    <h2 id="cta-title">Give your community a better front door.</h2>
+                    <h2 id="cta-title">Add JGL Bot to your Discord server</h2>
                     <p>Invite JGL Bot, configure the tools you need, and keep the docs close whenever your server grows into something new.</p>
                 </div>
                 <div class="bot-cta__actions">
