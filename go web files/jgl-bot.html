@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>JGL Bot: Discord Moderation, Reaction Roles &amp; Tickets</title>
+    <meta name="description" content="Add moderation, word filtering, reaction roles, reminders, tickets, welcome messages, and configurable server tools to Discord with JGL Bot.">
+    <meta name="author" content="JGL Technologies LLC">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://jgltechnologies.com/jgl-bot">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="JGL Technologies">
+    <meta property="og:title" content="JGL Bot: A Better-Run Discord Server">
+    <meta property="og:description" content="Moderation, word filtering, reaction roles, reminders, tickets, and community tools in one configurable Discord bot.">
+    <meta property="og:url" content="https://jgltechnologies.com/jgl-bot">
+    <meta property="og:image" content="https://jgltechnologies.com/logo_square.png">
+    <meta property="og:image:width" content="357">
+    <meta property="og:image:height" content="350">
+    <meta property="og:image:alt" content="JGL Bot circuit logo">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="JGL Bot: A Better-Run Discord Server">
+    <meta name="twitter:description" content="Moderation, word filtering, reaction roles, reminders, tickets, and community tools for Discord.">
+    <meta name="twitter:image" content="https://jgltechnologies.com/logo_square.png">
+    <meta name="twitter:image:alt" content="JGL Bot circuit logo">
+    <meta name="theme-color" content="#111126">
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "SoftwareApplication",
+                    "@id": "https://jgltechnologies.com/jgl-bot#software",
+                    "name": "JGL Bot",
+                    "applicationCategory": "CommunicationApplication",
+                    "applicationSubCategory": "Discord server management bot",
+                    "operatingSystem": "Discord",
+                    "url": "https://jgltechnologies.com/jgl-bot",
+                    "installUrl": "https://jgltechnologies.com/bot/invite",
+                    "image": "https://jgltechnologies.com/logo_square.png",
+                    "sameAs": "https://github.com/JGLTechnologies/JGL-Bot",
+                    "description": "A configurable Discord bot for moderation, word filtering, reaction roles, reminders, tickets, welcome messages, logging, and community management.",
+                    "featureList": [
+                        "Discord moderation and configurable warning punishments",
+                        "Banned-word filtering",
+                        "Announcements and server lockdown",
+                        "Reaction roles",
+                        "Private support tickets",
+                        "Role dependencies",
+                        "Welcome and goodbye messages",
+                        "Server logging",
+                        "Reminders"
+                    ],
+                    "author": {
+                        "@type": "Organization",
+                        "name": "JGL Technologies",
+                        "url": "https://jgltechnologies.com/"
+                    }
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        {
+                            "@type": "ListItem",
+                            "position": 1,
+                            "name": "Home",
+                            "item": "https://jgltechnologies.com/"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 2,
+                            "name": "JGL Bot",
+                            "item": "https://jgltechnologies.com/jgl-bot"
+                        }
+                    ]
+                },
+                {
+                    "@type": "FAQPage",
+                    "mainEntity": [
+                        {
+                            "@type": "Question",
+                            "name": "How do I view or reset JGL Bot's server configuration?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Use /config roles, /config channels, /config messages, /config punishments, or /config misc to view a configuration area. Use /config reset all: True to reset every area."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "How do I remove a configured role, channel, message, or punishment?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Run the appropriate /set command without its optional role, channel, message, or punishment value. Removing a punishment still requires its warning number."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Where can I get support for JGL Bot?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Support is available through JGL Technologies' contact page, Discord server, or the JGL Bot GitHub issue tracker."
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    </script>
+
+    {{ template "favicon" . }}
+    {{ template "css" . }}
+    <style>
+        :root {
+            --bot-night: #101023;
+            --bot-night-soft: #181737;
+            --bot-indigo: #5865f2;
+            --bot-indigo-dark: #4049c7;
+            --bot-green: #2fd584;
+            --bot-green-dark: #087746;
+            --bot-ink: #17162a;
+            --bot-muted: #68677b;
+            --bot-line: #e2e3ec;
+            --bot-soft: #f4f5fa;
+            --bot-panel: #ffffff;
+            --bot-shadow: 0 24px 70px rgba(21, 18, 65, .11);
+        }
+
+        html {
+            scroll-padding-top: 28px;
+        }
+
+        body.site-page--bot {
+            color: var(--bot-ink);
+            background: var(--bot-soft);
+        }
+
+        .site-page--bot main {
+            overflow: clip;
+        }
+
+        .bot-hero {
+            position: relative;
+            overflow: hidden;
+            padding: clamp(72px, 9vw, 126px) 0 clamp(82px, 10vw, 140px);
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 79% 19%, rgba(47, 213, 132, .22), transparent 23rem),
+                radial-gradient(circle at 4% 108%, rgba(88, 101, 242, .32), transparent 34rem),
+                linear-gradient(135deg, #0d0d20 0%, #171631 58%, #101627 100%);
+        }
+
+        .bot-hero::before {
+            position: absolute;
+            inset: 0;
+            opacity: .2;
+            background-image: radial-gradient(rgba(255, 255, 255, .32) .8px, transparent .8px);
+            background-size: 28px 28px;
+            -webkit-mask-image: linear-gradient(90deg, #000, transparent 66%);
+            mask-image: linear-gradient(90deg, #000, transparent 66%);
+            pointer-events: none;
+            content: "";
+        }
+
+        .bot-hero::after {
+            position: absolute;
+            right: -220px;
+            bottom: -310px;
+            width: 680px;
+            height: 680px;
+            border: 1px solid rgba(116, 126, 255, .2);
+            border-radius: 50%;
+            box-shadow:
+                0 0 0 74px rgba(88, 101, 242, .025),
+                0 0 0 148px rgba(47, 213, 132, .018);
+            pointer-events: none;
+            content: "";
+        }
+
+        .bot-hero__grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1.13fr) minmax(330px, .87fr);
+            align-items: center;
+            gap: clamp(54px, 8vw, 110px);
+        }
+
+        .bot-brandline {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            margin-bottom: 25px;
+            color: #79eeb6;
+            font-size: .76rem;
+            font-weight: 820;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+        }
+
+        .bot-brandline img {
+            width: 34px;
+            height: 34px;
+            padding: 4px;
+            border: 1px solid rgba(255, 255, 255, .15);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .07);
+        }
+
+        .bot-hero h1 {
+            max-width: 790px;
+            margin: 0;
+            color: #ffffff;
+            font-size: clamp(3.2rem, 6.6vw, 6.25rem);
+            letter-spacing: -.075em;
+            line-height: .93;
+        }
+
+        .bot-hero__lead {
+            max-width: 670px;
+            margin: 27px 0 0;
+            color: rgba(255, 255, 255, .72);
+            font-size: clamp(1.03rem, 1.45vw, 1.18rem);
+            line-height: 1.75;
+        }
+
+        .bot-hero__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 34px;
+        }
+
+        .bot-hero__actions .site-button--primary {
+            color: #071c12;
+            background: var(--bot-green);
+            box-shadow: 0 14px 34px rgba(47, 213, 132, .22);
+        }
+
+        .bot-hero__actions .site-button--primary:hover {
+            color: #071c12;
+            background: #51e39b;
+        }
+
+        .bot-hero__actions .site-button--secondary {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, .21);
+            background: rgba(255, 255, 255, .065);
+        }
+
+        .bot-hero__actions .site-button--secondary:hover {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, .38);
+            background: rgba(255, 255, 255, .11);
+        }
+
+        .bot-hero__proof {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px 20px;
+            margin: 30px 0 0;
+            padding: 0;
+            color: rgba(255, 255, 255, .55);
+            font-size: .8rem;
+            font-weight: 680;
+            list-style: none;
+        }
+
+        .bot-hero__proof li {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bot-hero__proof li::before {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--bot-green);
+            content: "";
+        }
+
+        .bot-preview {
+            position: relative;
+            width: min(100%, 430px);
+            justify-self: end;
+            padding: 19px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 27px;
+            background: rgba(8, 8, 24, .58);
+            box-shadow: 0 36px 90px rgba(0, 0, 0, .34);
+            backdrop-filter: blur(18px);
+            transform: rotate(1.5deg);
+        }
+
+        .bot-preview::before {
+            position: absolute;
+            z-index: -1;
+            inset: -22px;
+            border: 1px solid rgba(47, 213, 132, .12);
+            border-radius: 38px;
+            content: "";
+        }
+
+        .bot-preview__bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 3px 4px 17px;
+            color: rgba(255, 255, 255, .64);
+            font-size: .76rem;
+            font-weight: 740;
+        }
+
+        .bot-preview__channel {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .bot-preview__channel span {
+            color: rgba(255, 255, 255, .34);
+            font-size: 1rem;
+        }
+
+        .bot-preview__status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: #79eeb6;
+        }
+
+        .bot-preview__status::before {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--bot-green);
+            box-shadow: 0 0 0 4px rgba(47, 213, 132, .12);
+            content: "";
+        }
+
+        .bot-chat {
+            display: grid;
+            gap: 10px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 19px;
+            background: #1d1c36;
+        }
+
+        .bot-chat__message {
+            display: grid;
+            grid-template-columns: 36px minmax(0, 1fr);
+            gap: 11px;
+            padding: 10px 0;
+        }
+
+        .bot-chat__avatar {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            color: #ffffff;
+            background: var(--bot-indigo);
+            font-size: .68rem;
+            font-weight: 860;
+        }
+
+        .bot-chat__avatar--jgl {
+            padding: 4px;
+            background: #ffffff;
+        }
+
+        .bot-chat__avatar--jgl img {
+            width: 100%;
+        }
+
+        .bot-chat__name {
+            margin: 0;
+            color: rgba(255, 255, 255, .9);
+            font-size: .76rem;
+            font-weight: 790;
+        }
+
+        .bot-chat__name span {
+            margin-left: 6px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: #ffffff;
+            background: var(--bot-indigo);
+            font-size: .55rem;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        .bot-chat__text {
+            margin: 4px 0 0;
+            color: rgba(255, 255, 255, .61);
+            font-size: .76rem;
+            line-height: 1.55;
+        }
+
+        .bot-chat__command {
+            display: block;
+            margin-top: 6px;
+            color: #d7d9ff;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: .7rem;
+            overflow-wrap: anywhere;
+        }
+
+        .bot-chat__reply {
+            margin-top: 7px;
+            padding: 12px 13px;
+            border-left: 3px solid var(--bot-green);
+            border-radius: 6px 10px 10px 6px;
+            background: rgba(47, 213, 132, .07);
+        }
+
+        .bot-chat__reply strong {
+            display: block;
+            color: #ffffff;
+            font-size: .76rem;
+        }
+
+        .bot-chat__reply span {
+            display: block;
+            margin-top: 3px;
+            color: rgba(255, 255, 255, .57);
+            font-size: .68rem;
+        }
+
+        .bot-preview__input {
+            margin-top: 11px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, .34);
+            background: rgba(255, 255, 255, .07);
+            font-size: .72rem;
+        }
+
+        .bot-capabilities {
+            position: relative;
+            z-index: 2;
+            margin-top: -34px;
+        }
+
+        .bot-capabilities__grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            overflow: hidden;
+            border: 1px solid rgba(39, 32, 127, .1);
+            border-radius: 22px;
+            background: #ffffff;
+            box-shadow: var(--bot-shadow);
+        }
+
+        .bot-capability {
+            min-height: 110px;
+            padding: 24px 26px;
+            border-right: 1px solid var(--bot-line);
+        }
+
+        .bot-capability:last-child {
+            border-right: 0;
+        }
+
+        .bot-capability span {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--bot-indigo);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: .68rem;
+            font-weight: 820;
+            letter-spacing: .08em;
+        }
+
+        .bot-capability strong {
+            display: block;
+            font-size: .95rem;
+        }
+
+        .bot-section {
+            padding: clamp(82px, 9vw, 120px) 0;
+        }
+
+        .bot-section--white {
+            background: #ffffff;
+        }
+
+        .bot-section__heading {
+            max-width: 760px;
+            margin-bottom: 42px;
+        }
+
+        .bot-kicker {
+            margin: 0 0 13px;
+            color: var(--bot-green-dark);
+            font-size: .72rem;
+            font-weight: 830;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        .bot-section__heading h2,
+        .bot-docs__heading h2,
+        .bot-cta h2 {
+            margin: 0;
+            font-size: clamp(2.25rem, 4.6vw, 4rem);
+            letter-spacing: -.055em;
+            line-height: 1;
+        }
+
+        .bot-section__heading > p:last-child,
+        .bot-docs__heading > p:last-child {
+            max-width: 680px;
+            margin: 20px 0 0;
+            color: var(--bot-muted);
+            font-size: 1.04rem;
+        }
+
+        .bot-feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .bot-feature {
+            position: relative;
+            min-height: 285px;
+            overflow: hidden;
+            padding: clamp(28px, 4vw, 40px);
+            border: 1px solid var(--bot-line);
+            border-radius: 24px;
+            background: var(--bot-soft);
+            transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+        }
+
+        .bot-feature:hover {
+            border-color: rgba(88, 101, 242, .27);
+            box-shadow: 0 22px 50px rgba(21, 18, 65, .08);
+            transform: translateY(-4px);
+        }
+
+        .bot-feature::after {
+            position: absolute;
+            right: -55px;
+            bottom: -55px;
+            width: 150px;
+            height: 150px;
+            border: 1px solid rgba(88, 101, 242, .12);
+            border-radius: 50%;
+            box-shadow: 0 0 0 28px rgba(88, 101, 242, .025);
+            content: "";
+        }
+
+        .bot-feature__top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 42px;
+        }
+
+        .bot-feature__mark {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            color: #ffffff;
+            background: var(--bot-indigo);
+            box-shadow: 0 10px 26px rgba(88, 101, 242, .2);
+            font-size: .75rem;
+            font-weight: 850;
+            letter-spacing: .05em;
+        }
+
+        .bot-feature:nth-child(even) .bot-feature__mark {
+            color: #092116;
+            background: var(--bot-green);
+            box-shadow: 0 10px 26px rgba(47, 213, 132, .2);
+        }
+
+        .bot-feature__number {
+            color: #a2a1af;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: .69rem;
+            font-weight: 760;
+        }
+
+        .bot-feature h3 {
+            margin: 0;
+            font-size: clamp(1.55rem, 2.6vw, 2.1rem);
+        }
+
+        .bot-feature p {
+            max-width: 520px;
+            margin: 15px 0 0;
+            color: var(--bot-muted);
+        }
+
+        .bot-setup {
+            position: relative;
+            overflow: hidden;
+            padding: clamp(76px, 9vw, 112px) 0;
+            color: #ffffff;
+            background: var(--bot-night);
+        }
+
+        .bot-setup::before {
+            position: absolute;
+            inset: 0;
+            opacity: .2;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, .09) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, .09) 1px, transparent 1px);
+            background-size: 54px 54px;
+            -webkit-mask-image: linear-gradient(90deg, transparent, #000 48%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 48%, transparent);
+            content: "";
+        }
+
+        .bot-setup__inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .bot-setup .bot-kicker {
+            color: #78eeb6;
+        }
+
+        .bot-setup__header {
+            max-width: 760px;
+        }
+
+        .bot-setup__header h2 {
+            margin: 0;
+            color: #ffffff;
+            font-size: clamp(2.2rem, 4.7vw, 4rem);
+            letter-spacing: -.055em;
+        }
+
+        .bot-setup__header > p:last-child {
+            max-width: 650px;
+            margin: 18px 0 0;
+            color: rgba(255, 255, 255, .64);
+        }
+
+        .bot-steps {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 44px;
+        }
+
+        .bot-step {
+            min-height: 250px;
+            padding: 27px;
+            border: 1px solid rgba(255, 255, 255, .11);
+            border-radius: 21px;
+            background: rgba(255, 255, 255, .055);
+            backdrop-filter: blur(12px);
+        }
+
+        .bot-step__number {
+            width: 35px;
+            height: 35px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 32px;
+            border: 1px solid rgba(121, 238, 182, .35);
+            border-radius: 50%;
+            color: #79eeb6;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: .7rem;
+            font-weight: 820;
+        }
+
+        .bot-step h3 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 1.32rem;
+        }
+
+        .bot-step p {
+            margin: 12px 0 0;
+            color: rgba(255, 255, 255, .6);
+            font-size: .9rem;
+        }
+
+        .bot-step code {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 6px 9px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 7px;
+            color: #d7d9ff;
+            background: rgba(0, 0, 0, .18);
+            font-size: .76rem;
+        }
+
+        .bot-docs {
+            padding: clamp(84px, 10vw, 132px) 0;
+            background: #f7f8fb;
+        }
+
+        .bot-docs__heading {
+            max-width: 800px;
+            margin-bottom: 50px;
+        }
+
+        .bot-docs__layout {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr);
+            align-items: start;
+            gap: clamp(34px, 6vw, 78px);
+        }
+
+        .bot-docs-nav {
+            position: sticky;
+            top: 24px;
+            padding: 22px;
+            border: 1px solid var(--bot-line);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .9);
+            box-shadow: 0 14px 36px rgba(21, 18, 65, .055);
+            backdrop-filter: blur(12px);
+        }
+
+        .bot-docs-nav p {
+            margin: 0 0 12px;
+            color: var(--bot-ink);
+            font-size: .76rem;
+            font-weight: 820;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .bot-docs-nav ol {
+            display: grid;
+            gap: 3px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .bot-docs-nav a {
+            display: block;
+            padding: 7px 9px;
+            border-radius: 8px;
+            color: var(--bot-muted);
+            font-size: .84rem;
+            font-weight: 680;
+            text-decoration: none;
+        }
+
+        .bot-docs-nav a:hover {
+            color: var(--bot-indigo-dark);
+            background: #eff0ff;
+        }
+
+        .bot-docs-content {
+            min-width: 0;
+            display: grid;
+            gap: 24px;
+        }
+
+        .bot-doc-card {
+            scroll-margin-top: 24px;
+            padding: clamp(28px, 4vw, 44px);
+            border: 1px solid var(--bot-line);
+            border-radius: 24px;
+            background: #ffffff;
+            box-shadow: 0 16px 46px rgba(21, 18, 65, .055);
+        }
+
+        .bot-doc-card__label {
+            display: inline-flex;
+            margin-bottom: 13px;
+            color: var(--bot-indigo-dark);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: .68rem;
+            font-weight: 820;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .bot-doc-card h3 {
+            margin: 0;
+            font-size: clamp(1.65rem, 3vw, 2.35rem);
+        }
+
+        .bot-doc-card > p {
+            margin: 14px 0 0;
+            color: var(--bot-muted);
+        }
+
+        .bot-doc-block {
+            margin-top: 30px;
+            padding-top: 27px;
+            border-top: 1px solid var(--bot-line);
+        }
+
+        .bot-doc-block h4 {
+            margin: 0;
+            color: var(--bot-ink);
+            font-size: 1.08rem;
+            letter-spacing: -.02em;
+        }
+
+        .bot-doc-block > p {
+            margin: 9px 0 0;
+            color: var(--bot-muted);
+            font-size: .92rem;
+        }
+
+        .bot-command {
+            position: relative;
+            min-width: 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-top: 14px;
+            padding: 15px 16px;
+            border: 1px solid #292846;
+            border-radius: 12px;
+            color: #e8e9ff;
+            background: #18172e;
+        }
+
+        .bot-command code {
+            min-width: 0;
+            padding-top: 3px;
+            color: inherit;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: .78rem;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+            white-space: normal;
+        }
+
+        .bot-copy {
+            min-height: 30px;
+            display: none;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 10px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 7px;
+            color: rgba(255, 255, 255, .66);
+            background: rgba(255, 255, 255, .07);
+            font-size: .67rem;
+            font-weight: 760;
+        }
+
+        .bot-js .bot-copy {
+            display: inline-flex;
+        }
+
+        .bot-copy:hover {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, .28);
+            background: rgba(255, 255, 255, .12);
+        }
+
+        .bot-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 17px;
+        }
+
+        .bot-detail {
+            padding: 13px 14px;
+            border: 1px solid var(--bot-line);
+            border-radius: 11px;
+            background: #fafafe;
+        }
+
+        .bot-detail strong,
+        .bot-detail span {
+            display: block;
+        }
+
+        .bot-detail strong {
+            font-size: .83rem;
+        }
+
+        .bot-detail span {
+            margin-top: 2px;
+            color: var(--bot-muted);
+            font-size: .74rem;
+        }
+
+        .bot-note {
+            margin-top: 15px;
+            padding: 13px 15px;
+            border-left: 3px solid var(--bot-green);
+            border-radius: 5px 10px 10px 5px;
+            color: var(--bot-muted);
+            background: #effaf5;
+            font-size: .82rem;
+        }
+
+        .bot-note strong {
+            color: var(--bot-green-dark);
+        }
+
+        .bot-note--warning {
+            border-left-color: #d97706;
+            color: #78502b;
+            background: #fff8eb;
+        }
+
+        .bot-note--warning strong {
+            color: #9a4d09;
+        }
+
+        .bot-faq {
+            padding: clamp(80px, 9vw, 112px) 0;
+            background: #ffffff;
+        }
+
+        .bot-faq__layout {
+            display: grid;
+            grid-template-columns: minmax(240px, .65fr) minmax(0, 1.35fr);
+            align-items: start;
+            gap: clamp(46px, 8vw, 100px);
+        }
+
+        .bot-faq__intro h2 {
+            margin: 0;
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            letter-spacing: -.055em;
+        }
+
+        .bot-faq__intro p:last-child {
+            margin: 17px 0 0;
+            color: var(--bot-muted);
+        }
+
+        .bot-faq__list {
+            border-top: 1px solid var(--bot-line);
+        }
+
+        .bot-faq details {
+            border-bottom: 1px solid var(--bot-line);
+        }
+
+        .bot-faq summary {
+            position: relative;
+            padding: 22px 42px 22px 0;
+            color: var(--bot-ink);
+            font-weight: 770;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .bot-faq summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .bot-faq summary::after {
+            position: absolute;
+            top: 50%;
+            right: 4px;
+            width: 25px;
+            height: 25px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            color: var(--bot-indigo-dark);
+            background: #eff0ff;
+            font-size: 1rem;
+            transform: translateY(-50%);
+            content: "+";
+        }
+
+        .bot-faq details[open] summary::after {
+            content: "−";
+        }
+
+        .bot-faq details p {
+            margin: -7px 0 22px;
+            padding-right: 46px;
+            color: var(--bot-muted);
+        }
+
+        .bot-cta {
+            padding: 0 0 clamp(84px, 10vw, 126px);
+            background: #ffffff;
+        }
+
+        .bot-cta__card {
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 38px;
+            padding: clamp(38px, 6vw, 68px);
+            border-radius: 28px;
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 85% 20%, rgba(47, 213, 132, .2), transparent 20rem),
+                var(--bot-night);
+        }
+
+        .bot-cta__card::after {
+            position: absolute;
+            right: -130px;
+            bottom: -185px;
+            width: 380px;
+            height: 380px;
+            border: 1px solid rgba(88, 101, 242, .25);
+            border-radius: 50%;
+            box-shadow: 0 0 0 50px rgba(88, 101, 242, .035);
+            pointer-events: none;
+            content: "";
+        }
+
+        .bot-cta h2 {
+            position: relative;
+            z-index: 1;
+            max-width: 690px;
+            color: #ffffff;
+        }
+
+        .bot-cta p {
+            position: relative;
+            z-index: 1;
+            max-width: 620px;
+            margin: 17px 0 0;
+            color: rgba(255, 255, 255, .63);
+        }
+
+        .bot-cta__actions {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 10px;
+        }
+
+        .bot-cta__actions .site-button--primary {
+            color: #071c12;
+            background: var(--bot-green);
+        }
+
+        .bot-cta__actions .site-button--secondary {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, .18);
+            background: rgba(255, 255, 255, .06);
+        }
+
+        .bot-cta__actions .site-button--secondary:hover {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, .32);
+            background: rgba(255, 255, 255, .1);
+        }
+
+        .site-page--bot .bot-copy:focus-visible,
+        .site-page--bot .bot-docs-nav a:focus-visible,
+        .site-page--bot .bot-faq summary:focus-visible {
+            outline: 3px solid rgba(47, 213, 132, .5);
+            outline-offset: 4px;
+        }
+
+        @media (max-width: 1040px) {
+            .bot-hero__grid {
+                grid-template-columns: minmax(0, 1fr) 350px;
+                gap: 42px;
+            }
+
+            .bot-preview {
+                transform: none;
+            }
+
+            .bot-capabilities__grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .bot-capability:nth-child(2) {
+                border-right: 0;
+            }
+
+            .bot-capability:nth-child(-n + 2) {
+                border-bottom: 1px solid var(--bot-line);
+            }
+        }
+
+        @media (max-width: 860px) {
+            .bot-hero__grid,
+            .bot-faq__layout {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-preview {
+                width: min(100%, 560px);
+                justify-self: start;
+            }
+
+            .bot-feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-feature {
+                min-height: 245px;
+            }
+
+            .bot-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-step {
+                min-height: 0;
+            }
+
+            .bot-docs__layout {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-docs-nav {
+                position: static;
+            }
+
+            .bot-docs-nav ol {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .bot-cta__card {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-cta__actions {
+                display: flex;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .bot-hero {
+                padding-top: 58px;
+            }
+
+            .bot-hero h1 {
+                font-size: clamp(2.85rem, 15vw, 4.25rem);
+            }
+
+            .bot-hero__actions,
+            .bot-cta__actions {
+                display: grid;
+            }
+
+            .bot-hero__actions .site-button,
+            .bot-cta__actions .site-button {
+                width: 100%;
+            }
+
+            .bot-preview {
+                padding: 13px;
+                border-radius: 21px;
+            }
+
+            .bot-preview::before {
+                display: none;
+            }
+
+            .bot-chat {
+                padding: 12px;
+            }
+
+            .bot-capabilities__grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-capability {
+                min-height: 0;
+                border-right: 0;
+                border-bottom: 1px solid var(--bot-line);
+            }
+
+            .bot-capability:nth-child(3) {
+                border-bottom: 1px solid var(--bot-line);
+            }
+
+            .bot-capability:last-child {
+                border-bottom: 0;
+            }
+
+            .bot-feature__top {
+                margin-bottom: 30px;
+            }
+
+            .bot-docs-nav ol,
+            .bot-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-command {
+                gap: 10px;
+                padding: 13px;
+            }
+
+            .bot-command code {
+                font-size: .7rem;
+            }
+
+            .bot-copy {
+                padding-inline: 8px;
+            }
+
+            .bot-cta__card {
+                border-radius: 22px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bot-feature {
+                transition: none;
+            }
+
+            .bot-feature:hover {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body class="site-page site-page--bot">
+<a class="skip-link" href="#main-content">Skip to content</a>
+{{ template "noscript" . }}
+{{ template "navbar" . }}
+
+<main id="main-content">
+    <section class="bot-hero" aria-labelledby="bot-title">
+        <div class="site-shell bot-hero__grid">
+            <div class="bot-hero__content">
+                <div class="bot-brandline">
+                    <img src="/logo_square.png" alt="">
+                    <span>JGL Bot for Discord</span>
+                </div>
+                <h1 id="bot-title">Run your Discord server. Skip the busywork.</h1>
+                <p class="bot-hero__lead">
+                    JGL Bot brings moderation, reaction roles, reminders, tickets, and day-to-day community tools
+                    together—so your team can spend less time managing Discord and more time building the community.
+                </p>
+                <div class="bot-hero__actions">
+                    <a class="site-button site-button--primary" href="/bot/invite">Add JGL Bot <span aria-hidden="true">&rarr;</span></a>
+                    <a class="site-button site-button--secondary" href="#documentation">Explore the docs</a>
+                </div>
+                <ul class="bot-hero__proof" aria-label="Key capabilities">
+                    <li>Configurable moderation</li>
+                    <li>Self-serve roles</li>
+                    <li>Private tickets</li>
+                </ul>
+            </div>
+
+            <div class="bot-preview" aria-label="Example JGL Bot configuration conversation">
+                <div class="bot-preview__bar">
+                    <span class="bot-preview__channel"><span aria-hidden="true">#</span> server-setup</span>
+                    <span class="bot-preview__status">Ready</span>
+                </div>
+                <div class="bot-chat">
+                    <div class="bot-chat__message">
+                        <span class="bot-chat__avatar" aria-hidden="true">AD</span>
+                        <div>
+                            <p class="bot-chat__name">Admin</p>
+                            <span class="bot-chat__command">/set channel name: Logging channel: #mod-log</span>
+                        </div>
+                    </div>
+                    <div class="bot-chat__message">
+                        <span class="bot-chat__avatar bot-chat__avatar--jgl" aria-hidden="true">
+                            <img src="/logo_square.png" alt="">
+                        </span>
+                        <div>
+                            <p class="bot-chat__name">JGL Bot <span>App</span></p>
+                            <p class="bot-chat__text">Your server configuration has been updated.</p>
+                            <div class="bot-chat__reply">
+                                <strong>Logging channel</strong>
+                                <span>#mod-log</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bot-preview__input">Message #server-setup</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="bot-capabilities" aria-label="JGL Bot capabilities">
+        <div class="site-shell">
+            <div class="bot-capabilities__grid">
+                <div class="bot-capability"><span>01</span><strong>Moderation</strong></div>
+                <div class="bot-capability"><span>02</span><strong>Reaction roles</strong></div>
+                <div class="bot-capability"><span>03</span><strong>Support tickets</strong></div>
+                <div class="bot-capability"><span>04</span><strong>Community tools</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <section class="bot-section bot-section--white" aria-labelledby="features-title">
+        <div class="site-shell">
+            <div class="bot-section__heading">
+                <p class="bot-kicker">Built for real communities</p>
+                <h2 id="features-title">The essentials, working together.</h2>
+                <p>Give members a smoother experience and give staff one consistent toolkit for the work that keeps a server healthy.</p>
+            </div>
+
+            <div class="bot-feature-grid">
+                <article class="bot-feature">
+                    <div class="bot-feature__top">
+                        <span class="bot-feature__mark" aria-hidden="true">MOD</span>
+                        <span class="bot-feature__number">01 / 04</span>
+                    </div>
+                    <h3>Moderation with clear rules</h3>
+                    <p>Turn warning thresholds into kicks, bans, mutes, timeouts, or temporary actions. Staff roles and logging keep the workflow organized.</p>
+                </article>
+
+                <article class="bot-feature">
+                    <div class="bot-feature__top">
+                        <span class="bot-feature__mark" aria-hidden="true">RR</span>
+                        <span class="bot-feature__number">02 / 04</span>
+                    </div>
+                    <h3>Roles members can choose</h3>
+                    <p>Create polished reaction-role messages so members can select colors, interests, notifications, or access without waiting for staff.</p>
+                </article>
+
+                <article class="bot-feature">
+                    <div class="bot-feature__top">
+                        <span class="bot-feature__mark" aria-hidden="true">TKT</span>
+                        <span class="bot-feature__number">03 / 04</span>
+                    </div>
+                    <h3>Support that stays private</h3>
+                    <p>Let members open a ticket with a reason, keep the conversation in its own channel, and close it cleanly when the issue is resolved.</p>
+                </article>
+
+                <article class="bot-feature">
+                    <div class="bot-feature__top">
+                        <span class="bot-feature__mark" aria-hidden="true">CFG</span>
+                        <span class="bot-feature__number">04 / 04</span>
+                    </div>
+                    <h3>A server that feels considered</h3>
+                    <p>Customize welcome and goodbye messages, route activity to the right channels, connect dependent roles, and keep useful reminders close.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="bot-setup" aria-labelledby="setup-title">
+        <div class="site-shell bot-setup__inner">
+            <div class="bot-setup__header">
+                <p class="bot-kicker">Quick start</p>
+                <h2 id="setup-title">From invite to configured in three steps.</h2>
+                <p>Add the bot, review the current configuration, and switch on the tools your community needs.</p>
+            </div>
+
+            <div class="bot-steps">
+                <article class="bot-step">
+                    <span class="bot-step__number">01</span>
+                    <h3>Invite JGL Bot</h3>
+                    <p>Choose your Discord server and authorize the permissions needed for its moderation and community tools.</p>
+                    <a class="site-button site-button--primary" href="/bot/invite">Open invite</a>
+                </article>
+                <article class="bot-step">
+                    <span class="bot-step__number">02</span>
+                    <h3>Review your config</h3>
+                    <p>Review roles, channels, messages, warning punishments, or miscellaneous settings by configuration area.</p>
+                    <code>/config roles</code>
+                </article>
+                <article class="bot-step">
+                    <span class="bot-step__number">03</span>
+                    <h3>Enable your workflows</h3>
+                    <p>Set your Staff role, choose an existing category, and decide how ticket notifications and limits should work.</p>
+                    <code>/tickets setup mention_staff: True max_tickets: 1 category: Support</code>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="bot-docs" id="documentation" aria-labelledby="docs-title">
+        <div class="site-shell">
+            <div class="bot-docs__heading">
+                <p class="bot-kicker">Documentation</p>
+                <h2 id="docs-title">Command guide</h2>
+                <p>Use these slash commands in Discord to configure and operate JGL Bot. Copy any example, then replace the sample values with your own.</p>
+            </div>
+
+            <div class="bot-docs__layout">
+                <nav class="bot-docs-nav" aria-label="Documentation sections">
+                    <p>On this page</p>
+                    <ol>
+                        <li><a href="#config">Configuration</a></li>
+                        <li><a href="#moderation">Moderation</a></li>
+                        <li><a href="#word-filter">Word filter</a></li>
+                        <li><a href="#server-tools">Server tools</a></li>
+                        <li><a href="#dependencies">Role dependencies</a></li>
+                        <li><a href="#reaction-roles">Reaction roles</a></li>
+                        <li><a href="#tickets">Tickets</a></li>
+                        <li><a href="#utilities">Utilities</a></li>
+                    </ol>
+                </nav>
+
+                <div class="bot-docs-content">
+                    <article class="bot-doc-card" id="config">
+                        <span class="bot-doc-card__label">01 / Configuration</span>
+                        <h3>Set up your server</h3>
+                        <p>Configuration is organized into roles, channels, messages, warning punishments, and miscellaneous settings.</p>
+                        <p class="bot-note"><strong>Access:</strong> server administrators and the configured Staff role can view settings. Only the server owner can change or reset them.</p>
+
+                        <div class="bot-doc-block">
+                            <h4>View configuration</h4>
+                            <div class="bot-command"><code>/config roles</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/config channels</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/config messages</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/config punishments</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/config misc</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Reset configuration</h4>
+                            <p>Set <code>all</code> to <code>True</code> to reset every area, or set one or more individual areas to <code>True</code>.</p>
+                            <div class="bot-command"><code>/config reset all: True</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/config reset roles: True channels: True</code><button class="bot-copy" type="button">Copy</button></div>
+                            <p class="bot-note"><strong>Available reset options:</strong> punishments, roles, channels, messages, misc, and all.</p>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Set a role</h4>
+                            <p>Assign the roles JGL Bot uses for moderation and staff permissions.</p>
+                            <div class="bot-command"><code>/set role name: Mute role: @muted</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-detail-grid">
+                                <div class="bot-detail"><strong>Mute</strong><span>Added when a member is muted</span></div>
+                                <div class="bot-detail"><strong>Mute Remove</strong><span>Removed when a member is muted</span></div>
+                                <div class="bot-detail"><strong>Staff</strong><span>Grants access to most admin commands</span></div>
+                            </div>
+                            <p class="bot-note"><strong>To unset a role:</strong> omit the optional role argument—for example, <code>/set role name: Mute</code>.</p>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Set a channel</h4>
+                            <p>Choose where welcome messages, goodbye messages, and logs should appear.</p>
+                            <div class="bot-command"><code>/set channel name: Logging channel: #logging</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-detail-grid">
+                                <div class="bot-detail"><strong>Welcome</strong><span>Receives welcome messages</span></div>
+                                <div class="bot-detail"><strong>Goodbye</strong><span>Receives goodbye messages</span></div>
+                                <div class="bot-detail"><strong>Logging</strong><span>Receives server logs</span></div>
+                            </div>
+                            <p class="bot-note"><strong>To unset a channel:</strong> omit the optional channel argument—for example, <code>/set channel name: Logging</code>.</p>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Set a welcome or goodbye message</h4>
+                            <p>Messages may be up to 2,000 characters. Use <code>{member}</code> where the joining or leaving member’s display name should appear.</p>
+                            <div class="bot-command"><code>/set message name: Welcome message: {member} has joined the server!</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-detail-grid">
+                                <div class="bot-detail"><strong>Welcome</strong><span>Shown when a member joins</span></div>
+                                <div class="bot-detail"><strong>Goodbye</strong><span>Shown when a member leaves</span></div>
+                            </div>
+                            <p class="bot-note"><strong>To unset a message:</strong> omit the optional message argument—for example, <code>/set message name: Welcome</code>.</p>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Set a warning punishment</h4>
+                            <p>This example temporarily bans a member for five days when they reach seven warnings. A duration and number are required for Temp Ban, Temp Mute, and Timeout.</p>
+                            <div class="bot-command"><code>/set punishment punishment: Temp Ban warning: 7 duration: Days number: 5</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-detail-grid">
+                                <div class="bot-detail"><strong>Kick</strong><span>Remove the member from the server</span></div>
+                                <div class="bot-detail"><strong>Ban</strong><span>Ban the member from the server</span></div>
+                                <div class="bot-detail"><strong>Mute</strong><span>Apply the configured mute role</span></div>
+                                <div class="bot-detail"><strong>Timeout</strong><span>Temporarily restrict Discord activity</span></div>
+                                <div class="bot-detail"><strong>Temp Ban</strong><span>Ban for a configured duration</span></div>
+                                <div class="bot-detail"><strong>Temp Mute</strong><span>Mute for a configured duration</span></div>
+                            </div>
+                            <p class="bot-note"><strong>Limits and removal:</strong> timeouts cannot exceed 28 days. To remove the punishment for warning seven, use <code>/set punishment warning: 7</code> and omit the optional punishment.</p>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Set warning expiry</h4>
+                            <p>Choose when warnings expire: 1 Day, 3 Days, 1 Week, 2 Weeks, 1 Month, or Never.</p>
+                            <div class="bot-command"><code>/set expiry expiry: 2 Weeks</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                    </article>
+
+                    <article class="bot-doc-card" id="moderation">
+                        <span class="bot-doc-card__label">02 / Moderation</span>
+                        <h3>Act quickly and keep a record</h3>
+                        <p>JGL Bot includes direct moderation actions, persistent role-based mutes, Discord timeouts, temporary actions, and a warning system that can trigger the punishments configured above.</p>
+                        <p class="bot-note"><strong>Access:</strong> moderation commands are available to server administrators and the configured Staff role. JGL Bot needs administrator permission for actions that change members, roles, bans, or timeouts.</p>
+
+                        <div class="bot-doc-block">
+                            <h4>Kick, ban, and soft ban</h4>
+                            <p>Reasons are optional. Soft ban briefly bans and immediately unbans a member to clear recent message history.</p>
+                            <div class="bot-command"><code>/kick member: @member reason: Repeated rule violations</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/ban member: @member reason: Spam</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/unban user: @member</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/softban member: @member reason: Clear recent message history</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Mute and unmute</h4>
+                            <p>Role-based muting uses the configured Mute role. If Mute Remove is configured, that role is removed while the member is muted and restored when they are unmuted.</p>
+                            <div class="bot-command"><code>/mute member: @member reason: Disruptive behavior</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/unmute member: @member</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/tempmute member: @member hours: 2 reason: Cool-down period</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Temporary ban and Discord timeout</h4>
+                            <p>Temporary mutes and bans require a duration greater than zero. Timeouts may use seconds, minutes, hours, or days and cannot exceed 28 days.</p>
+                            <div class="bot-command"><code>/tempban member: @member days: 3 reason: Repeated spam</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/timeout member: @member minutes: 30 reason: Cool-down period</code><button class="bot-copy" type="button">Copy</button></div>
+                            <p class="bot-note"><strong>Remove a timeout:</strong> run <code>/timeout member: @member</code> without a duration.</p>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Warnings</h4>
+                            <p>Add a warning, review all active warnings or one warning number, and remove selected warnings or all of them.</p>
+                            <div class="bot-command"><code>/warn member: @member reason: Ignored moderator instructions</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/warnings member: @member</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/warnings member: @member warning: 2</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/unwarn member: @member number: 2,3</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/unwarn member: @member number: all</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <p class="bot-note"><strong>Automatic behavior:</strong> active mutes are restored if a member rejoins, temporary mutes and bans end automatically, expired warnings are removed, and <code>/warn</code> runs any punishment configured for the new warning count.</p>
+                    </article>
+
+                    <article class="bot-doc-card" id="word-filter">
+                        <span class="bot-doc-card__label">03 / Word filter</span>
+                        <h3>Filter banned words automatically</h3>
+                        <p>Maintain a server-specific list of words or phrases. JGL Bot checks new and edited messages, deletes matching content, and briefly tells the member not to use it. Administrators and members with the configured Staff role are exempt from filtering.</p>
+                        <p class="bot-note"><strong>Access:</strong> server administrators and the configured Staff role can manage and review the filter.</p>
+
+                        <div class="bot-doc-block">
+                            <h4>Add or remove entries</h4>
+                            <p>Supply one entry or a comma-separated list. Matching ignores capitalization and normalizes repeated spaces.</p>
+                            <div class="bot-command"><code>/words ban words: spam phrase, scam link</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/words unban words: spam phrase</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Review or clear the list</h4>
+                            <div class="bot-command"><code>/words list</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/words clear</code><button class="bot-copy" type="button">Copy</button></div>
+                            <p class="bot-note bot-note--warning"><strong>Clear behavior:</strong> <code>/words clear</code> removes every banned-word entry for the server.</p>
+                        </div>
+                    </article>
+
+                    <article class="bot-doc-card" id="server-tools">
+                        <span class="bot-doc-card__label">04 / Server tools</span>
+                        <h3>Handle everyday administration</h3>
+                        <p>Review bans, clear messages, publish formatted announcements, replace a channel, or temporarily stop new members from joining.</p>
+                        <p class="bot-note"><strong>Access:</strong> these tools are available to server administrators and the configured Staff role. Most require JGL Bot to have administrator permission.</p>
+
+                        <div class="bot-doc-block">
+                            <h4>Review bans and clear messages</h4>
+                            <p>The bans command opens a paginated list. Message clearing defaults to 100 messages when no number is supplied and accepts up to 1,000.</p>
+                            <div class="bot-command"><code>/bans</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/clear number: 100</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Publish an announcement</h4>
+                            <p>Choose an optional destination channel and mentions. Discord then opens a form for the required title and description; image and thumbnail URLs are also optional.</p>
+                            <div class="bot-command"><code>/announce channel: #announcements mentions: @everyone</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Reset a channel</h4>
+                            <p>Reset clones the selected channel, deletes the original, and places the replacement in the same position.</p>
+                            <div class="bot-command"><code>/reset channel: #old-channel</code><button class="bot-copy" type="button">Copy</button></div>
+                            <p class="bot-note bot-note--warning"><strong>Destructive action:</strong> resetting deletes the original channel and its message history.</p>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Lock or unlock new joins</h4>
+                            <p>While locked, newly joining members receive a direct message and are kicked. Existing members can continue using the server.</p>
+                            <div class="bot-command"><code>/lock</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/unlock</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/locked</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                    </article>
+
+                    <article class="bot-doc-card" id="dependencies">
+                        <span class="bot-doc-card__label">05 / Role dependencies</span>
+                        <h3>Keep connected roles in sync</h3>
+                        <p>A role dependency ties one role to another. If the required role is removed, JGL Bot also removes its dependent role. Each server can configure up to 20 dependencies.</p>
+                        <p class="bot-note"><strong>Access:</strong> only the server owner can add, remove, or clear dependencies. Administrators and the configured Staff role can list them.</p>
+
+                        <div class="bot-doc-block">
+                            <h4>Add a dependency</h4>
+                            <p>In this example, removing <code>@staff</code> also removes <code>@helper</code>.</p>
+                            <div class="bot-command"><code>/dependencies add role: @staff dependent: @helper</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                        <div class="bot-doc-block">
+                            <h4>Remove a dependency</h4>
+                            <div class="bot-command"><code>/dependencies remove role: @staff dependent: @helper</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                        <div class="bot-doc-block">
+                            <h4>Clear or list dependencies</h4>
+                            <div class="bot-command"><code>/dependencies clear</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/dependencies list</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                    </article>
+
+                    <article class="bot-doc-card" id="reaction-roles">
+                        <span class="bot-doc-card__label">06 / Reaction roles</span>
+                        <h3>Let members choose their roles</h3>
+                        <p>Create a message that pairs up to 20 unique, comma-separated emoji with the same number of roles. The bot must be able to assign each role, and anyone other than the server owner cannot select a role at or above their highest role.</p>
+                        <p class="bot-note"><strong>Access:</strong> server administrators and the configured Staff role can manage reaction roles. JGL Bot requires administrator permission to create them.</p>
+
+                        <div class="bot-doc-block">
+                            <h4>Create a reaction-role message</h4>
+                            <div class="bot-command"><code>/rr create emojis: 🔴, 🔵 roles: @red, @blue title: Colors description: Select your favorite color</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                        <div class="bot-doc-block">
+                            <h4>Review or clear reaction roles</h4>
+                            <p><code>/rr list</code> shows each registered message and includes a Delete control. Deleting the original Discord message also removes its saved mappings.</p>
+                            <div class="bot-command"><code>/rr list</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/rr clear id: 123456789012345678</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/rr clear id: all</code><button class="bot-copy" type="button">Copy</button></div>
+                            <p class="bot-note"><strong>Clear behavior:</strong> the <code>id</code> option also accepts comma-separated message IDs. Clear removes saved mappings but does not delete the original messages.</p>
+                        </div>
+                    </article>
+
+                    <article class="bot-doc-card" id="tickets">
+                        <span class="bot-doc-card__label">07 / Tickets</span>
+                        <h3>Give support its own place</h3>
+                        <p>The server owner first chooses whether to mention staff, allows one to five open tickets per member, and selects the existing Discord category where ticket channels will be created.</p>
+                        <p class="bot-note"><strong>Access:</strong> setup is restricted to the server owner. Administrators and the configured Staff role can view ticket configuration. JGL Bot requires administrator permission to create and close ticket channels.</p>
+
+                        <div class="bot-doc-block">
+                            <h4>Initialize tickets</h4>
+                            <p>Set a Staff role first when staff mentions should be enabled.</p>
+                            <div class="bot-command"><code>/tickets setup mention_staff: True max_tickets: 1 category: Support</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                        <div class="bot-doc-block">
+                            <h4>Create a ticket</h4>
+                            <p>The command opens a form for a reason of at least 25 characters. A member can successfully create one ticket per hour, subject to the server’s open-ticket limit.</p>
+                            <div class="bot-command"><code>/tickets create</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                        <div class="bot-doc-block">
+                            <h4>Close a ticket</h4>
+                            <p>Run this command from inside the ticket channel. The reason is optional.</p>
+                            <div class="bot-command"><code>/tickets close reason: Resolved</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                        <div class="bot-doc-block">
+                            <h4>View ticket configuration</h4>
+                            <div class="bot-command"><code>/tickets config</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                    </article>
+
+                    <article class="bot-doc-card" id="utilities">
+                        <span class="bot-doc-card__label">08 / Utilities</span>
+                        <h3>Useful commands for members and staff</h3>
+                        <p>Schedule a direct-message reminder, inspect member information, send product feedback, jump to the right documentation section, or get the bot invite link.</p>
+
+                        <div class="bot-doc-block">
+                            <h4>Schedule a reminder</h4>
+                            <p>Provide a message and any combination of seconds, minutes, hours, or days. JGL Bot sends the reminder to you in a direct message when it is due.</p>
+                            <div class="bot-command"><code>/reminder reminder: Team meeting hours: 1</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>View member information</h4>
+                            <p>Administrators and the configured Staff role can view a member’s username, ID, account and server dates, roles, and active warning count. Omit the member to view your own information.</p>
+                            <div class="bot-command"><code>/info member: @member</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Send feedback</h4>
+                            <p>Choose Bug Report or Feature Request to open the feedback form. Successful submissions are limited to one per user per day.</p>
+                            <div class="bot-command"><code>/feedback type: bug report</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+
+                        <div class="bot-doc-block">
+                            <h4>Open help or invite the bot</h4>
+                            <p>The help command links directly to the selected section on this page. Available categories are Config, Moderation, Word Filter, Server Tools, Role Dependencies, Reaction Roles, Tickets, Utilities, and Other.</p>
+                            <div class="bot-command"><code>/help category: Moderation</code><button class="bot-copy" type="button">Copy</button></div>
+                            <div class="bot-command"><code>/invite</code><button class="bot-copy" type="button">Copy</button></div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bot-faq" aria-labelledby="faq-title">
+        <div class="site-shell bot-faq__layout">
+            <div class="bot-faq__intro">
+                <p class="bot-kicker">Good to know</p>
+                <h2 id="faq-title">Frequently asked questions</h2>
+                <p>Quick answers for common setup and support questions.</p>
+            </div>
+            <div class="bot-faq__list">
+                <details>
+                    <summary>How do I view or reset the server configuration?</summary>
+                    <p>View an area with <code>/config roles</code>, <code>/config channels</code>, <code>/config messages</code>, <code>/config punishments</code>, or <code>/config misc</code>. Use <code>/config reset all: True</code> to reset every area.</p>
+                </details>
+                <details>
+                    <summary>How do I remove a role, channel, message, or punishment setting?</summary>
+                    <p>Run the matching <code>/set</code> command without its optional value. For a punishment, keep the required warning number—for example, <code>/set punishment warning: 7</code>.</p>
+                </details>
+                <details>
+                    <summary>Where can I get help with JGL Bot?</summary>
+                    <p>Reach us through the <a href="/contact">contact page</a>, ask in the <a href="/discord">JGL Technologies Discord server</a>, or open an issue in the <a href="https://github.com/JGLTechnologies/JGL-Bot/issues">GitHub repository</a>.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <section class="bot-cta" aria-labelledby="cta-title">
+        <div class="site-shell">
+            <div class="bot-cta__card">
+                <div>
+                    <h2 id="cta-title">Give your community a better front door.</h2>
+                    <p>Invite JGL Bot, configure the tools you need, and keep the docs close whenever your server grows into something new.</p>
+                </div>
+                <div class="bot-cta__actions">
+                    <a class="site-button site-button--primary" href="/bot/invite">Add to Discord</a>
+                    <a class="site-button site-button--secondary" href="https://github.com/JGLTechnologies/JGL-Bot">View source</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+{{ template "footer" . }}
+
+<p class="sr-only" id="copy-status" aria-live="polite"></p>
+<script>
+    (function () {
+        "use strict";
+        document.documentElement.classList.add("bot-js");
+
+        var status = document.getElementById("copy-status");
+        var buttons = document.querySelectorAll(".bot-copy");
+
+        function fallbackCopy(text) {
+            var textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.setAttribute("readonly", "");
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+        }
+
+        buttons.forEach(function (button) {
+            var command = button.parentElement.querySelector("code");
+            if (command) {
+                button.setAttribute("aria-label", "Copy command: " + command.textContent.trim());
+            }
+
+            button.addEventListener("click", function () {
+                var code = button.parentElement.querySelector("code");
+                var text = code ? code.textContent.trim() : "";
+                var copy;
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    copy = navigator.clipboard.writeText(text);
+                } else {
+                    try {
+                        fallbackCopy(text);
+                        copy = Promise.resolve();
+                    } catch (error) {
+                        copy = Promise.reject(error);
+                    }
+                }
+
+                copy.then(function () {
+                    button.textContent = "Copied";
+                    if (status) {
+                        status.textContent = "Command copied to clipboard.";
+                    }
+                    window.setTimeout(function () {
+                        button.textContent = "Copy";
+                    }, 1600);
+                }).catch(function () {
+                    if (status) {
+                        status.textContent = "The command could not be copied.";
+                    }
+                });
+            });
+        });
+    }());
+</script>
+</body>
+</html>

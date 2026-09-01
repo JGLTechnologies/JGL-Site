@@ -20,7 +20,8 @@ func registerRedirectRoutes(router *gin.Engine) {
 	router.GET("/gin-rate-limit", permanentRedirect("https://github.com/JGLTechnologies/gin-rate-limit"))
 	router.GET("/src", permanentRedirect("https://github.com/JGLTechnologies/jgl-site"))
 	router.GET("/gh", permanentRedirect("https://github.com/JGLTechnologies"))
-	router.GET("/bot", permanentRedirect("https://github.com/JGLTechnologies/JGL-Bot#readme"))
+	router.GET("/bot", permanentRedirect("/jgl-bot"))
+	router.GET("/jglbot", permanentRedirect("/jgl-bot"))
 	router.GET("/bot/invite", permanentRedirect("https://discord.com/api/oauth2/authorize?client_id=844976951692361800&permissions=8&scope=bot%20applications.commands"))
 	router.GET("/bot/top", permanentRedirect("https://top.gg/bot/844976951692361800"))
 }
