@@ -7,7 +7,7 @@ import (
 )
 
 func registerRedirectRoutes(router *gin.Engine) {
-	router.GET("/keyboardsoundplayeryoutube", permanentRedirect("https://www.youtube.com/watch?v=lxf4MtiYwRY"))
+	router.GET("/keyboardsoundplayeryoutube", permanentRedirect("https://www.youtube.com/watch?v=0pUzoknH2t4"))
 	router.GET("/keyboardsoundplayerstore", permanentRedirect("https://apps.microsoft.com/detail/9pfsjgvshm0l?hl=en-US&gl=US"))
 	router.GET("/discord", permanentRedirect("https://discord.gg/TUUbzTa3B7"))
 	router.GET("/dpys", permanentRedirect("https://github.com/JGLTechnologies/DPYS/blob/main/README.md"))
