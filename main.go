@@ -103,6 +103,9 @@ func newTemplates() multitemplate.Renderer {
 	r.AddFromFiles("login", "go web files/login.html", "go web files/base.html")
 	r.AddFromFiles("kbs", "go web files/kbs.html", "go web files/base.html")
 	r.AddFromFiles("jgl-bot", "go web files/jgl-bot.html", "go web files/base.html")
+	for _, guide := range kspGuides {
+		r.AddFromFiles(guide.TemplateName(), "go web files/ksp-guide.html", "go web files/base.html", "go web files/"+guide.TemplateName()+".html")
+	}
 	return r
 }
 
@@ -152,9 +155,9 @@ func registerSiteRoutes(router *gin.Engine) {
 	router.GET("/jn", requireLogin(), jn)
 
 	router.GET("/", pageCache, home)
-	router.GET("/home", pageCache, home)
 	router.GET("/contact", pageCache, contact)
 	router.GET("/keyboardsoundplayer", pageCache, ksp)
+	registerKSPGuideRoutes(router, pageCache)
 	router.GET("/jgl-bot", pageCache, jglBot)
 	router.GET("/robots.txt", pageCache, func(c *gin.Context) {
 		c.File("static/robots.txt")
@@ -196,7 +199,7 @@ func registerAPIRoutes(router *gin.Engine) {
 }
 
 func ksp(c *gin.Context) {
-	c.HTML(200, "kbs", gin.H{})
+	c.HTML(200, "kbs", gin.H{"Guides": kspGuides})
 }
 
 func jglBot(c *gin.Context) {

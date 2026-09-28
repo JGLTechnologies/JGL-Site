@@ -1,0 +1,37 @@
+{{ define "guide-content" }}
+<section aria-labelledby="mic-routing">
+    <h2 id="mic-routing">How soundboard microphone output works</h2>
+    <p>Playing a clip on your speakers does not automatically send it to a voice chat. With <strong>Output To Mic</strong> enabled, KeyboardSoundPlayer uses Voicemeeter Banana to route soundboard audio through a virtual microphone that your chat app can select.</p>
+    <p>You need KeyboardSoundPlayer, <a href="https://vb-audio.com/Voicemeeter/banana.htm">Voicemeeter Banana</a>, and your usual microphone and headphones or speakers. The steps below use the app's <strong>Voicemeeter Config</strong> tab to prepare the audio routing.</p>
+</section>
+<section aria-labelledby="mic-setup">
+    <h2 id="mic-setup">Set up Voicemeeter Banana for your soundboard</h2>
+    <ol>
+        <li><strong>Install Voicemeeter Banana.</strong> In KeyboardSoundPlayer, open <strong>Voicemeeter Config</strong>, click <strong>Download</strong>, and complete the installation. Restart your computer afterward.</li>
+        <li><strong>Enable microphone output.</strong> Open <strong>Config</strong>, set <strong>Output To Mic</strong> to <strong>Yes</strong>, and click <strong>Save</strong>.</li>
+        <li><strong>Select your devices.</strong> In <strong>Voicemeeter Config</strong>, set <strong>Input Device</strong> to your physical microphone and <strong>Output Device</strong> to your headphones or speakers. These selections save automatically.</li>
+        <li><strong>Check the application path.</strong> If <strong>Path to Voicemeeter Banana</strong> is empty or incorrect, use <strong>Select Path</strong> to choose <code>voicemeeterpro.exe</code> in the installation folder.</li>
+        <li><strong>Load the app's settings.</strong> Click <strong>Copy Settings Path</strong>, then <strong>Open Voicemeeter</strong>. In Voicemeeter, choose <strong>Menu → Load Settings on Startup</strong>, paste the copied path, and open the file. Restart Voicemeeter to load it.</li>
+        <li><strong>Enable Configure system audio.</strong> Turn this toggle on in KeyboardSoundPlayer. Windows will use <strong>Voicemeeter Input</strong> for speaker output and <strong>Voicemeeter Out B1</strong> for microphone input.</li>
+        <li><strong>Start the sound player.</strong> Return to <strong>Home</strong>, click <strong>Start</strong> or restart the player, and wait for it to finish loading.</li>
+    </ol>
+</section>
+<section aria-labelledby="discord-and-games">
+    <h2 id="discord-and-games">Use the soundboard in Discord, games, and calls</h2>
+    <p>Let your chat app follow the Windows devices by choosing <strong>Default</strong> or <strong>System Default</strong> for its input and output. If you select devices manually, use <strong>Voicemeeter Out B1</strong> as input and <strong>Voicemeeter Input</strong> as output.</p>
+    <p>In Discord, open <strong>User Settings → Voice &amp; Video</strong> to check the input and output selections. Test a <a href="/keyboardsoundplayer/keyboard-soundboard">sound bound to a keyboard key</a> and your voice before using the setup in a call.</p>
+    <p>If a clip is being cut off or sounds unclear, check your app's audio processing settings. Discord suggests testing with Noise Suppression disabled when troubleshooting audio quality; see its <a href="https://support.discord.com/hc/en-us/articles/360045138471-Discord-Voice-and-Video-Troubleshooting-Guide">voice and video troubleshooting guide</a>.</p>
+    <div class="guide-note"><strong>Keep Voicemeeter open while using this setup.</strong> Turn <strong>Configure system audio</strong> off before closing it. If you selected virtual devices manually in a chat app, change those selections back when you stop using Voicemeeter.</div>
+</section>
+<section aria-labelledby="mic-questions">
+    <h2 id="mic-questions">Microphone output troubleshooting</h2>
+    <h3>I can hear the soundboard, but other people cannot. What should I check?</h3>
+    <p>Check that <strong>Output To Mic</strong> is set to <strong>Yes</strong>, Voicemeeter is running with the supplied settings, and your chat app uses the virtual microphone. An app set directly to your physical microphone will not receive the same routed audio.</p>
+    <h3>Can I share captured audio and text-to-speech too?</h3>
+    <p>Yes. Once those sounds are bound, you can replay them through the same microphone setup. Learn how to <a href="/keyboardsoundplayer/audio-capture">clip recent audio</a> or <a href="/keyboardsoundplayer/text-to-speech">create spoken clips from text</a>.</p>
+    <h3>Do I need Voicemeeter for local sound playback?</h3>
+    <p>Voicemeeter is required for <strong>Output To Mic</strong> and <strong>Audio Capture</strong>. To use the player without it, turn <strong>Configure system audio</strong> off, set both features to <strong>No</strong>, and save Config.</p>
+    <h3>Where is the complete configuration reference?</h3>
+    <p>The main page has the full <a href="/keyboardsoundplayer#configuration">configuration table</a> and <a href="/keyboardsoundplayer#troubleshooting">startup and error guidance</a>.</p>
+</section>
+{{ end }}

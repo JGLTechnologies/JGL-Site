@@ -1,0 +1,40 @@
+{{ define "guide-content" }}
+<section aria-labelledby="capture-setup">
+    <h2 id="capture-setup">Set up recent audio capture on Windows</h2>
+    <p>Audio Capture records audio in the background so you can clip a recent moment with a key press. It is useful for adding a new sound while a game or call is still happening.</p>
+    <ol>
+        <li><strong>Install and configure Voicemeeter Banana.</strong> Follow the <a href="/keyboardsoundplayer#enabling-mic-output">Voicemeeter setup instructions</a>, including selecting your input and output devices, loading the settings, and enabling <strong>Configure system audio</strong>.</li>
+        <li><strong>Enable Audio Capture.</strong> Open <strong>Config</strong>, set <strong>Audio Capture</strong> to <strong>Yes</strong>, and choose your capture settings.</li>
+        <li><strong>Set Capture Key.</strong> The default is <code>scroll_lock</code>. This is the key you press to take a clip, rather than the key that will play the finished sound.</li>
+        <li><strong>Set Audio Clip Duration (Seconds).</strong> The default is <strong>3</strong>. This controls the length of the captured clip.</li>
+        <li><strong>Save and start.</strong> Click <strong>Save</strong>, then start the player from <strong>Home</strong> if it is not running. Wait for <strong>KeyboardSoundPlayer is ready</strong> before capturing.</li>
+    </ol>
+    <p class="guide-note">Keep Voicemeeter running while Audio Capture is enabled. Capturing audio and sending sounds through your microphone are separate options; enable <strong>Output To Mic</strong> as well if you want other people in a call to hear your replays.</p>
+</section>
+<section aria-labelledby="capture-queue">
+    <h2 id="capture-queue">Queue keys for your next audio clips</h2>
+    <p>Before taking a clip, enter a destination key and press the app's <strong>Capture</strong> button. This adds the key to the capture queue. You can queue multiple keys in the order you want them filled.</p>
+    <div class="guide-example">
+        <p><strong>Example: save two moments to two keys</strong></p>
+        <p>Enter <code>a</code> and click <strong>Capture</strong>. Then enter <code>b</code> and click <strong>Capture</strong> again.</p>
+        <p>Press <code>scroll_lock</code> after the first moment: the clip is bound to <code>a</code>. Press it after another moment: that clip is bound to <code>b</code>.</p>
+    </div>
+    <p>After each capture, allow roughly <strong>2–3 seconds</strong> for processing. Longer clips can take more time. Once processing is complete, press the destination key to replay your clip.</p>
+</section>
+<section aria-labelledby="capture-replay">
+    <h2 id="capture-replay">Replay captured audio in a call or game</h2>
+    <p>A captured clip becomes a soundboard binding. You can play it with its assigned key just as you would an <a href="/keyboardsoundplayer/keyboard-soundboard">MP3 or WAV file bound to a key</a>.</p>
+    <p>To share the replay through voice chat, set up <a href="/keyboardsoundplayer/play-sounds-through-mic">soundboard microphone output</a>. Your game or chat app needs to receive the Voicemeeter virtual microphone, not just your physical microphone.</p>
+</section>
+<section aria-labelledby="capture-questions">
+    <h2 id="capture-questions">Audio capture troubleshooting</h2>
+    <h3>What is the difference between Capture and Capture Key?</h3>
+    <p>The <strong>Capture</strong> button queues the key that will receive a clip. The configured <strong>Capture Key</strong> takes the clip and assigns it to the next queued key. Set up the queue before pressing your capture key.</p>
+    <h3>Why is my captured sound not ready immediately?</h3>
+    <p>Clips need time to process. Wait a few seconds, especially if you increased Audio Clip Duration, before testing the destination key.</p>
+    <h3>Why does the player ask me to install Voicemeeter?</h3>
+    <p>Audio Capture requires Voicemeeter Banana. Check the <strong>Voicemeeter Config</strong> tab and make sure <strong>Path to Voicemeeter Banana</strong> points to <code>voicemeeterpro.exe</code>. Then load the provided settings and restart the player.</p>
+    <h3>How do I return to normal Windows audio?</h3>
+    <p>Turn <strong>Configure system audio</strong> off before closing Voicemeeter. To run KeyboardSoundPlayer without it, set both <strong>Audio Capture</strong> and <strong>Output To Mic</strong> to <strong>No</strong> in Config and save.</p>
+</section>
+{{ end }}

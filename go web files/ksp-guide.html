@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{{ .Guide.Title }}</title>
+    <meta name="description" content="{{ .Guide.Description }}"/>
+    <meta name="robots" content="index, follow, max-image-preview:large"/>
+    <link rel="canonical" href="{{ .Guide.URL }}"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="JGL Technologies"/>
+    <meta property="og:title" content="{{ .Guide.Title }}"/>
+    <meta property="og:description" content="{{ .Guide.Description }}"/>
+    <meta property="og:url" content="{{ .Guide.URL }}"/>
+    <meta property="og:image" content="https://jgltechnologies.com/ksp_logo.png"/>
+    <meta property="og:image:width" content="1024"/>
+    <meta property="og:image:height" content="1024"/>
+    <meta property="og:image:alt" content="KeyboardSoundPlayer keyboard and speaker logo"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="{{ .Guide.Title }}"/>
+    <meta name="twitter:description" content="{{ .Guide.Description }}"/>
+    <meta name="twitter:image" content="https://jgltechnologies.com/ksp_logo.png"/>
+    <meta name="twitter:image:alt" content="KeyboardSoundPlayer keyboard and speaker logo"/>
+    <meta name="theme-color" content="#0b1218"/>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "WebPage",
+                    "@id": "{{ .Guide.URL }}#webpage",
+                    "url": "{{ .Guide.URL }}",
+                    "name": "{{ .Guide.Title }}",
+                    "description": "{{ .Guide.Description }}",
+                    "inLanguage": "en",
+                    "about": {"@id": "https://jgltechnologies.com/keyboardsoundplayer#software"},
+                    "breadcrumb": {"@id": "{{ .Guide.URL }}#breadcrumb"}
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "@id": "{{ .Guide.URL }}#breadcrumb",
+                    "itemListElement": [
+                        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jgltechnologies.com/"},
+                        {"@type": "ListItem", "position": 2, "name": "KeyboardSoundPlayer", "item": "https://jgltechnologies.com/keyboardsoundplayer"},
+                        {"@type": "ListItem", "position": 3, "name": "{{ .Guide.Label }}", "item": "{{ .Guide.URL }}"}
+                    ]
+                }
+            ]
+        }
+    </script>
+    {{ template "favicon" . }}
+    {{ template "css" . }}
+    <style>
+        :root { --guide-ink: #17212b; --guide-muted: #53645c; --guide-green: #087c48; --guide-line: #dce5e0; }
+        html { scroll-padding-top: 24px; }
+        body { color: var(--guide-ink); background: #f3f7f5; }
+        .guide-shell { width: min(1120px, 100% - 48px); margin-inline: auto; }
+        .guide-skip { position: absolute; left: 16px; top: -100px; z-index: 20; padding: 12px 18px; background: white; }
+        .guide-skip:focus { top: 12px; }
+        .guide-hero { padding: 30px 0 64px; color: white; background: radial-gradient(circle at 90% 20%, rgba(36, 200, 117, .15), transparent 38%), linear-gradient(125deg, #081016, #14242a 65%, #0e3225); }
+        .guide-breadcrumbs { margin-bottom: 44px; font-size: .82rem; }
+        .guide-breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 0; padding: 0; list-style: none; }
+        .guide-breadcrumbs li + li::before { content: "/"; margin-right: 12px; color: #81958b; }
+        .guide-breadcrumbs a { color: #c3d6cc; }
+        .guide-breadcrumbs [aria-current] { color: #75eead; }
+        .guide-eyebrow { margin-bottom: 16px; color: #75eead; font-size: .76rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        .guide-hero h1 { max-width: 880px; margin-bottom: 22px; color: white; font-size: clamp(2.35rem, 5.5vw, 4.3rem); line-height: 1.06; }
+        .guide-intro { max-width: 740px; margin-bottom: 28px; color: #ccdad3; font-size: 1.08rem; line-height: 1.8; }
+        .guide-actions { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+        .guide-button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 20px; border-radius: 12px; color: #062516; background: #24c875; font-weight: 800; text-decoration: none; }
+        .guide-button:hover { color: #062516; background: #42dd8d; }
+        .guide-reference { color: #d9e8e0; font-size: .9rem; }
+        .guide-reference:hover { color: white; }
+        .guide-layout { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 32px; align-items: start; padding-block: 36px 64px; }
+        .guide-article { min-width: 0; padding: clamp(24px, 4vw, 42px); border: 1px solid var(--guide-line); border-radius: 24px; background: white; }
+        .guide-article section + section { margin-top: 36px; padding-top: 32px; border-top: 1px solid var(--guide-line); }
+        .guide-article h2 { margin-bottom: 18px; color: var(--guide-ink); font-size: clamp(1.45rem, 3vw, 1.85rem); line-height: 1.2; }
+        .guide-article h3 { margin: 24px 0 10px; color: var(--guide-ink); font-size: 1.08rem; line-height: 1.4; }
+        .guide-article a, .guide-sidebar a { color: var(--guide-green); }
+        .guide-article li { margin-bottom: 14px; padding-left: 4px; }
+        .guide-article ol, .guide-article ul { padding-left: 24px; }
+        .guide-article section > :last-child { margin-bottom: 0; }
+        .guide-article code { padding: 2px 5px; border: 1px solid var(--guide-line); border-radius: 5px; background: #f0f6f3; color: #18553a; font-size: .9em; overflow-wrap: anywhere; }
+        .guide-note { margin-block: 22px; padding: 18px 20px; border-left: 4px solid #24c875; border-radius: 0 12px 12px 0; background: #e8f9f0; }
+        .guide-example { margin-block: 22px; padding: 22px; border-radius: 14px; color: #d9e8e0; background: #111b21; }
+        .guide-example strong { color: #75eead; }
+        .guide-example p:last-child { margin-bottom: 0; }
+        .guide-example code { color: #75eead; border-color: #30423a; background: #1c2b27; }
+        .guide-sidebar { padding: 24px; border: 1px solid var(--guide-line); border-radius: 20px; background: white; }
+        .guide-sidebar img { width: 58px; height: 58px; margin-bottom: 16px; }
+        .guide-sidebar h2 { margin-bottom: 12px; font-size: 1.1rem; line-height: 1.4; }
+        .guide-sidebar p { color: var(--guide-muted); font-size: .88rem; }
+        .guide-sidebar ul { margin: 20px 0; padding: 0; list-style: none; }
+        .guide-sidebar li + li { margin-top: 8px; }
+        .guide-sidebar li a { display: block; padding: 10px 12px; border-radius: 10px; font-size: .88rem; }
+        .guide-sidebar li a[aria-current] { background: #e8f9f0; font-weight: 750; text-decoration: none; }
+        .guide-sidebar .guide-support { margin: 20px 0 0; padding-top: 18px; border-top: 1px solid var(--guide-line); }
+        .guide-cta { margin-top: 36px; padding-top: 30px; border-top: 1px solid var(--guide-line); }
+        .guide-cta p { color: var(--guide-muted); }
+        .guide-cta .guide-button { color: #062516; }
+        .guide-shell a:focus-visible, .guide-skip:focus-visible { outline: 3px solid #24c875; outline-offset: 4px; }
+        @media (max-width: 860px) { .guide-layout { grid-template-columns: 1fr; } .guide-sidebar { max-width: none; } }
+        @media (max-width: 600px) {
+            .guide-shell { width: calc(100% - 24px); }
+            .guide-hero { padding: 24px 12px 40px; }
+            .guide-hero .guide-shell { width: 100%; }
+            .guide-breadcrumbs { margin-bottom: 30px; }
+            .guide-intro { font-size: 1rem; }
+            .guide-layout { gap: 24px; padding-block: 24px 40px; }
+            .guide-article { padding: 24px 20px; border-radius: 19px; }
+            .guide-actions { align-items: flex-start; flex-direction: column; }
+        }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    </style>
+</head>
+<body>
+<a class="guide-skip" href="#guide-content">Skip to guide</a>
+{{ template "navbar" . }}
+<main>
+    <header class="guide-hero">
+        <div class="guide-shell">
+            <nav class="guide-breadcrumbs" aria-label="Breadcrumb">
+                <ol>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/keyboardsoundplayer">KeyboardSoundPlayer</a></li>
+                    <li><span aria-current="page">{{ .Guide.Label }}</span></li>
+                </ol>
+            </nav>
+            <p class="guide-eyebrow">KeyboardSoundPlayer feature guide</p>
+            <h1>{{ .Guide.Heading }}</h1>
+            <p class="guide-intro">{{ .Guide.Intro }}</p>
+            <div class="guide-actions">
+                <a class="guide-button" href="/keyboardsoundplayerstore">Get it from Microsoft Store <span aria-hidden="true">&nbsp;&rarr;</span></a>
+                <a class="guide-reference" href="/keyboardsoundplayer#documentation">Full documentation</a>
+            </div>
+        </div>
+    </header>
+    <div class="guide-shell guide-layout">
+        <article class="guide-article" id="guide-content" aria-label="{{ .Guide.Label }} guide" tabindex="-1">
+            {{ template "guide-content" . }}
+            <div class="guide-cta">
+                <h2>Build your soundboard</h2>
+                <p>Get KeyboardSoundPlayer for Windows, then follow this guide to set up your sounds.</p>
+                <a class="guide-button" href="/keyboardsoundplayerstore">Get KeyboardSoundPlayer <span aria-hidden="true">&nbsp;&rarr;</span></a>
+            </div>
+        </article>
+        <aside class="guide-sidebar" aria-label="More KeyboardSoundPlayer guides">
+            <img src="/ksp_logo.png" alt="KeyboardSoundPlayer logo" width="1024" height="1024"/>
+            <h2>More ways to use your soundboard</h2>
+            <p>Set up a feature, try an example, and find answers to common questions.</p>
+            <nav aria-label="Feature guides">
+                <ul>
+                    {{ range .Guides }}
+                    <li><a href="{{ .Path }}"{{ if eq .Slug $.Guide.Slug }} aria-current="page"{{ end }}>{{ .Label }}</a></li>
+                    {{ end }}
+                </ul>
+            </nav>
+            <a href="/keyboardsoundplayer">All features &amp; documentation</a>
+            <p class="guide-support">Need a hand? <a href="/contact">Contact JGL Technologies</a>.</p>
+        </aside>
+    </div>
+</main>
+{{ template "footer" . }}
+</body>
+</html>

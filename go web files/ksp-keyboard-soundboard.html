@@ -1,0 +1,42 @@
+{{ define "guide-content" }}
+<section aria-labelledby="bind-files">
+    <h2 id="bind-files">Bind MP3 and WAV files to keyboard keys</h2>
+    <p>A keyboard soundboard maps sounds to individual keys. You choose the clip and its key; pressing that key plays the sound. Start with a few easy-to-remember bindings, then add more as you build your collection.</p>
+    <ol>
+        <li><strong>Choose a key.</strong> Enter the key you want to bind in KeyboardSoundPlayer. A letter such as <code>a</code> works for a first test. Pick keys that do not interfere with controls you use in your games or other apps.</li>
+        <li><strong>Select Audio File.</strong> Use the <strong>Audio File</strong> button to choose and bind an MP3 or WAV file.</li>
+        <li><strong>Start the player.</strong> On <strong>Home</strong>, click <strong>Start</strong> and wait for <strong>KeyboardSoundPlayer is ready</strong>.</li>
+        <li><strong>Try your binding.</strong> Press the assigned key to play your sound. Repeat the process with other keys for additional clips.</li>
+    </ol>
+    <p>Playing sounds for yourself does not require microphone routing. To share them in a call or game chat, follow the <a href="/keyboardsoundplayer/play-sounds-through-mic">guide to playing sounds through your microphone</a>.</p>
+</section>
+<section aria-labelledby="key-names">
+    <h2 id="key-names">Choose the right key names</h2>
+    <p>Letters use names such as <code>a</code> and <code>b</code>. Other keys have names such as <code>space</code>, <code>enter</code>, <code>f1</code>, and <code>scroll_lock</code>. Use the <a href="/keyboardsoundplayer#key-finder">Key Finder tool</a> on the main page to check what to enter for a particular key.</p>
+    <p>Bindings use individual key presses. Uppercase and lowercase letters are treated the same, and combinations such as Ctrl+A are read as two separate key presses.</p>
+    <div class="guide-note"><strong>Want a sound on every key?</strong> Use <code>all</code> as the key name. This is useful when you want the same sound to respond to any key instead of setting up separate bindings.</div>
+</section>
+<section aria-labelledby="playback-controls">
+    <h2 id="playback-controls">Put playback controls on your keyboard</h2>
+    <p>The <strong>Text</strong> button also lets you bind functions. Assign a function to a spare key to control the soundboard while you use it:</p>
+    <ul>
+        <li><code>reset()</code> clears all audio channels.</li>
+        <li><code>pause()</code> pauses all sounds, and <code>unpause()</code> resumes them.</li>
+        <li><code>toggle()</code> toggles the sound player. Commands are disabled while the player is toggled off.</li>
+    </ul>
+    <p>In <strong>Config</strong>, the <strong>Channels</strong> setting controls how many sounds can play at once. Its default is <strong>1</strong>. Click <strong>Save</strong> after changing configuration; saving restarts the player if it is already running.</p>
+</section>
+<section aria-labelledby="more-sources">
+    <h2 id="more-sources">Add sounds without a local audio file</h2>
+    <p>The <strong>YouTube URL</strong> button lets you bind audio from a YouTube video. You can also <a href="/keyboardsoundplayer/text-to-speech">generate a spoken clip from text</a>, or <a href="/keyboardsoundplayer/audio-capture">capture recent audio and bind it to your next queued key</a>. Each source gives you another way to build the same keyboard soundboard.</p>
+</section>
+<section aria-labelledby="keyboard-questions">
+    <h2 id="keyboard-questions">Common keyboard soundboard questions</h2>
+    <h3>Does the app window need to stay open?</h3>
+    <p>The GUI does not need to stay open for the sound player to function. Use the GUI to stop it, or use the configured exit key.</p>
+    <h3>How do I stop the player quickly?</h3>
+    <p>By default, press <strong>Esc five times in two seconds</strong>. You can change <strong>Exit Key</strong> in Config.</p>
+    <h3>Why can I hear a clip but nobody in my call can?</h3>
+    <p>Local playback and microphone output are separate settings. Enable <strong>Output To Mic</strong> and complete the <a href="/keyboardsoundplayer/play-sounds-through-mic">Voicemeeter setup</a> so your chat app receives the virtual microphone.</p>
+</section>
+{{ end }}
