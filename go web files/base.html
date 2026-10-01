@@ -665,9 +665,9 @@ Total output lines: 750
             <nav class="site-footer__links" aria-label="Footer navigation">
                 <a href="/home">Home</a>
                 <a href="/jgl-bot">JGL Bot</a>
+                <a href="/keyboardsoundplayer">KeyboardSoundPlayer</a>
                 <a href="/contact">Contact</a>
                 <a href="/gh">GitHub</a>
-                <a href="/discord">Discord</a>
             </nav>
             <div class="site-footer__contact">
                 <a href="mailto:info@jgltechnologies.com">info@jgltechnologies.com</a>
@@ -696,9 +696,10 @@ Total output lines: 750
         </button>
         <div class="site-nav__links" id="site-nav-links" data-nav-panel data-open="false">
             <a class="site-nav__link site-nav__link--home" href="/home">Home</a>
+            <a class="site-nav__link site-nav__link--bot" href="/jgl-bot">JGL Bot</a>
+            <a class="site-nav__link site-nav__link--ksp" href="/keyboardsoundplayer">KeyboardSoundPlayer</a>
             <a class="site-nav__link site-nav__link--contact" href="/contact">Contact</a>
             <a class="site-nav__link" href="/gh">GitHub</a>
-            <a class="site-nav__link" href="/discord">Discord</a>
         </div>
     </div>
 </nav>
@@ -912,16 +913,16 @@ Total output lines: 750
     .site-nav__inner {
         min-height: 92px;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        grid-template-columns: auto minmax(0, 1fr);
         align-items: center;
         gap: 28px;
     }
 
     .site-nav__brand {
-        grid-column: 2;
+        grid-column: 1;
         display: inline-flex;
         align-items: center;
-        justify-self: center;
+        justify-self: start;
         border-radius: 12px;
     }
 
@@ -931,7 +932,7 @@ Total output lines: 750
     }
 
     .site-nav__links {
-        grid-column: 3;
+        grid-column: 2;
         display: flex;
         align-items: center;
         justify-self: end;
@@ -962,6 +963,7 @@ Total output lines: 750
 
     .site-page--home .site-nav__link--home,
     .site-page--bot .site-nav__link--bot,
+    .site-page--ksp .site-nav__link--ksp,
     .site-page--contact .site-nav__link--contact {
         color: var(--site-purple);
         background: var(--site-purple-soft);
@@ -1540,6 +1542,11 @@ Total output lines: 750
     @media (max-width: 1040px) {
         .site-nav__inner {
             grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        }
+
+        .site-nav__brand {
+            grid-column: 2;
+            justify-self: center;
         }
 
         .site-nav__toggle {
