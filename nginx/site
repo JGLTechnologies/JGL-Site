@@ -52,7 +52,7 @@ server {
 
     server_name jgltechnologies.com;
 
-    return 301 https://jgltechnologies.com$request_
+    return 301 https://jgltechnologies.com$request_uri;
 }
 
 server {
